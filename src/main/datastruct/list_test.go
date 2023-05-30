@@ -211,7 +211,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
 	return head
 }
 
-//倒数第k个节点(从1开始计数)
+// 倒数第k个节点(从1开始计数)
 func getKthFromEnd(head *ListNode, k int) *ListNode {
 	f := head
 	for k > 0 && f != nil {
@@ -229,7 +229,7 @@ func getKthFromEnd(head *ListNode, k int) *ListNode {
 	return s.Next
 }
 
-//找单链表的中点
+// 找单链表的中点
 func middleNode(head *ListNode) *ListNode {
 	s := head
 	f := head
@@ -238,4 +238,30 @@ func middleNode(head *ListNode) *ListNode {
 		s = s.Next
 	}
 	return s
+}
+
+// 判断两个链表是否相交
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	a := headA
+	b := headB
+
+	for {
+		if a == b {
+			//要么是相交点、要么是nil
+			return a
+		}
+
+		if a == nil {
+			//当a走完headA, 接着走headB
+			a = headB
+		} else {
+			a = a.Next
+		}
+		if b == nil {
+			//当b走完headB, 接着走headA
+			b = headA
+		} else {
+			b = b.Next
+		}
+	}
 }
