@@ -211,4 +211,31 @@ func mergeKLists(lists []*ListNode) *ListNode {
 	return head
 }
 
-//递归
+//倒数第k个节点(从1开始计数)
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	f := head
+	for k > 0 && f != nil {
+		f = f.Next
+		k--
+	}
+	s := head
+	if f == nil {
+		return s
+	}
+	for f.Next != nil {
+		f = f.Next
+		s = s.Next
+	}
+	return s.Next
+}
+
+//找单链表的中点
+func middleNode(head *ListNode) *ListNode {
+	s := head
+	f := head
+	for f != nil && f.Next != nil {
+		f = f.Next.Next
+		s = s.Next
+	}
+	return s
+}
