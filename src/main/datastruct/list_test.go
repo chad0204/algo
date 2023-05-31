@@ -277,7 +277,6 @@ func deleteDuplicates(head *ListNode) *ListNode {
 	}
 	s := head
 	f := head
-	dummy := s
 	for f != nil {
 		if s.Val != f.Val {
 			s.Next = f
@@ -286,7 +285,7 @@ func deleteDuplicates(head *ListNode) *ListNode {
 		f = f.Next
 	}
 	s.Next = nil
-	return dummy
+	return head
 }
 
 /**
