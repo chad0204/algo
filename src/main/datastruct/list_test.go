@@ -265,3 +265,37 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 		}
 	}
 }
+
+func TestDeleteDuplicates(t *testing.T) {
+
+}
+
+//删除链表中的重复元素
+func deleteDuplicates(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	s := head
+	f := head
+	for f != nil {
+		if s.Val != f.Val {
+			s.Next = f
+			s = s.Next
+		}
+		f = f.Next
+	}
+	s.Next = nil
+	return head
+}
+
+/**
+
+[1,1,2,3]
+
+1 1 2 3
+s   s s
+f f f f f
+
+
+
+*/
