@@ -5,13 +5,40 @@ import (
 	"testing"
 )
 
+func TestTreeNode_PreTraverse(t *testing.T) {
+	root := &TreeNode{0,
+		&TreeNode{1, &TreeNode{2, nil, nil}, &TreeNode{3, nil, nil}},
+		&TreeNode{4, &TreeNode{5, nil, nil}, &TreeNode{6, nil, nil}}}
+	var pres []int
+	pres = root.PreTraverse(pres)
+	fmt.Println(pres)
+}
+
+func TestTreeNode_PostTraverse(t *testing.T) {
+	root := &TreeNode{6,
+		&TreeNode{2, &TreeNode{0, nil, nil}, &TreeNode{1, nil, nil}},
+		&TreeNode{5, &TreeNode{3, nil, nil}, &TreeNode{4, nil, nil}}}
+	var posts []int
+	root.PostTraverse(&posts)
+	fmt.Println(posts)
+}
+
+func TestTreeNode_InTraverse(t *testing.T) {
+	root := &TreeNode{3,
+		&TreeNode{1, &TreeNode{0, nil, nil}, &TreeNode{2, nil, nil}},
+		&TreeNode{5, &TreeNode{4, nil, nil}, &TreeNode{6, nil, nil}}}
+	var inorders []int
+	root.InTraverse(&inorders)
+	fmt.Println(inorders)
+}
+
+// 104. 二叉树的最大深度
 func TestMaxDepth(t *testing.T) {
 	root := &TreeNode{1, nil, &TreeNode{2, nil, nil}}
 	maxDepth(root)
 
 }
 
-// 104. 二叉树的最大深度
 func maxDepth(root *TreeNode) int {
 	depth := 0
 	traverse(root, &depth)
@@ -55,31 +82,4 @@ func traverseV2(root *TreeNode) int {
 	l := traverseV2(root.Left)
 	r := traverseV2(root.Right)
 	return max(l, r) + 1
-}
-
-func TestTreeNode_PreTraverse(t *testing.T) {
-	root := &TreeNode{0,
-		&TreeNode{1, &TreeNode{2, nil, nil}, &TreeNode{3, nil, nil}},
-		&TreeNode{4, &TreeNode{5, nil, nil}, &TreeNode{6, nil, nil}}}
-	var pres []int
-	pres = root.PreTraverse(pres)
-	fmt.Println(pres)
-}
-
-func TestTreeNode_PostTraverse(t *testing.T) {
-	root := &TreeNode{6,
-		&TreeNode{2, &TreeNode{0, nil, nil}, &TreeNode{1, nil, nil}},
-		&TreeNode{5, &TreeNode{3, nil, nil}, &TreeNode{4, nil, nil}}}
-	var posts []int
-	root.PostTraverse(&posts)
-	fmt.Println(posts)
-}
-
-func TestTreeNode_InTraverse(t *testing.T) {
-	root := &TreeNode{3,
-		&TreeNode{1, &TreeNode{0, nil, nil}, &TreeNode{2, nil, nil}},
-		&TreeNode{5, &TreeNode{4, nil, nil}, &TreeNode{6, nil, nil}}}
-	var inorders []int
-	root.InTraverse(&inorders)
-	fmt.Println(inorders)
 }
