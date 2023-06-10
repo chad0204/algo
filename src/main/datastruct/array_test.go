@@ -9,7 +9,7 @@ func TestRemoveDuplicates(t *testing.T) {
 	removeDuplicates(a)
 }
 
-//删除有序数组中的重复项 (有序是关键)
+// 删除有序数组中的重复项 (有序是关键)
 func removeDuplicates(nums []int) int {
 	//0 1 1 1 2 3 4 5 6 7
 	//0 1 2 3 4 5 6 7 6 7
@@ -25,7 +25,7 @@ func removeDuplicates(nums []int) int {
 	return s + 1
 }
 
-//删除指定元素 此题解法和上题类似
+// 删除指定元素 此题解法和上题类似
 func removeElement(nums []int, val int) int {
 	// 1 2 3 2 4 5  删除2
 	// 1 3 4 5
@@ -41,7 +41,7 @@ func removeElement(nums []int, val int) int {
 	return s
 }
 
-//两数之和II
+// 两数之和II
 func twoSum(nums []int, target int) []int {
 	left, right := 0, len(nums)-1
 	for left < right {
@@ -57,7 +57,7 @@ func twoSum(nums []int, target int) []int {
 	return []int{-1, -1}
 }
 
-//反转字符串
+// 反转字符串
 func reverseString(s []byte) {
 	left, right := 0, len(s)-1
 	for left < right {
@@ -69,7 +69,7 @@ func reverseString(s []byte) {
 	}
 }
 
-//最长回文子串 这题可以动态规划(dp)
+// 最长回文子串 这题可以动态规划(dp)
 func longestPalindrome(s string) string {
 	res := ""
 	for i := 0; i < len(s); i++ { //计算所有节点的中心
