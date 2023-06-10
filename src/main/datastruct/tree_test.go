@@ -32,7 +32,16 @@ func TestTreeNode_InTraverse(t *testing.T) {
 	fmt.Println(inorders)
 }
 
-// 104. 二叉树的最大深度
+func TestTreeNode_LevelTraverse(t *testing.T) {
+	root := &TreeNode{0,
+		&TreeNode{1, &TreeNode{3, nil, nil}, &TreeNode{4, nil, nil}},
+		&TreeNode{2, &TreeNode{5, nil, nil}, &TreeNode{6, nil, nil}}}
+	var levels []int
+	root.LevelTraverse(&levels)
+	fmt.Println(levels)
+}
+
+// 104. 二叉树的最大深度 涉及子树, 需要后续遍历并设置返回值 左右根
 func TestMaxDepth(t *testing.T) {
 	root := &TreeNode{1, nil, &TreeNode{2, nil, nil}}
 	maxDepth(root)
@@ -82,4 +91,25 @@ func traverseV2(root *TreeNode) int {
 	l := traverseV2(root.Left)
 	r := traverseV2(root.Right)
 	return max(l, r) + 1
+}
+
+// 543. 二叉树的直径
+func diameterOfBinaryTree(root *TreeNode) int {
+	/*
+		思路是"所有"子树的左右最大深度之和。
+		涉及左右子树所以是后序遍历, "最大"需要记录最大值
+	*/
+	d := 0
+	diameter(root, &d)
+	return d
+}
+
+func diameter(root *TreeNode, d *int) int {
+	if root == nil {
+		return 0
+	}
+	l := diameter(root.Left, d)
+	r := diameter(root.Right, d)
+	*d = max(l+r, *d)
+	return max(l, r) + 1 // 计算左右子树的深度
 }

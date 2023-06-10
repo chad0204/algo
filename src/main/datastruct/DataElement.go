@@ -41,3 +41,26 @@ func (t *TreeNode) InTraverse(res *[]int) {
 	*res = append(*res, t.Val)
 	t.Right.InTraverse(res)
 }
+
+// LevelTraverse 层序遍历, 就是迭代思想 比较简单
+func (t *TreeNode) LevelTraverse(res *[]int) {
+	if t == nil {
+		return
+	}
+	levels := make([]*TreeNode, 0)
+	levels = append(levels, t)
+	for len(levels) > 0 {
+		l := len(levels)
+		for i := 0; i < l; i++ {
+			curr := levels[0]
+			levels = levels[1:] //相当于pop一个
+			*res = append(*res, curr.Val)
+			if curr.Left != nil {
+				levels = append(levels, curr.Left)
+			}
+			if curr.Right != nil {
+				levels = append(levels, curr.Right)
+			}
+		}
+	}
+}
