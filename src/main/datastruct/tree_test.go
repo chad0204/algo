@@ -49,6 +49,7 @@ func TestMaxDepth(t *testing.T) {
 }
 
 func maxDepth(root *TreeNode) int {
+	res = 0 //每次执行 清空
 	depth := 0
 	traverse(root, &depth)
 	return res
@@ -60,9 +61,9 @@ func maxDepth(root *TreeNode) int {
 */
 var res int
 
-func traverse(root *TreeNode, depth *int) *int {
+func traverse(root *TreeNode, depth *int) {
 	if root == nil {
-		return depth
+		return
 	}
 	*depth++
 	if root.Left == nil && root.Right == nil {
@@ -71,7 +72,6 @@ func traverse(root *TreeNode, depth *int) *int {
 	traverse(root.Left, depth)
 	traverse(root.Right, depth)
 	*depth--
-	return depth
 }
 
 func max(a, b int) int {
