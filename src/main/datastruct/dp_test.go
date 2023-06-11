@@ -23,6 +23,7 @@ func fib(n int) int {
 	return f(n, m)
 }
 
+// 递归 自顶向下
 func f(n int, m map[int]int) int {
 	if n == 0 {
 		return 0
@@ -37,7 +38,7 @@ func f(n int, m map[int]int) int {
 	return m[n]
 }
 
-// 迭代
+// 迭代 自底向上
 func fibV2(n int) int {
 	if n == 0 {
 		return 0
