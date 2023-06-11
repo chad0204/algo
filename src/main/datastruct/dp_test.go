@@ -99,7 +99,7 @@ func dp(coins []int, amount int, m []int) int {
 func coinChangeIterator(coins []int, amount int) int {
 	dp := make([]int, amount+1)
 	for i := range dp {
-		dp[i] = math.MaxInt32 //dp[i-c]+1其他语言会溢出
+		dp[i] = math.MaxInt32 //dp[i-c]+1其他语言会溢出, 其实可以改成amount+1
 	}
 	dp[0] = 0
 	for i := 1; i < amount+1; i++ {
