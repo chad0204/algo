@@ -15,15 +15,14 @@ import (
 DFS, 遍历节点
 */
 func TestPermute(t *testing.T) {
-
-	permute([]int{1, 2, 3})
+	fmt.Println(permute([]int{1, 2, 3}))
 }
 
 // 46. 全排列
 func permute(nums []int) [][]int {
-	permutes = [][]int{} //每次执行都清空结果, 或者backtrack传递指针参数也行
-	used := make([]bool, len(nums))
-	var path []int //不能使用make, make不仅分配内存还会设置初始值
+	permutes = [][]int{}            //每次执行都清空结果, 或者backtrack传递指针参数也行
+	used := make([]bool, len(nums)) // 记录一次深度遍历的已使用索引
+	var path []int                  //不要初始值                //不能使用make, make不仅分配内存还会设置初始值
 	backtrack(nums, path, used)
 	return permutes
 }
