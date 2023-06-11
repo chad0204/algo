@@ -1,6 +1,10 @@
 package datastruct
 
-import "testing"
+import (
+	"fmt"
+	"strings"
+	"testing"
+)
 
 /*
 *
@@ -43,4 +47,79 @@ func backtrack(nums []int, path []int, used []bool) {
 		path = path[:len(path)-1]
 		used[i] = false
 	}
+}
+
+func TestSolveNQueens(t *testing.T) {
+	fmt.Println(solveNQueens(4))
+}
+
+// 51. N 皇后
+func solveNQueens(n int) [][]string {
+	solves = [][]string{}
+	// 每个元素表示每一行的放置情况, 凑齐所有行数就是一个解决方案
+	board := make([]string, n)
+	//board = []string{"....", "....", ".....", "....."}
+	for i := range board {
+		board[i] = strings.Repeat(".", n)
+	}
+	row := 0 // 从第0行开始
+	backtrackBoard(board, row)
+	return solves
+}
+
+// solves := [][]string{[]string{"Q..."}, []string{".Q.."}}
+var solves [][]string
+
+// 由于一行设置完就不能在同一行继续设置 所以从上往下一行一行设置
+func backtrackBoard(board []string, row int) {
+	if row == len(board) {
+		//已设置到最后一行 说明是一种解决方案
+		s := make([]string, len(board))
+		copy(s, board)
+		solves = append(solves, s)
+		return
+	}
+
+	//遍历n行n列
+	for col := 0; col < len(board[row]); col++ {
+		//判断此位置能否设置Q
+		if !isValid(board, row, col) {
+			continue
+		}
+		rowLine := []byte(board[row])
+		rowLine[col] = 'Q'
+		board[row] = string(rowLine)
+		backtrackBoard(board, row+1)
+		rowLine[col] = '.'
+		board[row] = string(rowLine)
+	}
+
+}
+
+/*
+*
+判断（row, col) 位置在board上是否可行
+*/
+func isValid(board []string, row int, col int) bool {
+	//列
+	for i := row; i > 0; i-- {
+		if []byte(board[i])[col] == 'Q' {
+			return false
+		}
+	}
+
+	//右上
+	for i, j := row-1, col+1; i >= 0 && j < len(board[i]); i, j = i-1, j+1 {
+		if []byte(board[i])[j] == 'Q' {
+			return false
+		}
+	}
+
+	//左上
+	for i, j := row-1, col-1; i >= 0 && j >= 0; i, j = i-1, j-1 {
+		if []byte(board[i])[j] == 'Q' {
+			return false
+		}
+	}
+	return true
 }
