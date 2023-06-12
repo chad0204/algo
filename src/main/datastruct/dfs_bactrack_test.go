@@ -2,6 +2,7 @@ package datastruct
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -57,7 +58,7 @@ func solveNQueens(n int) [][]string {
 	solves = [][]string{}
 	// 每个元素表示每一行的放置情况, 凑齐所有行数就是一个解决方案
 	board := make([]string, n)
-	//board = []string{"....", "....", ".....", "....."}
+	//{"....", "....", ".....", "....."}
 	for i := range board {
 		board[i] = strings.Repeat(".", n)
 	}
@@ -121,4 +122,49 @@ func isValid(board []string, row int, col int) bool {
 		}
 	}
 	return true
+}
+
+func TestPermuteUnique(t *testing.T) {
+	fmt.Println(permuteUnique([]int{1, 1, 2}))
+}
+
+// 47. 全排列 II (nums包含重复数字)
+func permuteUnique(nums []int) [][]int {
+	var r [][]int
+	used := make([]bool, len(nums))
+	var path []int
+	sort.Ints(nums)
+	backTrackUnique(nums, path, used, &r)
+	return r
+}
+
+func backTrackUnique(nums []int, path []int, used []bool, r *[][]int) {
+	if len(path) == len(nums) {
+		s := make([]int, len(path))
+		copy(s, path)
+		*r = append(*r, s)
+		return
+	}
+
+	pre := -999
+	for i := range nums {
+		//深度遍历是否有过这个分支
+		if used[i] {
+			continue
+		}
+		if nums[i] == pre {
+			//pre只有在上一个分支没有被剪调的情况下才会记录
+			continue
+		}
+		////与前一个相邻分支值重复 并且前一个相邻分支没有在深度遍历中使用, 则跳过
+		//if i > 0 && nums[i] == nums[i - 1] && !used[i - 1] {
+		//	// 如果!used[i - 1], 说明相邻节点已经深度树中, 不应该剪切当前分支
+		//	continue
+		//}
+		path = append(path, nums[i])
+		used[i] = true
+		backTrackUnique(nums, path, used, r)
+		path = path[:len(path)-1]
+		used[i] = false
+	}
 }
