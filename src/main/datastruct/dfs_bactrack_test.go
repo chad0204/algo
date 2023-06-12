@@ -14,6 +14,10 @@ import (
 
 回溯算法, 遍历树枝
 DFS, 遍历节点
+
+排列 -> 组合 -> 子集
+变型: n皇后
+变型: 有重复数字的排列
 */
 func TestPermute(t *testing.T) {
 	fmt.Println(permute([]int{1, 2, 3}))
@@ -206,7 +210,7 @@ func TestSubsets(t *testing.T) {
 */
 func subsets(nums []int) [][]int {
 	var path []int
-	used := make([]bool, len(nums))
+	used := make([]bool, len(nums)) // 想想怎么可以不用标记使用
 	var res [][]int
 	backTrackSubsets(nums, path, 0, used, &res)
 	return res
@@ -223,6 +227,42 @@ func backTrackSubsets(nums []int, path []int, index int, used []bool, res *[][]i
 		path = append(path, nums[i])
 		used[i] = true
 		backTrackSubsets(nums, path, i, used, res)
+		path = path[:len(path)-1]
+		used[i] = false
+	}
+}
+
+func TestCombine(t *testing.T) {
+	fmt.Println(combine(4, 2))
+}
+
+// 77. 组合
+func combine(n int, k int) [][]int {
+	var nums []int // 想想怎么可以不用构造
+	for i := 1; i <= n; i++ {
+		nums = append(nums, i)
+	}
+	var path []int
+	used := make([]bool, n) //想想怎么可以不用标记使用
+	var res [][]int
+	backtrackCombine(nums, path, 0, k, used, &res)
+	return res
+}
+
+func backtrackCombine(nums []int, path []int, index int, k int, used []bool, res *[][]int) {
+	if len(path) == k {
+		s := make([]int, k)
+		copy(s, path)
+		*res = append(*res, s)
+		return
+	}
+	for i := index; i < len(nums); i++ {
+		if used[i] {
+			continue
+		}
+		path = append(path, nums[i])
+		used[i] = true
+		backtrackCombine(nums, path, i, k, used, res)
 		path = path[:len(path)-1]
 		used[i] = false
 	}
