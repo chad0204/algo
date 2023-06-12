@@ -189,3 +189,41 @@ func backTrackUniqueV2(nums []int, path []int, used []bool, r *[][]int) {
 		used[i] = false
 	}
 }
+
+func TestSubsets(t *testing.T) {
+	fmt.Println(subsets([]int{1, 2, 3}))
+}
+
+// 78. 子集
+/*
+         []
+      /    \    \
+    [1]     [2] [3]
+    /   \     \
+ [1,2] [1,3]  [3]
+  /
+[1,2,3]
+*/
+func subsets(nums []int) [][]int {
+	var path []int
+	used := make([]bool, len(nums))
+	var res [][]int
+	backTrackSubsets(nums, path, 0, used, &res)
+	return res
+}
+
+func backTrackSubsets(nums []int, path []int, index int, used []bool, res *[][]int) {
+	s := make([]int, len(path))
+	copy(s, path)
+	*res = append(*res, s)
+	for i := index; i < len(nums); i++ {
+		if used[i] {
+			continue
+		}
+		path = append(path, nums[i])
+		used[i] = true
+		backTrackSubsets(nums, path, i, used, res)
+		path = path[:len(path)-1]
+		used[i] = false
+	}
+}
