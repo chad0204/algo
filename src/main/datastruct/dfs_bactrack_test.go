@@ -146,6 +146,32 @@ func backTrackUnique(nums []int, path []int, used []bool, r *[][]int) {
 		return
 	}
 
+	for i := range nums {
+		//深度遍历是否有过这个分支
+		if used[i] {
+			continue
+		}
+		//与前一个相邻分支值重复 并且前一个相邻分支没有在深度遍历中使用, 则跳过
+		if i > 0 && nums[i] == nums[i-1] && !used[i-1] {
+			// 如果!used[i - 1], 说明相邻节点已经深度树中, 不应该剪切当前分支
+			continue
+		}
+		path = append(path, nums[i])
+		used[i] = true
+		backTrackUnique(nums, path, used, r)
+		path = path[:len(path)-1]
+		used[i] = false
+	}
+}
+
+func backTrackUniqueV2(nums []int, path []int, used []bool, r *[][]int) {
+	if len(path) == len(nums) {
+		s := make([]int, len(path))
+		copy(s, path)
+		*r = append(*r, s)
+		return
+	}
+
 	pre := -999
 	for i := range nums {
 		//深度遍历是否有过这个分支
@@ -153,14 +179,9 @@ func backTrackUnique(nums []int, path []int, used []bool, r *[][]int) {
 			continue
 		}
 		if nums[i] == pre {
-			//pre只有在上一个分支没有被剪调的情况下才会记录
+			//pre只有在上一个分支没有会被剪掉的时候才会记录
 			continue
 		}
-		////与前一个相邻分支值重复 并且前一个相邻分支没有在深度遍历中使用, 则跳过
-		//if i > 0 && nums[i] == nums[i - 1] && !used[i - 1] {
-		//	// 如果!used[i - 1], 说明相邻节点已经深度树中, 不应该剪切当前分支
-		//	continue
-		//}
 		path = append(path, nums[i])
 		used[i] = true
 		backTrackUnique(nums, path, used, r)
