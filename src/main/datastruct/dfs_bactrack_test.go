@@ -15,9 +15,11 @@ import (
 回溯算法, 遍历树枝
 DFS, 遍历节点
 
-排列 -> 组合 -> 子集
+标准: 排列(不在乎顺序, 121和112都是排列) -> 组合 -> 子集(不在乎顺序, 12和21是一样的只能取一个)
+
 变型: n皇后
-变型: 有重复数字的排列
+变型: 有重复数字的排列, 不可复选
+变型: 有重复数字的子集, 不可复选
 */
 func TestPermute(t *testing.T) {
 	fmt.Println(permute([]int{1, 2, 3}))
@@ -183,11 +185,12 @@ func backTrackUniqueV2(nums []int, path []int, used []bool, r *[][]int) {
 			continue
 		}
 		if nums[i] == pre {
-			//pre只有在上一个分支没有会被剪掉的时候才会记录
+			//pre只有在遍历上一个分支没有会被剪掉的时候才会记录
 			continue
 		}
 		path = append(path, nums[i])
 		used[i] = true
+		pre = nums[i]
 		backTrackUnique(nums, path, used, r)
 		path = path[:len(path)-1]
 		used[i] = false
@@ -265,5 +268,32 @@ func backtrackCombine(nums []int, path []int, index int, k int, used []bool, res
 		backtrackCombine(nums, path, i, k, used, res)
 		path = path[:len(path)-1]
 		used[i] = false
+	}
+}
+
+func TestSubsetsWithDup(t *testing.T) {
+	fmt.Println(subsetsWithDup([]int{1, 1, 2}))
+}
+
+// 90. 子集 II(有重复数据)
+func subsetsWithDup(nums []int) [][]int {
+	var path []int
+	var res [][]int
+	sort.Ints(nums)
+	backtrackSubsetsWithDup(nums, path, 0, &res)
+	return res
+}
+
+func backtrackSubsetsWithDup(nums []int, path []int, index int, res *[][]int) {
+	s := make([]int, len(path))
+	copy(s, path)
+	*res = append(*res, s)
+	for i := index; i < len(nums); i++ {
+		if i > index && nums[i] == nums[i-1] {
+			continue
+		}
+		path = append(path, nums[i])
+		backtrackSubsetsWithDup(nums, path, i+1, res)
+		path = path[:len(path)-1]
 	}
 }
