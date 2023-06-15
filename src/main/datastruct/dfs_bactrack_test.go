@@ -297,3 +297,112 @@ func backtrackSubsetsWithDup(nums []int, path []int, index int, res *[][]int) {
 		path = path[:len(path)-1]
 	}
 }
+
+// 39. 组合总和
+func combinationSum(candidates []int, target int) [][]int {
+	var res [][]int
+	var path []int
+	backtrackCombinationSum(candidates, path, 0, 0, target, &res)
+	return res
+}
+
+func backtrackCombinationSum(candidates []int, path []int, sum int, start int, target int, res *[][]int) {
+	if sum > target {
+		return
+	}
+	if sum == target {
+		tmp := make([]int, len(path))
+		copy(tmp, path)
+		*res = append(*res, tmp)
+	}
+	for i := start; i < len(candidates); i++ {
+		path = append(path, candidates[i])
+		sum = sum + candidates[i]
+		backtrackCombinationSum(candidates, path, sum, i, target, res)
+		path = path[:len(path)-1]
+		sum = sum - candidates[i]
+	}
+}
+
+func TestCombinationSum3(t *testing.T) {
+	combinationSum3(3, 7)
+}
+
+// 216. 组合总和 III
+func combinationSum3(k int, n int) [][]int {
+	var res [][]int
+	var nums []int
+	var path []int
+	used := make([]bool, 9)
+	for i := 1; i <= 9; i++ {
+		nums = append(nums, i)
+	}
+	backtrackCombinationSum3(nums, path, 0, used, 0, k, n, &res)
+	return res
+}
+
+func backtrackCombinationSum3(nums []int, path []int, sum int, used []bool, start int, k int, n int, res *[][]int) {
+	if sum > n {
+		return
+	}
+	if len(path) > k {
+		return
+	}
+	if sum == n && len(path) == k {
+		s := make([]int, len(path))
+		copy(s, path)
+		*res = append(*res, s)
+	}
+	for i := start; i < len(nums); i++ {
+		if used[i] {
+			continue
+		}
+		path = append(path, nums[i])
+		sum = sum + nums[i]
+		used[i] = true
+		backtrackCombinationSum3(nums, path, sum, used, i, k, n, res)
+		path = path[:len(path)-1]
+		sum = sum - nums[i]
+		used[i] = false
+	}
+}
+
+func TestCombinationSum2(t *testing.T) {
+	fmt.Println(combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8))
+}
+
+// 40. 组合总和 II
+func combinationSum2(candidates []int, target int) [][]int {
+	var path []int
+	used := make([]bool, len(candidates)) //可以去掉
+	var res [][]int
+	sort.Ints(candidates)
+	backtrackCombinationSum2(candidates, path, used, 0, 0, target, &res)
+	return res
+}
+
+func backtrackCombinationSum2(candidates []int, path []int, used []bool, start int, sum int, target int, res *[][]int) {
+	if sum > target {
+		return
+	}
+	if sum == target {
+		s := make([]int, len(path))
+		copy(s, path)
+		*res = append(*res, s)
+	}
+	for i := start; i < len(candidates); i++ {
+		if used[i] {
+			continue
+		}
+		if i > 0 && (candidates[i] == candidates[i-1]) && !used[i-1] {
+			continue
+		}
+		path = append(path, candidates[i])
+		sum = sum + candidates[i]
+		used[i] = true
+		backtrackCombinationSum2(candidates, path, used, i, sum, target, res)
+		path = path[:len(path)-1]
+		sum = sum - candidates[i]
+		used[i] = false
+	}
+}
