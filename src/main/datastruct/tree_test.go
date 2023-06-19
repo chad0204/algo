@@ -67,18 +67,11 @@ func traverse(root *TreeNode, depth *int) {
 	}
 	*depth++
 	if root.Left == nil && root.Right == nil {
-		res = max(res, *depth)
+		res = Max(res, *depth)
 	}
 	traverse(root.Left, depth)
 	traverse(root.Right, depth)
 	*depth--
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }
 
 /*
@@ -90,7 +83,7 @@ func traverseV2(root *TreeNode) int {
 	}
 	l := traverseV2(root.Left)
 	r := traverseV2(root.Right)
-	return max(l, r) + 1
+	return Max(l, r) + 1
 }
 
 // 543. 二叉树的直径
@@ -110,6 +103,53 @@ func diameter(root *TreeNode, d *int) int {
 	}
 	l := diameter(root.Left, d)
 	r := diameter(root.Right, d)
-	*d = max(l+r, *d)
-	return max(l, r) + 1 // 计算左右子树的深度
+	*d = Max(l+r, *d)
+	return Max(l, r) + 1 // 计算左右子树的深度
+}
+
+func TestMinDepth(t *testing.T) {
+	root := &TreeNode{0,
+		&TreeNode{1, &TreeNode{3, nil, nil}, &TreeNode{4, nil, nil}},
+		&TreeNode{2, nil, nil}}
+
+	//root := &TreeNode{1,
+	//	nil,
+	//	&TreeNode{2,
+	//		nil,
+	//		&TreeNode{3,
+	//			nil,
+	//			&TreeNode{4,
+	//				nil,
+	//				&TreeNode{5, nil ,nil}}}}}
+
+	fmt.Println(minDepth(root))
+}
+
+// 111. 二叉树的最小深度, 最小, 层序遍历 找到第一个叶子节点的分支即可, 如果用dfs(参考最大深度), 需要遍历所有的分支, 时间复杂度划不来
+func minDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	var queue []*TreeNode
+	queue = append(queue, root)
+	level := 0
+
+	for len(queue) != 0 {
+		level++
+		l := len(queue) //记录长度快照, queue的长度是动态的
+		for i := 0; i < l; i++ {
+			t := queue[0]
+			queue = queue[1:] //需要缩减长度
+			if t.Left != nil {
+				queue = append(queue, t.Left)
+			}
+			if t.Right != nil {
+				queue = append(queue, t.Right)
+			}
+			if t.Left == nil && t.Right == nil {
+				return level
+			}
+		}
+	}
+	return level
 }

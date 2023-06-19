@@ -6,13 +6,6 @@ import (
 	"testing"
 )
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func TestFib(t *testing.T) {
 	fmt.Println(fib(1000))
 }
@@ -88,7 +81,7 @@ func dp(coins []int, amount int, m []int) int {
 		if v == -1 {                // 子问题无解 父问题也无解
 			continue
 		}
-		tmp = min(tmp, v+1) // 少了c 多一枚硬币
+		tmp = Min(tmp, v+1) // 少了c 多一枚硬币
 	}
 	m[amount] = tmp
 	if tmp == math.MaxInt32 {
@@ -108,7 +101,7 @@ func coinChangeIterator(coins []int, amount int) int {
 			if i < c {
 				continue
 			}
-			dp[i] = min(dp[i-c]+1, dp[i])
+			dp[i] = Min(dp[i-c]+1, dp[i])
 		}
 	}
 	if dp[amount] == math.MaxInt32 {
