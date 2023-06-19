@@ -79,3 +79,65 @@ func traverseDFS(root *TreeNode, res *int) {
 	}
 	*res = *res - 1
 }
+
+func TestOpenLock(t *testing.T) {
+	openLock([]string{}, "8000")
+}
+
+func openLock(deadends []string, target string) int {
+	return openLockDFS("0000", target, deadends)
+}
+
+func openLockDFS(start string, target string, deadends []string) int {
+	deadMap := make(map[string]bool)
+	for _, v := range deadends {
+		deadMap[v] = true
+	}
+	var queue []string
+	queue = append(queue, start)
+	visited := make(map[string]bool)
+	visited[start] = true
+
+	res := 0
+	for len(queue) != 0 {
+		l := len(queue)
+		for i := 0; i < l; i++ {
+			curr := queue[0] // 通过curr找下一层
+			queue = queue[1:]
+			if _, ok := deadMap[curr]; ok {
+				//这条路走死了
+				continue
+			}
+			if curr == target {
+				return res
+			}
+			for j := 0; j < 4; j++ {
+				//上拨 4次 0 -> 1 > 2 > 3 ... -> 9 -> 0
+				up := []byte(curr)
+				if up[j] == '9' {
+					up[j] = '0'
+				} else {
+					up[j] = up[j] + 1
+				}
+				if _, ok := visited[string(up)]; !ok {
+					visited[string(up)] = true
+					queue = append(queue, string(up))
+				}
+
+				//下拨 4次 9 -> 8 -> 7 ... -> 1 -> 0 -> 9
+				down := []byte(curr)
+				if down[j] == '0' {
+					down[j] = '9'
+				} else {
+					down[j] = down[j] - 1
+				}
+				if _, ok := visited[string(down)]; !ok {
+					visited[string(down)] = true
+					queue = append(queue, string(down))
+				}
+			}
+		}
+		res++
+	}
+	return -1
+}
