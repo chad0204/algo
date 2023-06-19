@@ -146,7 +146,7 @@ func minDepth(root *TreeNode) int {
 			if t.Right != nil {
 				queue = append(queue, t.Right)
 			}
-			if t.Left == nil && t.Right == nil {
+			if t.Left == nil && t.Right == nil { //没有子节点的节点才算叶子节点
 				return level
 			}
 		}
