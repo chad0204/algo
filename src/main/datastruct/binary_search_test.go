@@ -75,20 +75,24 @@ func searchRange(nums []int, target int) []int {
 	//左边界
 	left := 0
 	right := len(nums) - 1
-
-	//第一个left是小于target的, 然后right逼近left, 直到和left相同
 	for left <= right {
 		mid := (left + right) / 2
 		if nums[mid] > target {
+			//搜索区间变成[left, mid-1]
 			right = mid - 1
 		} else if nums[mid] < target {
+			//当left == right时, left向前一步
+			//搜索区间变成 [mid+1, right]
 			left = mid + 1
 		} else {
-			//找到相等的 判断左边的不是相等
+			//找到target, 收缩右边界, 直到left > right循环退出
 			right = mid - 1
 		}
 	}
-	if left < len(nums) && nums[left] == target {
+	if left < 0 || left >= len(nums) {
+		//不合法
+		res[0] = -1
+	} else if nums[left] == target {
 		res[0] = left
 	}
 
@@ -102,11 +106,14 @@ func searchRange(nums []int, target int) []int {
 		} else if nums[mid] < target {
 			left = mid + 1
 		} else {
-			//找到相等的 继续向左
+			//找到相等的 收缩左边界
 			left = mid + 1
 		}
 	}
-	if right >= 0 && nums[right] == target {
+	if right < 0 || right >= len(nums) {
+		//不合法
+		res[1] = -1
+	} else if nums[right] == target {
 		res[1] = right
 	}
 	return res
