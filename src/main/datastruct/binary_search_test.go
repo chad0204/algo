@@ -45,6 +45,7 @@ func searchIteration(nums []int, target int) int {
 			return mid
 		}
 	}
+	//上面left < right 改成 left <= right, 这段可以去掉
 	if left == right && nums[left] == target {
 		return left
 	}
@@ -75,7 +76,7 @@ func searchRange(nums []int, target int) []int {
 	//左边界
 	left := 0
 	right := len(nums) - 1
-	for left <= right {
+	for left < right {
 		mid := (left + right) / 2
 		if nums[mid] > target {
 			//搜索区间变成[left, mid-1]
@@ -85,12 +86,12 @@ func searchRange(nums []int, target int) []int {
 			//搜索区间变成 [mid+1, right]
 			left = mid + 1
 		} else {
-			//找到target, 收缩右边界, 直到left > right循环退出
+			//找到target, 收缩右边界, 如果比target大或者等于target都收缩, 直到left > right循环退出
 			right = mid - 1
 		}
 	}
 	if left < 0 || left >= len(nums) {
-		//不合法
+		//下标不合法
 		res[0] = -1
 	} else if nums[left] == target {
 		res[0] = left
