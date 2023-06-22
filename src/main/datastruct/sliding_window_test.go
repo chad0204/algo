@@ -12,13 +12,18 @@ func TestMinWindow(t *testing.T) {
 
 // 剑指 Offer II 017. 含有所有字符的最短字符串; 76. 最小覆盖子串
 func minWindow(s string, t string) string {
-	needs := make(map[byte]int, len(t))
+	needs := make(map[byte]int, 0)
 	for i := range t {
 		//可能有重复值, 值不一定为1
 		needs[t[i]] = needs[t[i]] + 1
 	}
 	window := make(map[byte]int)
 	left, right, checkNum := 0, 0, 0
+
+	/**
+	l记录从start开始满足条件的字符串长度
+	start记录最小一次满足条件的起始位置, 因为后续的left的right还可能会满足, 会一直更新, 所以需要记录下此时的位置。只有当新的left的right比l小的时候, start才会更新成left。
+	*/
 	start := 0
 	l := math.MaxInt32
 
