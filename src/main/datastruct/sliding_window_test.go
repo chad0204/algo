@@ -61,3 +61,91 @@ func minWindow(s string, t string) string {
 	}
 	return s[start : start+l]
 }
+
+// 567. 字符串的排列; 剑指 Offer II 014. 字符串中的变位词
+func checkInclusion(s1 string, s2 string) bool {
+	needs := make(map[byte]int)
+	for i := range s1 {
+		needs[s1[i]] = needs[s1[i]] + 1
+	}
+	window := make(map[byte]int)
+	left, right := 0, 0
+	checkSum := 0
+
+	for right < len(s2) {
+		add := s2[right]
+		right++
+		if _, ok := needs[add]; ok {
+			window[add] = window[add] + 1
+			if window[add] == needs[add] {
+				checkSum++
+			}
+		}
+		for right-left == len(s1) {
+			if checkSum == len(needs) {
+				return true
+			}
+			rmv := s2[left]
+			left++
+			if _, ok := needs[rmv]; ok {
+				if window[rmv] == needs[rmv] {
+					checkSum--
+				}
+				window[rmv] = window[rmv] - 1
+
+			}
+		}
+	}
+	return false
+}
+
+func TestFindAnagrams(t *testing.T) {
+	ints := make([]int, 0)
+	fmt.Println(ints)
+}
+
+// 438. 找到字符串中所有字母异位词; 剑指 Offer II 015. 字符串中的所有变位词
+func findAnagrams(s string, p string) []int {
+
+	window := make(map[byte]int)
+	needs := make(map[byte]int)
+	for i := range p {
+		needs[p[i]] = needs[p[i]] + 1
+	}
+
+	left, right := 0, 0
+	res := make([]int, 0)
+
+	checkSum := 0
+
+	for right < len(s) {
+		add := s[right]
+		right++
+		if _, ok := needs[add]; ok {
+			window[add] = window[add] + 1
+			if window[add] == needs[add] {
+				checkSum++
+			}
+		}
+
+		for right-left == len(p) {
+			if checkSum == len(needs) {
+				res = append(res, left)
+			}
+			rmv := s[left]
+			left++
+			if _, ok := needs[rmv]; ok {
+				if window[rmv] == needs[rmv] {
+					checkSum--
+				}
+				window[rmv] = window[rmv] - 1
+			}
+		}
+	}
+	return res
+}
+
+// 3. 无重复字符的最长子串; 剑指 Offer 48. 最长不含重复字符的子字符串
+func lengthOfLongestSubstring(s string) int {
+	return 0
+}
