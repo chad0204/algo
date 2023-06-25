@@ -145,7 +145,28 @@ func findAnagrams(s string, p string) []int {
 	return res
 }
 
+func TestLOLS(t *testing.T) {
+	lengthOfLongestSubstring("abcdef")
+}
+
 // 3. 无重复字符的最长子串; 剑指 Offer 48. 最长不含重复字符的子字符串
 func lengthOfLongestSubstring(s string) int {
-	return 0
+	window := make(map[byte]int)
+	l := 0
+	left, right := 0, 0
+	for right < len(s) {
+		add := s[right]
+		right++
+		window[add] = window[add] + 1
+		//出现重复项
+		for window[add] > 1 {
+			rmv := s[left]
+			left++
+			window[rmv] = window[rmv] - 1
+		}
+		if right-left > l {
+			l = right - left
+		}
+	}
+	return l
 }
