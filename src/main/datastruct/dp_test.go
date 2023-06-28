@@ -111,7 +111,8 @@ func coinChangeIterator(coins []int, amount int) int {
 }
 
 /*
-*
+
+股票买卖
 
 #状态
 1 持有股票 0 未持有股票
@@ -279,4 +280,154 @@ func maxProfitWithFee(prices []int, fee int) int {
 		dp[i][1] = Max(dp[i-1][1], dp[i-1][0]-prices[i]-fee)
 	}
 	return dp[n-1][0]
+}
+
+// 309. 最佳买卖股票时机含冷冻期
+func maxProfitWithFreeze(prices []int, fee int) int {
+	n := len(prices)
+	dp := make([][]int, n)
+	for i := range dp {
+		dp[i] = make([]int, 2)
+	}
+	/*
+	   sell之后是冷冻期。buy的前一天是冷冻期
+
+	   dp[-1][0] = 0
+	   dp[-1][1] = math.MinInt32
+	   dp[-2][0] = 0
+	   dp[-2][1] = math.MinInt32
+	*/
+	for i := 0; i < n; i++ {
+		if i == 0 {
+			dp[i][0] = Max(0, math.MinInt32)
+			dp[i][1] = Max(math.MinInt32, -prices[i])
+			continue
+		}
+		if i == 1 {
+			dp[i][0] = Max(dp[0][0], dp[0][1]+prices[i])
+			dp[i][1] = Max(dp[0][1], -prices[i])
+			continue
+		}
+		//今天无: 昨天无; 昨天有今天卖了, 明天是冷冻期
+		dp[i][0] = Max(dp[i-1][0], dp[i-1][1]+prices[i])
+		//今天有：昨天有; 昨天无,今天买了, 昨天是冷冻期, 状态转移是从前天而来。
+		dp[i][1] = Max(dp[i-1][1], dp[i-2][0]-prices[i])
+	}
+	return dp[n-1][0]
+}
+
+/**
+
+打家劫舍
+
+
+https://mp.weixin.qq.com/s/z44hk0MW14_mAQd7988mfw
+
+	不偷 0 偷 1
+
+	这间不偷, 上一间偷了, 上一间没偷
+	dp[i][0] = max(dp[i-1][1], dp[i-1][0])
+	这间偷了, 上上间偷了, 上一间没偷
+	dp[i][1] = max(dp[i-2][1] + nums[i], dp[i-1][0] + num[i])
+
+	base case:
+	dp[-1][0] = 0
+	dp[-1][1] = math.MinInt32
+	dp[-2][0] = 0
+	dp[-2][1] = math.MinInt32
+
+
+*/
+// 198. 打家劫舍
+func robV1(nums []int) int {
+	n := len(nums)
+	dp := make([][]int, n)
+	for i := range dp {
+		dp[i] = make([]int, 2)
+	}
+
+	for i := 0; i < n; i++ {
+		if i == 0 {
+			dp[i][0] = 0
+			dp[i][1] = nums[i]
+			continue
+		}
+		if i == 1 {
+			dp[i][0] = Max(dp[0][1], dp[0][0])
+			dp[i][1] = nums[i]
+			continue
+		}
+		if i == 2 {
+			dp[i][0] = Max(dp[1][1], dp[1][0])
+			dp[i][1] = Max(dp[0][1]+nums[i], dp[1][0]+nums[i])
+			continue
+		}
+		dp[i][0] = Max(dp[i-1][1], dp[i-1][0])
+		dp[i][1] = Max(dp[i-2][1]+nums[i], dp[i-1][0]+nums[i])
+	}
+	return Max(dp[n-1][0], dp[n-1][1])
+}
+
+// 递归 自顶向下
+func robV2(nums []int) int {
+	mem := make([]int, len(nums))
+	for i := range mem {
+		mem[i] = -1
+	}
+	return dpRob(nums, len(nums)-1, mem)
+}
+
+func dpRob(nums []int, start int, mem []int) int {
+	if start < 0 {
+		return 0
+	}
+	if mem[start] != -1 {
+		return mem[start]
+	}
+	res := Max(
+		dpRob(nums, start-1, mem),             //start位置不抢,
+		dpRob(nums, start-2, mem)+nums[start], //start位置抢, 只能去上上间
+	)
+	mem[start] = res
+	return res
+}
+
+func TestRobV3(t *testing.T) {
+	robV3([]int{2, 1})
+}
+
+// 一维数组 自低向上
+func robV3(nums []int) int {
+
+	n := len(nums)
+	dp := make([]int, n)
+
+	/*
+		dp[-1] = 0
+		dp[-2] = 0
+	*/
+	for i := 0; i < n; i++ {
+		if i == 0 {
+			dp[i] = nums[i]
+			continue
+		}
+		if i == 1 {
+			dp[i] = Max(dp[0], nums[i])
+			continue
+		}
+		//i不抢, 和i-1一样; 今天抢了, i-2
+		dp[i] = Max(dp[i-1], dp[i-2]+nums[i])
+	}
+	return dp[n-1]
+}
+
+// 213. 打家劫舍 II
+func robCycle(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	return Max(robV3(nums[:len(nums)-1]), robV3(nums[1:]))
 }
