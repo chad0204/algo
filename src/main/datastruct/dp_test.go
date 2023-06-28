@@ -337,6 +337,9 @@ https://mp.weixin.qq.com/s/z44hk0MW14_mAQd7988mfw
 	dp[-2][1] = math.MinInt32
 
 
+	可以使用一维数组和递归, 我的习惯是从0到n, 也可以从n到0
+
+
 */
 // 198. 打家劫舍
 func robV1(nums []int) int {
