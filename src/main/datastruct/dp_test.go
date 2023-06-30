@@ -6,6 +6,24 @@ import (
 	"testing"
 )
 
+/*
+
+什么是动态规划:
+
+最优子结构, 状态转移方程, base case, 状态, 选择
+
+
+递归 + memory是本质, 迭代刷表是优化
+
+
+思路：
+先想递归
+发现重复计算
+通过记忆化等方法弄掉重复计算
+最后看下能不能通过利用计算顺序来做到去掉递归用“刷表”方式直接顺序计算，能搞定最好搞不定拉倒
+
+*/
+
 func TestFib(t *testing.T) {
 	fmt.Println(fib(1000))
 }
@@ -433,4 +451,30 @@ func robCycle(nums []int) int {
 		return nums[0]
 	}
 	return Max(robV3(nums[:len(nums)-1]), robV3(nums[1:]))
+}
+
+//337. 打家劫舍 III
+func robTree(root *TreeNode) int { // 还有思路是先层序后dp
+	mem := make(map[*TreeNode]int)
+	return robDp(root, mem)
+}
+func robDp(root *TreeNode, mem map[*TreeNode]int) int {
+	if root == nil {
+		return 0
+	}
+	if _, ok := mem[root]; ok {
+		return mem[root]
+	}
+
+	a := robDp(root.Left, mem) + robDp(root.Right, mem)
+
+	b := root.Val // b表示抢, 所以加上val
+	if root.Left != nil {
+		b = b + robDp(root.Left.Left, mem) + robDp(root.Left.Right, mem)
+	}
+	if root.Right != nil {
+		b = b + robDp(root.Right.Left, mem) + robDp(root.Right.Right, mem)
+	}
+	mem[root] = Max(a, b)
+	return mem[root]
 }
