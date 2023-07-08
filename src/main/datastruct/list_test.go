@@ -31,23 +31,32 @@ func hashCycle(head *ListNode) bool {
 
 func TestDetectCycle(t *testing.T) {
 
-	head := ListNode{1, nil}
-	head.Next = &ListNode{2, &head}
+	head := ListNode{0, nil}
+	head.Next = &ListNode{1, nil}
+	head.Next.Next = &ListNode{2, nil}
+	head.Next.Next.Next = &ListNode{3, nil}
+	head.Next.Next.Next.Next = &ListNode{4, nil}
+	head.Next.Next.Next.Next.Next = &ListNode{5, nil}
+	head.Next.Next.Next.Next.Next.Next = &ListNode{6, nil}
+	head.Next.Next.Next.Next.Next.Next.Next = &ListNode{7, nil}
+	head.Next.Next.Next.Next.Next.Next.Next.Next = &ListNode{8, nil}
+	head.Next.Next.Next.Next.Next.Next.Next.Next.Next = &ListNode{9, nil}
+	head.Next.Next.Next.Next.Next.Next.Next.Next.Next.Next = head.Next.Next.Next.Next.Next.Next.Next
 
 	fmt.Println(detectCycle(&head))
 }
 
 func detectCycle(head *ListNode) *ListNode {
 	/*
-		设 环一圈长度为L
-		第一次相遇时, 慢指针走了k步, 快指针走了2k步, 由于相遇时, 快指针已经在环中转了n圈, 所以k = nL
-		设相遇点距离环入口距离是M步
+		设 head到环入口为a, 环入口到相遇点为b, 相遇点到环入口为c
+		第一次相遇时, 快指针走的路程为 a + b + n(b + c), 相遇时, 快指针一定已经走了n圈了。(n >= 1)
+		任何时候, 快指针都是慢指针的两倍, 第一次相遇时也满足, a + b + n(b + c) = 2(a + b)。（这里有个隐藏条件,a + b能表示慢指针的路程, 说明慢指针进入环后, 只走了b, 没有超过一圈）
 
-		此时慢指针从head走(K-M)步就是环入口。
-		慢指针从相遇点走多少步能到环入口呢？ (L-M) + (n-1)L = nL - M = K-M ,（L-M到环入口的第一圈, n-1是后续圈数）所以 慢指针从相遇点也是走K-M步到环起点
+		a = n(b+c) + b = (n-1)(b+c) + c, 说明head到环入口的距离a，是相遇到环入口的距离c, 再加上n-1圈数。所以慢指针从head和从相遇点出发, 一定会在入口相遇
 
-		第一次相遇, 保留相遇点的任意一个指针, 将另一个指针设置到head, 重新以相等的速度走, 相遇点就是环入口节点
+		为何慢指针第一圈走不完一定会和快指针相遇？由于快指针比慢指针快一步, 如果都在环中, 那么慢指针静止, 快指针相当于1步的速度前进, 一圈内一定相遇。得出a + b是慢指针在第一次相遇是慢指针的路程
 
+		备注: 此题用map比较普世
 	*/
 
 	slow := head
@@ -66,6 +75,7 @@ func detectCycle(head *ListNode) *ListNode {
 		return nil
 	}
 
+	fast = head
 	for fast != head {
 		fast = fast.Next
 		slow = slow.Next
@@ -166,7 +176,7 @@ func partition(head *ListNode, x int) *ListNode {
 		head = head.Next
 	}
 	l.Next = rhead.Next
-	r.Next = nil
+	r.Next = nil //不然结果有个环
 	return lhead.Next
 }
 
@@ -247,10 +257,10 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 
 	for {
 		if a == b {
+			//不用担心 a走完headB后, 会继续走headB。 因为a+b = b+a, 如果不相交, 会同时nil
 			//要么是相交点、要么是nil
 			return a
 		}
-
 		if a == nil {
 			//当a走完headA, 接着走headB
 			a = headB
@@ -270,7 +280,7 @@ func TestDeleteDuplicates(t *testing.T) {
 
 }
 
-//删除链表中的重复元素
+// 删除链表中的重复元素
 func deleteDuplicates(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
@@ -299,3 +309,20 @@ f f f f f
 
 
 */
+//19. 删除链表的倒数第 N 个结点
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	m := &ListNode{-1, head}
+	f := head
+	s := m
+
+	for i := 0; i < n; i++ {
+		f = f.Next
+	}
+
+	for f != nil {
+		s = s.Next
+		f = f.Next
+	}
+	s.Next = s.Next.Next
+	return m.Next
+}
