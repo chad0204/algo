@@ -31,11 +31,11 @@ func TestFib(t *testing.T) {
 // 斐波那契数列 dp(n) = dp(n-1) + dp(n-2)
 func fib(n int) int {
 	m := make(map[int]int)
-	return f(n, m)
+	return fibV1(n, m)
 }
 
 // 递归 自顶向下
-func f(n int, m map[int]int) int {
+func fibV1(n int, m map[int]int) int {
 	if n == 0 {
 		return 0
 	}
@@ -45,7 +45,7 @@ func f(n int, m map[int]int) int {
 	if m[n] != 0 {
 		return m[n]
 	}
-	m[n] = f(n-1, m) + f(n-2, m)
+	m[n] = fibV1(n-1, m) + fibV1(n-2, m)
 	return m[n]
 }
 
@@ -129,7 +129,6 @@ func coinChangeIterator(coins []int, amount int) int {
 }
 
 /*
-
 股票买卖
 
 #状态
@@ -453,7 +452,7 @@ func robCycle(nums []int) int {
 	return Max(robV3(nums[:len(nums)-1]), robV3(nums[1:]))
 }
 
-//337. 打家劫舍 III
+// 337. 打家劫舍 III
 func robTree(root *TreeNode) int { // 还有思路是先层序后dp
 	mem := make(map[*TreeNode]int)
 	return robDp(root, mem)
