@@ -102,6 +102,7 @@ func dpCoin(coins []int, amount int, m []int) int {
 		tmp = Min(tmp, v+1) // 少了c 多一枚硬币
 	}
 	m[amount] = tmp
+	//这里也要注意
 	if tmp == math.MaxInt32 {
 		return -1
 	}
