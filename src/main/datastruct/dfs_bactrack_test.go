@@ -20,6 +20,10 @@ DFS, 遍历节点
 变型: n皇后
 变型: 有重复数字的排列, 不可复选
 变型: 有重复数字的子集, 不可复选
+
+i := start 同级不能回头, 从上一层递归的索引开始遍历
+used 只能选一次
+!used[i-1] && nums[i-1] == nums[i] 重复值
 */
 func TestPermute(t *testing.T) {
 	fmt.Println(permute([]int{1, 2, 3}))
@@ -352,6 +356,7 @@ func backtrackCombinationSum3(nums []int, path []int, sum int, used []bool, star
 		s := make([]int, len(path))
 		copy(s, path)
 		*res = append(*res, s)
+		return
 	}
 	for i := start; i < len(nums); i++ {
 		if used[i] {
