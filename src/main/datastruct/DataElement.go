@@ -51,7 +51,7 @@ func (t *TreeNode) LevelTraverse(res *[]int) {
 	levels = append(levels, t)
 	for len(levels) > 0 {
 		l := len(levels)
-		for i := 0; i < l; i++ {
+		for i := 0; i < l; i++ { //这里的循环是进行分层, 如果不需要记录层级, 其实也可以去掉
 			curr := levels[0]
 			levels = levels[1:] //相当于pop一个
 			*res = append(*res, curr.Val)
@@ -61,6 +61,25 @@ func (t *TreeNode) LevelTraverse(res *[]int) {
 			if curr.Right != nil {
 				levels = append(levels, curr.Right)
 			}
+		}
+	}
+}
+
+func (t *TreeNode) LevelTraverseV2(res *[]int) {
+	if t == nil {
+		return
+	}
+	queue := make([]*TreeNode, 1)
+	queue[0] = t
+	for len(queue) > 0 {
+		curr := queue[0]
+		queue = queue[1:]
+		*res = append(*res, curr.Val)
+		if curr.Left != nil {
+			queue = append(queue, curr.Left)
+		}
+		if curr.Right != nil {
+			queue = append(queue, curr.Right)
 		}
 	}
 }

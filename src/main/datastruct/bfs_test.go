@@ -81,14 +81,14 @@ func traverseDFS(root *TreeNode, res *int) {
 }
 
 func TestOpenLock(t *testing.T) {
-	openLock([]string{}, "8000")
+	openLock([]string{"8888"}, "0009")
 }
 
 func openLock(deadends []string, target string) int {
-	return openLockDFS("0000", target, deadends)
+	return openLockBFS("0000", target, deadends)
 }
 
-func openLockDFS(start string, target string, deadends []string) int {
+func openLockBFS(start string, target string, deadends []string) int {
 	deadMap := make(map[string]bool)
 	for _, v := range deadends {
 		deadMap[v] = true
