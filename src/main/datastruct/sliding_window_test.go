@@ -149,7 +149,7 @@ func TestLOLS(t *testing.T) {
 	lengthOfLongestSubstring("abcdef")
 }
 
-// 3. 无重复字符的最长子串; 剑指 Offer 48. 最长不含重复字符的子字符串
+// 3. 无重复字符的最长子串; 剑指 Offer 48. 最长不含重复字符的子字符串 剑指 Offer II 016. 不含重复字符的最长子字符串
 func lengthOfLongestSubstring(s string) int {
 	window := make(map[byte]int)
 	l := 0
