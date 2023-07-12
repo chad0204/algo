@@ -63,12 +63,12 @@ func TestSolveNQueens(t *testing.T) {
 	fmt.Println(solveNQueens(4))
 }
 
-// 51. N 皇后
+// 51. N 皇后 用递归遍历行 迭代遍历列
 func solveNQueens(n int) [][]string {
 	solves = [][]string{}
 	// 每个元素表示每一行的放置情况, 凑齐所有行数就是一个解决方案
 	board := make([]string, n)
-	//{"....", "....", ".....", "....."}
+	//{"....", "....", "....", "...."}
 	for i := range board {
 		board[i] = strings.Repeat(".", n)
 	}
@@ -112,7 +112,7 @@ func backtrackBoard(board []string, row int) {
 */
 func isValid(board []string, row int, col int) bool {
 	//列
-	for i := row; i > 0; i-- {
+	for i := row - 1; i >= 0; i-- {
 		if []byte(board[i])[col] == 'Q' {
 			return false
 		}
