@@ -215,23 +215,23 @@ func maxProfitK(k int, prices []int) int {
 	return dp[n-1][k][0]
 }
 
-// k = 1
+// k = 1 “今天买了不能卖” 和 k无限次的区别就是一天不能同时买卖
+//121. 买卖股票的最佳时机
 func maxProfit1(prices []int) int {
 	/*
 	   state func:
 	   昨天没有, 今天无操作; 昨天有, 今天卖了。今天卖了不能买, 无妨。
-	   dp[i][1][0] = max{dp[i-1][1][0], dp[i-1][1][1] + prices[i]}
+	   dp[i][j][0] = max{dp[i-1][j][0], dp[i-1][j][1] + prices[i]}
 
 	   昨天有, 今天无操作; 昨天没有, 今天买了。今天买了不能卖, 而且只能交易一次, 所以今天利润是-prices[i]
-	   dp[i][1][1] = max{dp[i-1][1][1], dp[i-1][0][0] - prices[i]}
+	   dp[i][j][1] = max{dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]}
 	               = max{dp[i-1][1][1], -prices[i]}
 
-	   base case:
-	   dp[-1][x][0] = 0
-	   dp[-1][x][1] = math.MinInt32
+	   去掉j
 
-	   dp[i][0][0] = 0
-	   dp[j][0][1] = math.MinInt32
+	   base case:
+	   dp[-1][0] = 0
+	   dp[-1][1] = math.MinInt32
 
 	*/
 	n := len(prices)
@@ -253,6 +253,7 @@ func maxProfit1(prices []int) int {
 }
 
 // k = +infinity
+// 122. 买卖股票的最佳时机 II
 func maxProfitInfinity(prices []int) int {
 	/*
 	   state func:
