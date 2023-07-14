@@ -189,7 +189,7 @@ func maxProfitK(k int, prices []int) int {
 	n := len(prices)
 	dp := make([][][]int, n)
 	for i := range dp {
-		dp[i] = make([][]int, k+1)
+		dp[i] = make([][]int, k+1) // 因为从0开始, 比如两笔, 就有0, 1, 2
 		for j := range dp[i] {
 			dp[i][j] = make([]int, 2)
 		}
