@@ -205,7 +205,7 @@ func maxProfitK(k int, prices []int) int {
 			}
 			if j == 0 {
 				dp[i][j][0] = 0
-				dp[i][j][1] = math.MinInt32
+				dp[i][j][1] = math.MinInt32//一笔没买就持有, 不可能啊。但是按照公式推应该是-prices[i]。都可以
 				continue
 			}
 			dp[i][j][0] = Max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
