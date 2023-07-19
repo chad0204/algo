@@ -379,12 +379,7 @@ func robV1(nums []int) int {
 			dp[i][1] = nums[i]
 			continue
 		}
-		if i == 2 {
-			dp[i][0] = Max(dp[1][1], dp[1][0])
-			dp[i][1] = Max(dp[0][1]+nums[i], dp[1][0]+nums[i])
-			continue
-		}
-		dp[i][0] = Max(dp[i-1][1], dp[i-1][0])
+		dp[i][0] = Max(dp[i-1][1], dp[i-1][0]) // i-2
 		dp[i][1] = Max(dp[i-2][1]+nums[i], dp[i-1][0]+nums[i])
 	}
 	return Max(dp[n-1][0], dp[n-1][1])
@@ -443,7 +438,7 @@ func robV3(nums []int) int {
 	return dp[n-1]
 }
 
-// 213. 打家劫舍 II
+// 213. 打家劫舍 II 不要头的情况, 不要尾的情况
 func robCycle(nums []int) int {
 	if len(nums) == 0 {
 		return 0
