@@ -311,9 +311,9 @@ f f f f f
 */
 //19. 删除链表的倒数第 N 个结点
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	m := &ListNode{-1, head}
+	dummy := &ListNode{-1, head}
 	f := head
-	s := m
+	s := dummy
 
 	for i := 0; i < n; i++ {
 		f = f.Next
@@ -324,5 +324,5 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 		f = f.Next
 	}
 	s.Next = s.Next.Next
-	return m.Next
+	return dummy.Next
 }
