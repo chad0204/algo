@@ -5,15 +5,11 @@ import (
 	"testing"
 )
 
-/**
+/*
+*
 遍历的模式, 回溯思想, 前序遍历
 
-
-
 分解子问题的模式, 动态规划。分解子问题一般需要拿到子问题的结果, 也就是需要返回值
-
-
-
 */
 func TestTreeNode_PreTraverse(t *testing.T) {
 	root := &TreeNode{0,
@@ -122,28 +118,29 @@ func flatten(root *TreeNode) {
 	traversal(root)
 }
 
-/**
+/*
+*
 
-0. 开始
-  1
- / \
+ 0. 开始
+    1
+    / \
+
 2   3
 
 1. 记录 l, r
 2 , 3
 
-2. 左接到右边
-  1
- / \
+ 2. 左接到右边
+    1
+    / \
     2
 
-3. 再把老的右接到新的右边
-  1
- / \
-	2
-	 \
-      3
-
+ 3. 再把老的右接到新的右边
+    1
+    / \
+    2
+    \
+    3
 */
 func traversal(root *TreeNode) {
 	if root == nil {
@@ -177,7 +174,7 @@ type Node struct {
 }
 
 // 116. 填充每个节点的下一个右侧节点指针. 解决子树直接的空隙问题
-//解法一: 层序遍历
+// 解法一: 层序遍历
 func connectLevel(root *Node) *Node {
 	if root == nil {
 		return nil
@@ -205,7 +202,7 @@ func connectLevel(root *Node) *Node {
 	return root
 }
 
-//解法二: 三叉树
+// 解法二: 三叉树
 func connect3Tree(root *Node) *Node {
 	if root == nil {
 		return nil
@@ -268,7 +265,7 @@ func construct(preorder []int, preStart int, preEnd int,
 
 	//因为需要找个左根, 所以相等要特殊处理
 	if preStart == preEnd {
-		return &TreeNode{preStart, nil, nil}
+		return &TreeNode{preorder[preStart], nil, nil}
 	}
 
 	rootVal := preorder[preStart]
