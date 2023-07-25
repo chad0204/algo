@@ -2,6 +2,7 @@ package datastruct
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -283,4 +284,32 @@ func construct(preorder []int, preStart int, preEnd int,
 	left := construct(preorder, preStart+1, preStart+leftSize, postorder, postStart, leftRootIndex)
 	right := construct(preorder, preStart+leftSize+1, preEnd, postorder, leftRootIndex+1, postEnd-1)
 	return &TreeNode{rootVal, left, right}
+}
+
+/*
+652. 寻找重复的子树
+https://mp.weixin.qq.com/s/LJbpo49qppIeRs-FbgjsSQ
+*/
+func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
+	valMap := make(map[string]int)
+	res := make([]*TreeNode, 0)
+	traversalFDS(root, valMap, &res)
+	return res
+}
+
+func traversalFDS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) string {
+	if root == nil {
+		return "#"
+	}
+
+	left := traversalFDS(root.Left, valMap, res)
+	right := traversalFDS(root.Right, valMap, res)
+
+	subTree := left + ", " + right + ", " + strconv.Itoa(root.Val)
+
+	valMap[subTree] = valMap[subTree] + 1
+	if valMap[subTree] == 2 {
+		*res = append(*res, root)
+	}
+	return subTree
 }
