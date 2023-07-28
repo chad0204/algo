@@ -315,3 +315,5 @@ func traversalFDS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) strin
 }
 
 // 297. 二叉树的序列化与反序列化
+type Codec struct {
+}
