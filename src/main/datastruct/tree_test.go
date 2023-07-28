@@ -313,3 +313,5 @@ func traversalFDS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) strin
 	}
 	return subTree
 }
+
+// 297. 二叉树的序列化与反序列化
