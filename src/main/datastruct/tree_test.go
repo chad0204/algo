@@ -3,6 +3,7 @@ package datastruct
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -315,5 +316,44 @@ func traversalFDS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) strin
 }
 
 // 297. 二叉树的序列化与反序列化
+// https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485871&idx=1&sn=bcb24ea8927995b585629a8b9caeed01&chksm=9bd7f7a7aca07eb1b4c330382a4e0b916ef5a82ca48db28908ab16563e28a376b5ca6805bec2&scene=21#wechat_redirect
 type Codec struct {
+}
+
+func Constructor() Codec {
+	return Codec{}
+}
+
+// Serializes a tree to a single string.
+func (c *Codec) serialize(root *TreeNode) string {
+	if root == nil {
+		//包含空指针就能唯一确定一颗二叉树（中序不行）
+		return "#"
+	}
+	left := c.serialize(root.Left)
+	right := c.serialize(root.Right)
+	return left + "," + right + "," + strconv.Itoa(root.Val)
+}
+
+// Deserializes your encoded data to tree.
+func (c *Codec) deserialize(data string) *TreeNode {
+	split := strings.Split(data, ",")
+
+	return c.deserializeHelper(split)
+}
+
+func (c *Codec) deserializeHelper(postorder []string) *TreeNode {
+	return nil
+}
+
+func TestCodec(t *testing.T) {
+	root := &TreeNode{1,
+		&TreeNode{2, &TreeNode{4, nil, nil}, &TreeNode{5, nil, nil}},
+		&TreeNode{3, nil, nil}}
+	ser := Constructor()
+	deser := Constructor()
+	data := ser.serialize(root)
+	fmt.Println(data)
+	ans := deser.deserialize(data)
+	fmt.Println(ans)
 }
