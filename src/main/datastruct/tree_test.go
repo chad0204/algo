@@ -325,25 +325,41 @@ func Constructor() Codec {
 }
 
 // Serializes a tree to a single string.
-func (c *Codec) serialize(root *TreeNode) string {
+func (this *Codec) serialize(root *TreeNode) string {
 	if root == nil {
-		//包含空指针就能唯一确定一颗二叉树（中序不行）
 		return "#"
 	}
-	left := c.serialize(root.Left)
-	right := c.serialize(root.Right)
+	left := this.serialize(root.Left)
+	right := this.serialize(root.Right)
 	return left + "," + right + "," + strconv.Itoa(root.Val)
 }
 
 // Deserializes your encoded data to tree.
-func (c *Codec) deserialize(data string) *TreeNode {
-	split := strings.Split(data, ",")
-
-	return c.deserializeHelper(split)
+func (this *Codec) deserialize(data string) *TreeNode {
+	postorder := strings.Split(data, ",")
+	return this.deserializeHelper(&postorder)
 }
 
-func (c *Codec) deserializeHelper(postorder []string) *TreeNode {
-	return nil
+// # # 2     #  #  4  # # 5  3     1
+func (this *Codec) deserializeHelper(postorder *[]string) *TreeNode {
+	// if len(*postorder) == 0 {
+	//     return nil
+	// }
+
+	lastIndex := len(*postorder) - 1
+	val := (*postorder)[lastIndex]
+	//主要就是postorder每次构建完一个节点 都要减掉一个
+	*postorder = (*postorder)[:lastIndex]
+	if val == "#" {
+		return nil
+	}
+
+	right := this.deserializeHelper(postorder)
+	left := this.deserializeHelper(postorder)
+
+	v, _ := strconv.Atoi(val)
+	return &TreeNode{v, left, right}
+
 }
 
 func TestCodec(t *testing.T) {
