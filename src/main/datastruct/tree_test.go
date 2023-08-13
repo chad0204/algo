@@ -375,6 +375,7 @@ func TestCodec(t *testing.T) {
 }
 
 // 236. 二叉树的最近公共祖先
+// https://mp.weixin.qq.com/s/njl6nuid0aalZdH5tuDpqQ
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 	return lcaHelper(root, p, q)
 }
