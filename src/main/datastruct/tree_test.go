@@ -373,3 +373,32 @@ func TestCodec(t *testing.T) {
 	ans := deser.deserialize(data)
 	fmt.Println(ans)
 }
+
+// 236. 二叉树的最近公共祖先
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	return lcaHelper(root, p, q)
+}
+
+func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	if root.Val == p.Val {
+		return root
+	}
+	if root.Val == q.Val {
+		return root
+	}
+
+	l := lcaHelper(root.Left, p, q)
+	r := lcaHelper(root.Right, p, q)
+
+	if l == nil {
+		return r
+	}
+	if r == nil {
+		return l
+	}
+	//左右子树都不为空
+	return root
+}
