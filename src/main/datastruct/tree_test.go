@@ -400,6 +400,6 @@ func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
 	if r == nil {
 		return l
 	}
-	//左右子树都不为空
+	//左右子树都不为空, 找到lca
 	return root
 }
