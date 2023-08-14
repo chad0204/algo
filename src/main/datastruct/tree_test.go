@@ -403,3 +403,28 @@ func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
 	//左右子树都不为空, 找到lca
 	return root
 }
+
+// 235. 二叉搜索树的最近公共祖先
+func lowestCommonAncestor235(root, p, q *TreeNode) *TreeNode {
+	if p.Val < q.Val {
+		return lcaHelper(root, p, q)
+	} else {
+		return lcaHelper(root, q, p)
+	}
+}
+
+func lcaHelper235(root, min, max *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	// root min max
+	if root.Val > max.Val {
+		return lcaHelper235(root.Left, min, max)
+	}
+	// min max root
+	if root.Val < min.Val {
+		return lcaHelper235(root.Right, min, max)
+	}
+	// min root max 找到lca
+	return root
+}
