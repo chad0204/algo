@@ -116,7 +116,7 @@ func NumMatrixConstructor(matrix [][]int) NumMatrix {
 	for i := 1; i <= row; i++ {
 		for j := 1; j <= col; j++ {
 			fmt.Println(PreNumMatrix[i-1][j], PreNumMatrix[i][j-1], matrix[i-1][j-1], PreNumMatrix[i-1][j-1])
-			//x = 上 + 左 + 值 - 对角
+			//x = 上 + 左 + 值 - 对角(多加啦一份重叠的要减掉)
 			PreNumMatrix[i][j] = PreNumMatrix[i-1][j] + PreNumMatrix[i][j-1] + matrix[i-1][j-1] - PreNumMatrix[i-1][j-1]
 		}
 	}
@@ -124,6 +124,7 @@ func NumMatrixConstructor(matrix [][]int) NumMatrix {
 }
 
 func (this *NumMatrix) SumRegion(row1 int, col1 int, row2 int, col2 int) int {
+	//同理： 多减一份, 要加回来
 	return this.PreNumMatrix[row2+1][col2+1] - this.PreNumMatrix[row1][col2+1] - this.PreNumMatrix[row2+1][col1] + this.PreNumMatrix[row1][col1]
 }
 
