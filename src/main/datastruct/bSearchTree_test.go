@@ -1,5 +1,24 @@
 package datastruct
 
+//98. 验证二叉搜索树
+func isValidBST(root *TreeNode) bool {
+	return isValidHelper(root, nil, nil)
+}
+
+func isValidHelper(root *TreeNode, min *TreeNode, max *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	if min != nil && root.Val <= min.Val {
+		return false
+	}
+	if max != nil && root.Val >= max.Val {
+		return false
+	}
+	//左子树更新最大值. 右子树更新最小值
+	return isValidHelper(root.Left, min, root) && isValidHelper(root.Right, root, max)
+}
+
 // https://mp.weixin.qq.com/s/kcwz2lyRxxOsC3n11qdVSw
 // 96. 不同的二叉搜索树
 // 95. 不同的二叉搜索树 II
