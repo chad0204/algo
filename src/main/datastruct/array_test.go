@@ -115,10 +115,12 @@ func NumMatrixConstructor(matrix [][]int) NumMatrix {
 
 	for i := 1; i <= row; i++ {
 		for j := 1; j <= col; j++ {
-			fmt.Println(PreNumMatrix[i-1][j], PreNumMatrix[i][j-1], matrix[i-1][j-1], PreNumMatrix[i-1][j-1])
+
 			//x = 上 + 左 + 值 - 对角(多加啦一份重叠的要减掉)
 			PreNumMatrix[i][j] = PreNumMatrix[i-1][j] + PreNumMatrix[i][j-1] + matrix[i-1][j-1] - PreNumMatrix[i-1][j-1]
+			fmt.Print(PreNumMatrix[i][j])
 		}
+		fmt.Println()
 	}
 	return NumMatrix{PreNumMatrix}
 }
@@ -143,5 +145,6 @@ func TestNumMatrix(t *testing.T) {
 
 	numMatrix := NumMatrixConstructor(matrix)
 
-	numMatrix.SumRegion(1, 1, 2, 2)
+	fmt.Println(numMatrix.SumRegion(0, 0, 2, 2))
+
 }
