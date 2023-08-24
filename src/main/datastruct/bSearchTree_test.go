@@ -21,7 +21,6 @@ func isValidHelper(root *TreeNode, min *TreeNode, max *TreeNode) bool {
 
 // https://mp.weixin.qq.com/s/kcwz2lyRxxOsC3n11qdVSw
 // 96. 不同的二叉搜索树
-// 95. 不同的二叉搜索树 II
 func numTrees(n int) int {
 	mem := make([][]int, n+1)
 	for i := range mem {
@@ -49,5 +48,34 @@ func dp(lo, hi int, mem [][]int) int {
 		res += left * right
 	}
 	mem[lo][hi] = res
+	return res
+}
+
+// 95. 不同的二叉搜索树 II
+func generateTrees(n int) []*TreeNode {
+	return build(1, n)
+}
+
+func build(lo, hi int) []*TreeNode {
+	res := make([]*TreeNode, 0)
+	if lo > hi {
+		res = append(res, nil)
+		return res
+	}
+	for i := lo; i <= hi; i++ {
+		leftTrees := build(lo, i-1)
+		rightTrees := build(i+1, hi)
+
+		//穷举
+		for l := range leftTrees {
+			for r := range rightTrees {
+				left := leftTrees[l]
+				right := rightTrees[r]
+
+				root := &TreeNode{i, left, right}
+				res = append(res, root)
+			}
+		}
+	}
 	return res
 }

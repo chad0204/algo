@@ -1,6 +1,9 @@
 package datastruct
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestRemoveDuplicates(t *testing.T) {
 
@@ -95,4 +98,50 @@ func palindrome(s string, l int, r int) string {
 		r++
 	}
 	return s[l+1 : r] //左闭右开
+}
+
+// 304. 二维区域和检索 - 矩阵不可变 前缀和
+type NumMatrix struct {
+	PreNumMatrix [][]int
+}
+
+func NumMatrixConstructor(matrix [][]int) NumMatrix {
+	row := len(matrix)
+	col := len(matrix[0])
+	PreNumMatrix := make([][]int, row+1)
+	for i := 0; i < len(PreNumMatrix); i++ {
+		PreNumMatrix[i] = make([]int, col+1)
+	}
+
+	for i := 1; i <= row; i++ {
+		for j := 1; j <= col; j++ {
+			fmt.Println(PreNumMatrix[i-1][j], PreNumMatrix[i][j-1], matrix[i-1][j-1], PreNumMatrix[i-1][j-1])
+			//x = 上 + 左 + 值 - 对角(多加啦一份重叠的要减掉)
+			PreNumMatrix[i][j] = PreNumMatrix[i-1][j] + PreNumMatrix[i][j-1] + matrix[i-1][j-1] - PreNumMatrix[i-1][j-1]
+		}
+	}
+	return NumMatrix{PreNumMatrix}
+}
+
+func (this *NumMatrix) SumRegion(row1 int, col1 int, row2 int, col2 int) int {
+	//同理： 多减一份, 要加回来
+	return this.PreNumMatrix[row2+1][col2+1] - this.PreNumMatrix[row1][col2+1] - this.PreNumMatrix[row2+1][col1] + this.PreNumMatrix[row1][col1]
+}
+
+func TestNumMatrix(t *testing.T) {
+	//matrix := make([][]int, 5)
+	//matrix[0] = []int{3, 0, 1, 4, 2}
+	//matrix[1] = []int{5, 6, 3, 2, 1}
+	//matrix[2] = []int{1, 2, 0, 1, 5}
+	//matrix[3] = []int{4, 1, 0, 1, 7}
+	//matrix[4] = []int{1, 0, 3, 0, 5}
+
+	matrix := make([][]int, 3)
+	matrix[0] = []int{1, 2, 3}
+	matrix[1] = []int{4, 5, 6}
+	matrix[2] = []int{7, 8, 9}
+
+	numMatrix := NumMatrixConstructor(matrix)
+
+	numMatrix.SumRegion(1, 1, 2, 2)
 }

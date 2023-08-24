@@ -373,3 +373,58 @@ func TestCodec(t *testing.T) {
 	ans := deser.deserialize(data)
 	fmt.Println(ans)
 }
+
+// 236. 二叉树的最近公共祖先
+// https://mp.weixin.qq.com/s/njl6nuid0aalZdH5tuDpqQ
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	return lcaHelper(root, p, q)
+}
+
+func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	if root.Val == p.Val {
+		return root
+	}
+	if root.Val == q.Val {
+		return root
+	}
+
+	l := lcaHelper(root.Left, p, q)
+	r := lcaHelper(root.Right, p, q)
+
+	if l == nil {
+		return r
+	}
+	if r == nil {
+		return l
+	}
+	//左右子树都不为空, 找到lca
+	return root
+}
+
+// 235. 二叉搜索树的最近公共祖先
+func lowestCommonAncestor235(root, p, q *TreeNode) *TreeNode {
+	if p.Val < q.Val {
+		return lcaHelper(root, p, q)
+	} else {
+		return lcaHelper(root, q, p)
+	}
+}
+
+func lcaHelper235(root, min, max *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	// root min max
+	if root.Val > max.Val {
+		return lcaHelper235(root.Left, min, max)
+	}
+	// min max root
+	if root.Val < min.Val {
+		return lcaHelper235(root.Right, min, max)
+	}
+	// min root max 找到lca
+	return root
+}
