@@ -148,3 +148,51 @@ func TestNumMatrix(t *testing.T) {
 	fmt.Println(numMatrix.SumRegion(0, 0, 2, 2))
 
 }
+
+func TestCarPooling(t *testing.T) {
+	//[[2,1,5],[3,5,7]] 3
+	trips := make([][]int, 2)
+	trips[0] = []int{2, 1, 5}
+	trips[1] = []int{3, 5, 7}
+	carPooling(trips, 3)
+}
+
+func carPooling(trips [][]int, capacity int) bool {
+	nums := make([]int, 1001)
+
+	diff := NewDiff(nums)
+	for _, v := range trips {
+		Increment(diff, v[0], v[1], v[2]-1) // -1 是因为下车和上车同一个位置是不算总数的
+	}
+	res := GetRes(diff)
+
+	for _, v := range res {
+		if v > capacity {
+			return false
+		}
+	}
+	return true
+}
+
+func Increment(diff []int, val int, i, j int) {
+	diff[i] += val
+	diff[j+1] -= val
+}
+
+func NewDiff(nums []int) []int {
+	diff := make([]int, len(nums))
+	diff[0] = nums[0]
+	for i := 1; i < len(nums); i++ {
+		diff[i] = nums[i] - nums[i-1]
+	}
+	return diff
+}
+
+func GetRes(diff []int) []int {
+	nums := make([]int, len(diff))
+	nums[0] = diff[0]
+	for i := 1; i < len(diff); i++ {
+		nums[i] = diff[i] + nums[i-1]
+	}
+	return nums
+}
