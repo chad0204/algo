@@ -146,6 +146,7 @@ func TestNumMatrix(t *testing.T) {
 	numMatrix.SumRegion(1, 1, 2, 2)
 }
 
+//1094. 拼车
 func TestCarPooling(t *testing.T) {
 	//[[2,1,5],[3,5,7]] 3
 	trips := make([][]int, 2)
@@ -157,7 +158,7 @@ func TestCarPooling(t *testing.T) {
 func carPooling(trips [][]int, capacity int) bool {
 	nums := make([]int, 1001)
 
-	diff := NewDiff(nums)
+	diff := NewDiffNums(nums)
 	for _, v := range trips {
 		Increment(diff, v[0], v[1], v[2]-1) // -1 是因为下车和上车同一个位置是不算总数的
 	}
@@ -173,10 +174,12 @@ func carPooling(trips [][]int, capacity int) bool {
 
 func Increment(diff []int, val int, i, j int) {
 	diff[i] += val
-	diff[j+1] -= val
+	if j+1 < len(diff) {
+		diff[j+1] -= val
+	}
 }
 
-func NewDiff(nums []int) []int {
+func NewDiffNums(nums []int) []int {
 	diff := make([]int, len(nums))
 	diff[0] = nums[0]
 	for i := 1; i < len(nums); i++ {
@@ -192,4 +195,44 @@ func GetRes(diff []int) []int {
 		nums[i] = diff[i] + nums[i-1]
 	}
 	return nums
+}
+
+// 1109. 航班预订统计
+func corpFlightBookings(bookings [][]int, n int) []int {
+	nums := make([]int, n)
+	diff := NewDiff(nums)
+
+	for i, _ := range bookings {
+		diff.Incr(bookings[i][0]-1, bookings[i][1]-1, bookings[i][2])
+	}
+	return diff.GetRes()
+}
+
+type Diff struct {
+	diffNums []int
+}
+
+func NewDiff(nums []int) *Diff {
+	diffNums := make([]int, len(nums))
+	diffNums[0] = nums[0]
+	for i := 1; i < len(nums); i++ {
+		diffNums[i] = nums[i] - diffNums[i-1]
+	}
+	return &Diff{diffNums}
+}
+
+func (d *Diff) GetRes() []int {
+	nums := make([]int, len(d.diffNums))
+	nums[0] = d.diffNums[0]
+	for i := 1; i < len(d.diffNums); i++ {
+		nums[i] = d.diffNums[i] + nums[i-1]
+	}
+	return nums
+}
+
+func (d *Diff) Incr(i, j, val int) {
+	d.diffNums[i] += val
+	if j+1 < len(d.diffNums) {
+		d.diffNums[j+1] -= val
+	}
 }
