@@ -149,7 +149,7 @@ func TestNumMatrix(t *testing.T) {
 
 }
 
-//1094. 拼车
+// 1094. 拼车
 func TestCarPooling(t *testing.T) {
 	//[[2,1,5],[3,5,7]] 3
 	trips := make([][]int, 2)
@@ -238,4 +238,73 @@ func (d *Diff) Incr(i, j, val int) {
 	if j+1 < len(d.diffNums) {
 		d.diffNums[j+1] -= val
 	}
+}
+
+// 48. 旋转图像 先对角线翻转, 再逐行翻转
+func rotate(matrix [][]int) {
+	n := len(matrix)
+	// 沿对角线镜像反转
+	for row := 0; row < n; row++ {
+		for col := row; col < n; col++ {
+			matrix[row][col], matrix[col][row] = matrix[col][row], matrix[row][col]
+		}
+	}
+	//逐行反转
+	for i, _ := range matrix {
+		reverse(matrix[i])
+	}
+}
+
+func reverse(nums []int) {
+	l := 0
+	r := len(nums) - 1
+	for l < r {
+		nums[l], nums[r] = nums[r], nums[l]
+		l++
+		r--
+	}
+}
+
+// 54. 螺旋矩阵
+func spiralOrder(matrix [][]int) []int {
+	m := len(matrix)
+	n := len(matrix[0])
+	res := make([]int, 0, m*n) // 就是长度为0, cap为m*n的数组
+
+	left := 0      //左边界++
+	right := n - 1 //右边界--
+	up := 0        //上边界++
+	low := m - 1   //下边界--
+
+	for up <= low && left <= right {
+		if up <= low {
+			for i := left; i <= right; i++ {
+				res = append(res, matrix[up][i])
+			}
+			up++
+		}
+
+		if left <= right {
+			for i := up; i <= low; i++ {
+				res = append(res, matrix[i][right])
+			}
+			right--
+		}
+
+		if up <= low {
+			for i := right; i >= left; i-- {
+				res = append(res, matrix[low][i])
+			}
+			low--
+		}
+
+		if left <= right {
+			for i := low; i >= up; i-- {
+				res = append(res, matrix[i][left])
+			}
+			left++
+		}
+
+	}
+	return res
 }
