@@ -48,15 +48,17 @@ func TestDetectCycle(t *testing.T) {
 
 func detectCycle(head *ListNode) *ListNode {
 	/*
-		设 head到环入口为a, 环入口到相遇点为b, 相遇点到环入口为c
-		第一次相遇时, 快指针走的路程为 a + b + n(b + c), 相遇时, 快指针一定已经走了n圈了。(n >= 1)
-		任何时候, 快指针都是慢指针的两倍, 第一次相遇时也满足, a + b + n(b + c) = 2(a + b)。（这里有个隐藏条件,a + b能表示慢指针的路程, 说明慢指针进入环后, 只走了b, 没有超过一圈）
+		求证： a = (n-1)L + c
 
-		a = n(b+c) + b = (n-1)(b+c) + c, 说明head到环入口的距离a，是相遇到环入口的距离c, 再加上n-1圈数。所以慢指针从head和从相遇点出发, 一定会在入口相遇
+			设 head到环入口为a, 环入口到相遇点为b, 相遇点到环入口为c
+			第一次相遇时, 快指针走的路程为 a + b + n(b + c), 相遇时, 快指针一定已经走了n圈了。(n >= 1)
+			任何时候, 快指针都是慢指针的两倍, 第一次相遇时也满足, a + b + n(b + c) = 2(a + b)。（这里有个隐藏条件,a + b能表示慢指针的路程, 说明慢指针进入环后, 只走了b, 没有超过一圈）
 
-		为何慢指针第一圈走不完一定会和快指针相遇？由于快指针比慢指针快一步, 如果都在环中, 那么慢指针静止, 快指针相当于1步的速度前进, 一圈内一定相遇。得出a + b是慢指针在第一次相遇是慢指针的路程
+			a = n(b+c) + b = (n-1)(b+c) + c, 说明head到环入口的距离a，是相遇到环入口的距离c, 再加上n-1圈数。所以慢指针从head和从相遇点出发, 一定会在入口相遇
 
-		备注: 此题用map比较普世
+			为何慢指针第一圈走不完一定会和快指针相遇？由于快指针比慢指针快一步, 如果都在环中, 那么慢指针静止, 快指针相当于1步的速度前进, 一圈内一定相遇。得出a + b是慢指针在第一次相遇是慢指针的路程
+
+			备注: 此题用map比较普世
 	*/
 
 	slow := head
@@ -101,31 +103,30 @@ func TestMergeTwoLists(t *testing.T) {
 }
 
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-	l := &ListNode{-999, nil} //虚拟头节点
-	head := l
+	dummy := &ListNode{-999, nil} //虚拟头节点
+	head := dummy
 
 	for l1 != nil && l2 != nil {
 		if l1.Val < l2.Val {
-			l.Next = l1
+			dummy.Next = l1
 			//只有节点符合链表才往前走
 			l1 = l1.Next
 		} else {
-			l.Next = l2
+			dummy.Next = l2
 			l2 = l2.Next
 		}
 		//l1 = l1.Next
 		//l2 = l2.Next
-		l = l.Next
+		dummy = dummy.Next
 	}
 
 	if l1 != nil {
-		l.Next = l1
+		dummy.Next = l1
 	}
 
 	if l2 != nil {
-		l.Next = l2
+		dummy.Next = l2
 	}
-
 	return head.Next
 }
 
@@ -160,23 +161,23 @@ func TestPartition(t *testing.T) {
 
 // 小于的一个链表, 大于等于的一个链表, 这两个链表原节点顺序不变。 组成一个新链表
 func partition(head *ListNode, x int) *ListNode {
-	l := &ListNode{-1, nil}
-	r := &ListNode{-1, nil}
+	dummyL := &ListNode{-1, nil}
+	dummyR := &ListNode{-1, nil}
 
-	lhead := l
-	rhead := r
+	lhead := dummyL
+	rhead := dummyR
 	for head != nil {
 		if head.Val < x {
-			l.Next = head
-			l = l.Next
+			dummyL.Next = head
+			dummyL = dummyL.Next
 		} else {
-			r.Next = head
-			r = r.Next
+			dummyR.Next = head
+			dummyR = dummyR.Next
 		}
 		head = head.Next
 	}
-	l.Next = rhead.Next
-	r.Next = nil //不然结果有个环
+	dummyL.Next = rhead.Next
+	dummyR.Next = nil //不然结果有个环
 	return lhead.Next
 }
 
@@ -257,7 +258,7 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 
 	for {
 		if a == b {
-			//不用担心 a走完headB后, 会继续走headB。 因为a+b = b+a, 如果不相交, 会同时nil
+			//不用担心 a走完headA后, 会继续走headB。 因为a+b = b+a, 如果不相交, 会同时nil
 			//要么是相交点、要么是nil
 			return a
 		}
@@ -325,4 +326,36 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	}
 	s.Next = s.Next.Next
 	return dummy.Next
+}
+
+// 206. 反转链表
+func reverseList(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	if head.Next == nil {
+		return head
+	}
+
+	newHead := reverseList(head.Next)
+	head.Next.Next = head
+	head.Next = nil
+	return newHead //透传
+}
+
+func reverseListIte(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	var pre *ListNode
+	curr := head
+
+	for curr != nil {
+		curr = head.Next
+		head.Next = pre
+		pre = head
+		head = curr
+
+	}
+	return pre
 }
