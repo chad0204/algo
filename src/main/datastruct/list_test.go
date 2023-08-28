@@ -359,3 +359,87 @@ func reverseListIte(head *ListNode) *ListNode {
 	}
 	return pre
 }
+
+/**
+
+         2               4
+node -> node -> node -> node -> node -> node -> nil
+
+*/
+
+func TestReverseBetween(t *testing.T) {
+	head := &ListNode{1,
+		&ListNode{2,
+			&ListNode{3,
+				&ListNode{4,
+					&ListNode{5,
+						&ListNode{6,
+							&ListNode{7, nil}}}}}}}
+
+	between := reverseBetween(head, 2, 4)
+	fmt.Println(between)
+}
+
+// 92. 反转链表 II
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	if left == 1 {
+		node, _ := reverseRight(head, right)
+		return node
+	}
+	head.Next = reverseBetween(head.Next, left-1, right-1)
+	return head
+}
+
+func reverseRight(head *ListNode, right int) (*ListNode, *ListNode) {
+	if head == nil {
+		return nil, nil
+	}
+	if right == 1 {
+		return head, head.Next
+	}
+	right--
+	newHead, successor := reverseRight(head.Next, right)
+	head.Next.Next = head
+	head.Next = successor
+	return newHead, successor
+}
+
+/**
+
+
+
+node1 -> node2 -> node3 -> node4 -> node5 -> node6 -> node7
+
+
+  <- node1 <- node2 <- node3   <- node4 <- node5 <- node6  node7 ->
+
+*/
+
+// 25. K 个一组翻转链表
+func reverseKGroup(head *ListNode, k int) *ListNode {
+	if head == nil {
+		return nil
+	}
+	successor := head
+	i := 0
+	for ; i < k; i++ {
+		if successor == nil {
+			//数量不足k, 不翻转
+			return head
+		}
+		successor = successor.Next
+	}
+	newHead := reverseNode(head, successor)
+	head.Next = reverseKGroup(successor, k)
+	return newHead
+}
+
+func reverseNode(head, tail *ListNode) *ListNode {
+	if head.Next == tail {
+		return head
+	}
+	newHead := reverseNode(head.Next, tail)
+	head.Next.Next = head
+	head.Next = tail
+	return newHead
+}
