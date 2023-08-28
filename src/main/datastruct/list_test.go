@@ -443,3 +443,17 @@ func reverseNode(head, successor *ListNode) *ListNode {
 	head.Next = successor
 	return newHead
 }
+
+func TestName(t *testing.T) {
+	head := &ListNode{1,
+		&ListNode{2,
+			&ListNode{2,
+				&ListNode{1, nil}}}}
+	isPalindrome(head)
+}
+
+// 234. 回文链表
+func isPalindrome(head *ListNode) bool {
+
+	return true
+}
