@@ -434,12 +434,12 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	return newHead
 }
 
-func reverseNode(head, tail *ListNode) *ListNode {
-	if head.Next == tail {
+func reverseNode(head, successor *ListNode) *ListNode {
+	if head.Next == successor {
 		return head
 	}
-	newHead := reverseNode(head.Next, tail)
+	newHead := reverseNode(head.Next, successor)
 	head.Next.Next = head
-	head.Next = tail
+	head.Next = successor
 	return newHead
 }
