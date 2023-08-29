@@ -454,6 +454,27 @@ func TestName(t *testing.T) {
 
 // 234. 回文链表
 func isPalindrome(head *ListNode) bool {
+	slow := head
+	fast := head
 
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	//处理奇偶
+	if fast != nil {
+		slow = slow.Next
+	}
+
+	left := head
+	right := reverseList(slow)
+
+	for right != nil {
+		if left.Val != right.Val {
+			return false
+		}
+		left = left.Next
+		right = right.Next
+	}
 	return true
 }
