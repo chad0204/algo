@@ -10,39 +10,20 @@ import (
 最大二叉堆： 父节点大于等于左右子节点的完全二叉树
 最小二叉堆： 父节点小于等于左右子节点的完全二叉树
 
-
-       10
-     9    8
-   7  6  5  4
-
-
+	    10
+	  9    8
+	7  6  5  4
 */
 type BinaryHeap struct {
 	heapNums []int
 }
 
-func parent(idx int) int {
-	return (idx - 1) / 2
-}
-
-func left(idx int) int {
-	return idx*2 + 1
-}
-
-func right(idx int) int {
-	return idx*2 + 2
-}
-
-// 最后子节点 上浮到 堆顶
-func (b *BinaryHeap) swim() {
-	b.swimIdx(len(b.heapNums) - 1)
-}
-
-func (b *BinaryHeap) swimIdx(idx int) {
+// idx位置上浮到l, 用于新增元素
+func (b *BinaryHeap) swim(idx int, l int) {
 	childIdx := idx
 	parentIdx := (childIdx - 1) / 2
 	value := b.heapNums[childIdx]
-	for childIdx > 0 && value < b.heapNums[parentIdx] {
+	for childIdx > l && value < b.heapNums[parentIdx] {
 		b.heapNums[childIdx] = b.heapNums[parentIdx]
 		childIdx = parentIdx
 		parentIdx = (childIdx - 1) / 2
@@ -50,21 +31,34 @@ func (b *BinaryHeap) swimIdx(idx int) {
 	b.heapNums[childIdx] = value
 }
 
-// 下沉
-func (b *BinaryHeap) sink() {
-	parentIdx := 0
-	b.sinkIdx(parentIdx, len(b.heapNums))
-}
-
-func (b *BinaryHeap) sinkIdx(idx int, l int) {
+// idx位置下沉到l, 用于删除元素
+func (b *BinaryHeap) minSink(idx int, l int) {
 	parentIdx := idx
 	childIdx := parentIdx*2 + 1
 	value := b.heapNums[parentIdx]
 	for childIdx < l {
-		if childIdx+1 < len(b.heapNums) && b.heapNums[childIdx+1] < b.heapNums[childIdx] {
+		if childIdx+1 < l && b.heapNums[childIdx+1] < b.heapNums[childIdx] {
 			childIdx = childIdx + 1
 		}
 		if value < b.heapNums[childIdx] {
+			break
+		}
+		b.heapNums[parentIdx] = b.heapNums[childIdx]
+		parentIdx = childIdx
+		childIdx = parentIdx*2 + 1
+	}
+	b.heapNums[parentIdx] = value
+}
+
+func (b *BinaryHeap) maxSink(idx int, l int) {
+	parentIdx := idx
+	childIdx := parentIdx*2 + 1
+	value := b.heapNums[parentIdx]
+	for childIdx < l {
+		if childIdx+1 < l && b.heapNums[childIdx+1] > b.heapNums[childIdx] {
+			childIdx = childIdx + 1
+		}
+		if value > b.heapNums[childIdx] {
 			break
 		}
 		b.heapNums[parentIdx] = b.heapNums[childIdx]
@@ -79,19 +73,29 @@ func buildMinHeap(nums []int) *BinaryHeap {
 	//最后一个非叶子节点开始, 依次下沉
 	lastChildIdx := len(nums)/2 - 1
 	for i := lastChildIdx; i >= 0; i-- {
-		b.sinkIdx(i, len(nums))
+		b.minSink(i, len(nums))
+	}
+	return b
+}
+
+func buildMaxHeap(nums []int) *BinaryHeap {
+	b := &BinaryHeap{nums}
+	//最后一个非叶子节点开始, 依次上浮
+	lastChildIdx := len(nums)/2 - 1
+	for i := lastChildIdx; i >= 0; i-- {
+		b.maxSink(i, len(nums))
 	}
 	return b
 }
 
 func heapSort(nums []int) {
-	heap := buildMinHeap(nums)
+	heap := buildMaxHeap(nums)
 
-	// 堆顶是最小值, 依次把堆顶交换到堆低, 得到从大到小的顺序
+	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
 	for i := 0; i < len(nums); i++ {
 		heap.heapNums[0], heap.heapNums[len(nums)-1-i] = heap.heapNums[len(nums)-1-i], heap.heapNums[0]
 		//堆顶下沉
-		heap.sinkIdx(0, len(nums)-1-i)
+		heap.maxSink(0, len(nums)-1-i)
 	}
 }
 
@@ -104,7 +108,7 @@ func TestBinaryHeap(t *testing.T) {
 	heap.heapNums = append(heap.heapNums, 0)
 	fmt.Println(heap.heapNums)
 	//上浮调整
-	heap.swim()
+	heap.swim(len(heap.heapNums)-1, 0)
 	fmt.Println(heap.heapNums)
 
 	fmt.Println("--------------")
@@ -116,7 +120,7 @@ func TestBinaryHeap(t *testing.T) {
 	heap.heapNums = heap.heapNums[:len(heap.heapNums)-1]
 	fmt.Println(heap.heapNums)
 	//下沉头
-	heap.sink()
+	heap.minSink(0, len(heap.heapNums)-1)
 	fmt.Println(heap.heapNums)
 
 	fmt.Println("--------------")
