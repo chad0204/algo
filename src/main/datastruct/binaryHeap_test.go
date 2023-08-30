@@ -14,8 +14,146 @@ import (
 	  9    8
 	7  6  5  4
 */
-type BinaryHeap struct {
-	heapNums []int
+
+// idx位置上浮到l, 用于新增元素
+func minSwim(nums []int, idx int, l int) {
+	childIdx := idx
+	parentIdx := (childIdx - 1) / 2
+	value := nums[childIdx]
+	for childIdx > l && value < nums[parentIdx] {
+		nums[childIdx] = nums[parentIdx]
+		childIdx = parentIdx
+		parentIdx = (childIdx - 1) / 2
+	}
+	nums[childIdx] = value
+}
+
+func maxSwim(nums []int, idx int, l int) {
+	childIdx := idx
+	parentIdx := (childIdx - 1) / 2
+	value := nums[childIdx]
+	for childIdx > l && value > nums[parentIdx] {
+		nums[childIdx] = nums[parentIdx]
+		childIdx = parentIdx
+		parentIdx = (childIdx - 1) / 2
+	}
+	nums[childIdx] = value
+}
+
+// idx位置下沉到l, 用于删除元素
+func minSink(nums []int, idx int, l int) {
+	if l == 0 {
+		//下沉到头节点没意义
+		return
+	}
+	parentIdx := idx
+	childIdx := parentIdx*2 + 1
+	value := nums[parentIdx]
+	for childIdx < l {
+		if childIdx+1 < l && nums[childIdx+1] < nums[childIdx] {
+			childIdx = childIdx + 1
+		}
+		if value < nums[childIdx] {
+			break
+		}
+		nums[parentIdx] = nums[childIdx]
+		parentIdx = childIdx
+		childIdx = parentIdx*2 + 1
+	}
+	nums[parentIdx] = value
+}
+
+func maxSink(nums []int, idx int, l int) {
+	if l == 0 {
+		//下沉到头节点没意义
+		return
+	}
+	parentIdx := idx
+	childIdx := parentIdx*2 + 1
+	value := nums[parentIdx]
+	for childIdx < l {
+		if childIdx+1 < l && nums[childIdx+1] > nums[childIdx] {
+			childIdx = childIdx + 1
+		}
+		if value > nums[childIdx] {
+			break
+		}
+		nums[parentIdx] = nums[childIdx]
+		parentIdx = childIdx
+		childIdx = parentIdx*2 + 1
+	}
+	nums[parentIdx] = value
+}
+
+func buildMinHeap(nums []int) {
+	//最后一个非叶子节点开始, 依次下沉
+	lastChildIdx := len(nums)/2 - 1
+	for i := lastChildIdx; i >= 0; i-- {
+		minSink(nums, i, len(nums))
+	}
+}
+
+func buildMaxHeap(nums []int) {
+	//最后一个非叶子节点开始, 依次上浮
+	lastChildIdx := len(nums)/2 - 1
+	for i := lastChildIdx; i >= 0; i-- {
+		maxSink(nums, i, len(nums))
+	}
+}
+
+func heapSortASC(nums []int) {
+	buildMaxHeap(nums)
+
+	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
+	for i := 0; i < len(nums); i++ {
+		nums[0], nums[len(nums)-1-i] = nums[len(nums)-1-i], nums[0]
+		//堆顶下沉
+		maxSink(nums, 0, len(nums)-1-i)
+	}
+}
+
+func heapSortDESC(nums []int) {
+	buildMaxHeap(nums)
+
+	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
+	for i := 0; i < len(nums); i++ {
+		nums[0], nums[len(nums)-1-i] = nums[len(nums)-1-i], nums[0]
+		//堆顶下沉
+		maxSink(nums, 0, len(nums)-1-i)
+	}
+}
+
+func TestBinaryHeap(t *testing.T) {
+	nums := []int{5, 1, 2, 6, 3, 7, 8, 9, 10, 4}
+	//构建
+	buildMinHeap(nums)
+	fmt.Println(nums)
+
+	fmt.Println("-------插入操作-------")
+
+	//插入尾部
+	nums = append(nums, 0)
+	fmt.Println("插入尾部: ", nums)
+	//上浮调整
+	minSwim(nums, len(nums)-1, 0)
+	fmt.Println("上浮恢复: ", nums)
+
+	fmt.Println("-------删除操作-------")
+
+	//先把头移到尾
+	nums[0], nums[len(nums)-1] = nums[len(nums)-1], nums[0]
+	fmt.Println("头尾交换: ", nums)
+	//删除尾巴
+	nums = nums[:len(nums)-1]
+	fmt.Println("删除尾部: ", nums)
+	//下沉头
+	minSink(nums, 0, len(nums)-1)
+	fmt.Println("下沉恢复: ", nums)
+
+	fmt.Println("-------排序-------")
+	//排序
+	heapSortASC(nums)
+	fmt.Println(nums)
 }
 
 type PriorityQueue struct {
@@ -23,137 +161,43 @@ type PriorityQueue struct {
 	element []int
 }
 
+func buildPriorityQueue(cap int) *PriorityQueue {
+	return &PriorityQueue{0, make([]int, cap)}
+}
+
 // push 队尾插入元素
 func (p *PriorityQueue) push(value int) {
-
+	p.element = append(p.element, value)
+	minSwim(p.element, len(p.element)-1, 0)
 }
 
 // pop 删除队头
-func (p PriorityQueue) pop() int {
-	return 0
+func (p *PriorityQueue) pop() int {
+	e := p.element[0]
+	p.element[0], p.element[len(p.element)-1] = p.element[len(p.element)-1], p.element[0]
+	p.element = p.element[:len(p.element)-1]
+	minSink(p.element, 0, len(p.element))
+	return e
 }
 
-// idx位置上浮到l, 用于新增元素
-func (b *BinaryHeap) swim(idx int, l int) {
-	childIdx := idx
-	parentIdx := (childIdx - 1) / 2
-	value := b.heapNums[childIdx]
-	for childIdx > l && value < b.heapNums[parentIdx] {
-		b.heapNums[childIdx] = b.heapNums[parentIdx]
-		childIdx = parentIdx
-		parentIdx = (childIdx - 1) / 2
+func TestPriorityQueue(t *testing.T) {
+
+	pq := buildPriorityQueue(0)
+
+	pq.push(9)
+	pq.push(1)
+	pq.push(8)
+	pq.push(7)
+	pq.push(5)
+	pq.push(5)
+	pq.push(6)
+	pq.push(4)
+	pq.push(2)
+	pq.push(3)
+	fmt.Println(pq.element)
+
+	for i := 0; i < 10; i++ {
+		fmt.Println(pq.pop())
 	}
-	b.heapNums[childIdx] = value
-}
 
-// idx位置下沉到l, 用于删除元素
-func (b *BinaryHeap) minSink(idx int, l int) {
-	parentIdx := idx
-	childIdx := parentIdx*2 + 1
-	value := b.heapNums[parentIdx]
-	for childIdx < l {
-		if childIdx+1 < l && b.heapNums[childIdx+1] < b.heapNums[childIdx] {
-			childIdx = childIdx + 1
-		}
-		if value < b.heapNums[childIdx] {
-			break
-		}
-		b.heapNums[parentIdx] = b.heapNums[childIdx]
-		parentIdx = childIdx
-		childIdx = parentIdx*2 + 1
-	}
-	b.heapNums[parentIdx] = value
-}
-
-func (b *BinaryHeap) maxSink(idx int, l int) {
-	parentIdx := idx
-	childIdx := parentIdx*2 + 1
-	value := b.heapNums[parentIdx]
-	for childIdx < l {
-		if childIdx+1 < l && b.heapNums[childIdx+1] > b.heapNums[childIdx] {
-			childIdx = childIdx + 1
-		}
-		if value > b.heapNums[childIdx] {
-			break
-		}
-		b.heapNums[parentIdx] = b.heapNums[childIdx]
-		parentIdx = childIdx
-		childIdx = parentIdx*2 + 1
-	}
-	b.heapNums[parentIdx] = value
-}
-
-func buildMinHeap(nums []int) *BinaryHeap {
-	b := &BinaryHeap{nums}
-	//最后一个非叶子节点开始, 依次下沉
-	lastChildIdx := len(nums)/2 - 1
-	for i := lastChildIdx; i >= 0; i-- {
-		b.minSink(i, len(nums))
-	}
-	return b
-}
-
-func buildMaxHeap(nums []int) *BinaryHeap {
-	b := &BinaryHeap{nums}
-	//最后一个非叶子节点开始, 依次上浮
-	lastChildIdx := len(nums)/2 - 1
-	for i := lastChildIdx; i >= 0; i-- {
-		b.maxSink(i, len(nums))
-	}
-	return b
-}
-
-func heapSortASC(nums []int) {
-	heap := buildMaxHeap(nums)
-
-	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
-	for i := 0; i < len(nums); i++ {
-		heap.heapNums[0], heap.heapNums[len(nums)-1-i] = heap.heapNums[len(nums)-1-i], heap.heapNums[0]
-		//堆顶下沉
-		heap.maxSink(0, len(nums)-1-i)
-	}
-}
-
-func heapSortDESC(nums []int) {
-	heap := buildMaxHeap(nums)
-
-	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
-	for i := 0; i < len(nums); i++ {
-		heap.heapNums[0], heap.heapNums[len(nums)-1-i] = heap.heapNums[len(nums)-1-i], heap.heapNums[0]
-		//堆顶下沉
-		heap.maxSink(0, len(nums)-1-i)
-	}
-}
-
-func TestBinaryHeap(t *testing.T) {
-	nums := []int{5, 1, 2, 6, 3, 7, 8, 9, 10}
-	//构建
-	heap := buildMinHeap(nums)
-	fmt.Println(heap.heapNums)
-
-	fmt.Println("-------插入操作-------")
-
-	//插入尾部
-	heap.heapNums = append(heap.heapNums, 0)
-	fmt.Println(heap.heapNums)
-	//上浮调整
-	heap.swim(len(heap.heapNums)-1, 0)
-	fmt.Println(heap.heapNums)
-
-	fmt.Println("-------删除操作-------")
-
-	//先把头移到尾
-	heap.heapNums[0], heap.heapNums[len(heap.heapNums)-1] = heap.heapNums[len(heap.heapNums)-1], heap.heapNums[0]
-	fmt.Println(heap.heapNums)
-	//删除尾巴
-	heap.heapNums = heap.heapNums[:len(heap.heapNums)-1]
-	fmt.Println(heap.heapNums)
-	//下沉头
-	heap.minSink(0, len(heap.heapNums)-1)
-	fmt.Println(heap.heapNums)
-
-	fmt.Println("-------排序-------")
-	//排序
-	heapSortASC(heap.heapNums)
-	fmt.Println(heap.heapNums)
 }
