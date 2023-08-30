@@ -16,7 +16,7 @@ import (
 */
 
 // idx位置上浮到l, 用于新增元素
-func minSwim(nums []int, idx int, l int) {
+func minUp(nums []int, idx int, l int) {
 	childIdx := idx
 	parentIdx := (childIdx - 1) / 2
 	value := nums[childIdx]
@@ -28,7 +28,7 @@ func minSwim(nums []int, idx int, l int) {
 	nums[childIdx] = value
 }
 
-func maxSwim(nums []int, idx int, l int) {
+func maxUp(nums []int, idx int, l int) {
 	childIdx := idx
 	parentIdx := (childIdx - 1) / 2
 	value := nums[childIdx]
@@ -41,11 +41,7 @@ func maxSwim(nums []int, idx int, l int) {
 }
 
 // idx位置下沉到l, 用于删除元素
-func minSink(nums []int, idx int, l int) {
-	if l == 0 {
-		//下沉到头节点没意义
-		return
-	}
+func minDown(nums []int, idx int, l int) {
 	parentIdx := idx
 	childIdx := parentIdx*2 + 1
 	value := nums[parentIdx]
@@ -63,11 +59,7 @@ func minSink(nums []int, idx int, l int) {
 	nums[parentIdx] = value
 }
 
-func maxSink(nums []int, idx int, l int) {
-	if l == 0 {
-		//下沉到头节点没意义
-		return
-	}
+func maxDown(nums []int, idx int, l int) {
 	parentIdx := idx
 	childIdx := parentIdx*2 + 1
 	value := nums[parentIdx]
@@ -89,7 +81,7 @@ func buildMinHeap(nums []int) {
 	//最后一个非叶子节点开始, 依次下沉
 	lastChildIdx := len(nums)/2 - 1
 	for i := lastChildIdx; i >= 0; i-- {
-		minSink(nums, i, len(nums))
+		minDown(nums, i, len(nums))
 	}
 }
 
@@ -97,7 +89,7 @@ func buildMaxHeap(nums []int) {
 	//最后一个非叶子节点开始, 依次上浮
 	lastChildIdx := len(nums)/2 - 1
 	for i := lastChildIdx; i >= 0; i-- {
-		maxSink(nums, i, len(nums))
+		maxDown(nums, i, len(nums))
 	}
 }
 
@@ -108,18 +100,18 @@ func heapSortASC(nums []int) {
 	for i := 0; i < len(nums); i++ {
 		nums[0], nums[len(nums)-1-i] = nums[len(nums)-1-i], nums[0]
 		//堆顶下沉
-		maxSink(nums, 0, len(nums)-1-i)
+		maxDown(nums, 0, len(nums)-1-i)
 	}
 }
 
 func heapSortDESC(nums []int) {
-	buildMaxHeap(nums)
+	buildMinHeap(nums)
 
-	// 堆顶是最大值, 依次把堆顶交换到堆低, 得到从小到大的顺序
+	// 堆顶是最小值, 依次把堆顶交换到堆低, 得到从大到小的顺序
 	for i := 0; i < len(nums); i++ {
 		nums[0], nums[len(nums)-1-i] = nums[len(nums)-1-i], nums[0]
 		//堆顶下沉
-		maxSink(nums, 0, len(nums)-1-i)
+		minDown(nums, 0, len(nums)-1-i)
 	}
 }
 
@@ -135,7 +127,7 @@ func TestBinaryHeap(t *testing.T) {
 	nums = append(nums, 0)
 	fmt.Println("插入尾部: ", nums)
 	//上浮调整
-	minSwim(nums, len(nums)-1, 0)
+	minUp(nums, len(nums)-1, 0)
 	fmt.Println("上浮恢复: ", nums)
 
 	fmt.Println("-------删除操作-------")
@@ -147,12 +139,12 @@ func TestBinaryHeap(t *testing.T) {
 	nums = nums[:len(nums)-1]
 	fmt.Println("删除尾部: ", nums)
 	//下沉头
-	minSink(nums, 0, len(nums)-1)
+	minDown(nums, 0, len(nums)-1)
 	fmt.Println("下沉恢复: ", nums)
 
 	fmt.Println("-------排序-------")
 	//排序
-	heapSortASC(nums)
+	heapSortDESC(nums)
 	fmt.Println(nums)
 }
 
@@ -168,7 +160,7 @@ func buildPriorityQueue(cap int) *PriorityQueue {
 // push 队尾插入元素
 func (p *PriorityQueue) push(value int) {
 	p.element = append(p.element, value)
-	minSwim(p.element, len(p.element)-1, 0)
+	minUp(p.element, len(p.element)-1, 0)
 }
 
 // pop 删除队头
@@ -176,7 +168,7 @@ func (p *PriorityQueue) pop() int {
 	e := p.element[0]
 	p.element[0], p.element[len(p.element)-1] = p.element[len(p.element)-1], p.element[0]
 	p.element = p.element[:len(p.element)-1]
-	minSink(p.element, 0, len(p.element))
+	minDown(p.element, 0, len(p.element))
 	return e
 }
 
@@ -201,3 +193,7 @@ func TestPriorityQueue(t *testing.T) {
 	}
 
 }
+
+//https://leetcode.cn/problems/kth-largest-element-in-a-stream/?show=1
+//https://leetcode.cn/problems/top-k-frequent-words/?show=1
+//https://leetcode.cn/problems/sort-characters-by-frequency/?show=1
