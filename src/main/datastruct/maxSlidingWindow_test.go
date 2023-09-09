@@ -152,3 +152,5 @@ func (p *Queue) poll(value int) {
 func (p *Queue) max() int {
 	return p.nums[0]
 }
+
+//剑指 Offer 59 - II. 队列的最大值
