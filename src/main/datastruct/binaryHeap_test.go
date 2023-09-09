@@ -42,6 +42,9 @@ func maxUp(nums []int, idx int, l int) {
 
 // idx位置下沉到l, 用于删除元素
 func minDown(nums []int, idx int, l int) {
+	if len(nums) == 0 {
+		return
+	}
 	parentIdx := idx
 	childIdx := parentIdx*2 + 1
 	value := nums[parentIdx]
@@ -60,6 +63,9 @@ func minDown(nums []int, idx int, l int) {
 }
 
 func maxDown(nums []int, idx int, l int) {
+	if len(nums) == 0 {
+		return
+	}
 	parentIdx := idx
 	childIdx := parentIdx*2 + 1
 	value := nums[parentIdx]
