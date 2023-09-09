@@ -103,16 +103,15 @@ func down(nums [][]int, top int, targetIdx int) {
 	nums[parentIdx] = value
 }
 
-/**
+/*
+*
 单调队列
 
+队列里保持从大到小的顺序
 
 输入：nums = [1,3,9,-3,5,3,6,7], k = 3
 
 1,3,9,-3,5,3,6,7
-
-
-
 */
 func maxSlidingWindowV2(nums []int, k int) []int {
 	n := len(nums)
@@ -121,6 +120,7 @@ func maxSlidingWindowV2(nums []int, k int) []int {
 
 	for i := 0; i < n; i++ {
 		q.offer(nums[i])
+		//i先走k-1步
 		if i < k-1 {
 			continue
 		}
@@ -135,6 +135,7 @@ type Queue struct {
 }
 
 func (p *Queue) offer(value int) {
+	//每次入队, 都把队列中比value小的删掉
 	for len(p.nums) > 0 && p.nums[len(p.nums)-1] < value {
 		p.nums = p.nums[:len(p.nums)-1]
 	}
@@ -142,6 +143,7 @@ func (p *Queue) offer(value int) {
 }
 
 func (p *Queue) poll(value int) {
+	//可能value已经不存在了(被offer删了), 就不用删了
 	if value == p.nums[0] {
 		p.nums = p.nums[1:]
 	}
