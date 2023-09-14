@@ -8,7 +8,7 @@ type TrieMap struct {
 }
 
 type TrieNode struct {
-	val   int            //初始化0, 所以0表示没有值, TrieMap不能put value == 0的key
+	val   int            //初始化0, 所以0表示没有值, TrieMap不能put value == 0的key. 前缀数应该不存值, bool类型即可
 	child [256]*TrieNode // 用索引下标来存char, ASCII总共有256位, 包含所有char
 }
 
@@ -25,9 +25,19 @@ func getNode(node *TrieNode, key string) *TrieNode {
 	return p
 }
 
+func getNodeV2(node *TrieNode, key string, i int) *TrieNode {
+	if node == nil {
+		return nil
+	}
+	if len(key) == i {
+		return node
+	}
+	return getNodeV2(node.child[i], key, i+1)
+}
+
 func (t *TrieMap) get(key string) int {
 	node := getNode(t.root, key)
-	//node不为nil, 不代表key存在, 只有node的val也不为空才存在(这里用0表示)
+	//node不为nil或者node的val为空(这里用0表示)， 表示值不存在。存在节点存在val为空是因为下面可能还有值, 比如 存了abc, 没存ab, 找ab
 	if node == nil || node.val == 0 {
 		return 0
 	}
@@ -71,28 +81,30 @@ func removeHelper(node *TrieNode, key string, i int) *TrieNode {
 	if node == nil {
 		return nil
 	}
-	if i == len(key) {
-		// 找到了 key 对应的 TrieNode，删除 val
-		node.val = 0
-	} else {
+	if i != len(key) {
 		//递归去子树删除
 		c := key[i]
 		node.child[c] = removeHelper(node.child[c], key, i+1)
 	}
-	//后序处理
+	//后序处理, 倒着向上处理
 
-	//路径上存在有值节点, 不能被删除
+	if i == len(key) {
+		// 找到了 key的最后一个字符对应的 TrieNode，删除 val。 这里不能node = nil, 因为下面可能还有值, 只能把当前节点的值设为空
+		node.val = 0
+	}
+
+	//路径上存在有值节点, 不能被删除。 比如abcde, 删除e, 发现d有值, d就不能删除。
 	if node.val != 0 {
 		return node
 	}
 
-	//检查是否有有值子节点（后缀）, 有就不用清理, 没有则清理
+	//检查是否存在有值子节点（后缀）, 有就不用清理, 没有则清理。比如abcdef, 删除e, 需要判断e下面有没有值, 有f所以节点e不能删除。
 	for c := 0; c < 256; c++ {
 		if node.child[c] != nil {
 			return node
 		}
 	}
-	//既没有存储 val，也没有后缀树枝，则该节点需要被清理
+	//既没有存储 val（这里val==0），也没有后缀树枝，上面判断过。比如abcde, 删除e, e的值已经是0, e也没有子值, d = nil
 	return nil
 }
 
@@ -102,17 +114,18 @@ func (t *TrieMap) hasKeyWithPrefix(prefix string) bool {
 	return getNode(t.root, prefix) != nil
 }
 
-// 在所有键中寻找 query 的最短前缀
+// 在所有键中寻找 query 的最短前缀 存了abcde, abc， ab。 那么abcdef的最短前缀就是ab
 func (t *TrieMap) shortestPrefixOf(query string) string {
 	p := t.root
 	for i := 0; i < len(query); i++ {
 		if p == nil {
+			//query = abcd, dic = abd. c对应nil, abd不是前缀
 			return ""
 		}
 		if p.val != 0 {
+			//找到最短
 			return query[:i]
 		}
-		//向下
 		c := query[i]
 		p = p.child[c]
 	}
@@ -132,9 +145,9 @@ func (t *TrieMap) longestPrefixOf(query string) string {
 			return ""
 		}
 		if p.val != 0 {
+			//更新最大值
 			max = i
 		}
-		//向下
 		c := query[i]
 		p = p.child[c]
 	}
