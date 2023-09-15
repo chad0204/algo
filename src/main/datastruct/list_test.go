@@ -251,6 +251,17 @@ func middleNode(head *ListNode) *ListNode {
 	return s
 }
 
+func TestGIN(t *testing.T) {
+	a := &ListNode{1,
+		&ListNode{2, nil}}
+
+	b := &ListNode{11,
+		&ListNode{22,
+			&ListNode{33,
+				&ListNode{44, nil}}}}
+	getIntersectionNode(a, b)
+}
+
 // 判断两个链表是否相交
 func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	a := headA
@@ -313,10 +324,10 @@ f f f f f
 //19. 删除链表的倒数第 N 个结点
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	dummy := &ListNode{-1, head}
-	f := head
+	f := dummy
 	s := dummy
 
-	for i := 0; i < n; i++ {
+	for i := 0; i <= n; i++ {
 		f = f.Next
 	}
 
