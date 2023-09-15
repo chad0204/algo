@@ -53,10 +53,10 @@ func (t *TrieMap) put(key string, val int) {
 	if !t.containsKey(key) {
 		t.size++
 	}
-	t.root = t.putHelper(t.root, key, val, 0)
+	t.root = putHelper(t.root, key, val, 0)
 }
 
-func (t *TrieMap) putHelper(node *TrieNode, key string, val int, i int) *TrieNode {
+func putHelper(node *TrieNode, key string, val int, i int) *TrieNode {
 	if node == nil {
 		node = &TrieNode{}
 	}
@@ -65,7 +65,7 @@ func (t *TrieMap) putHelper(node *TrieNode, key string, val int, i int) *TrieNod
 		return node
 	}
 	c := key[i]
-	node.child[c] = t.putHelper(node.child[c], key, val, i+1)
+	node.child[c] = putHelper(node.child[c], key, val, i+1)
 	return node
 }
 
