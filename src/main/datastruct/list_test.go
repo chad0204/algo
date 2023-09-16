@@ -103,31 +103,31 @@ func TestMergeTwoLists(t *testing.T) {
 }
 
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-	dummy := &ListNode{-999, nil} //虚拟头节点
-	head := dummy
+	head := &ListNode{-999, nil} //虚拟头节点
+	dummy := head
 
 	for l1 != nil && l2 != nil {
 		if l1.Val < l2.Val {
-			dummy.Next = l1
+			head.Next = l1
 			//只有节点符合链表才往前走
 			l1 = l1.Next
 		} else {
-			dummy.Next = l2
+			head.Next = l2
 			l2 = l2.Next
 		}
 		//l1 = l1.Next
 		//l2 = l2.Next
-		dummy = dummy.Next
+		head = head.Next
 	}
 
 	if l1 != nil {
-		dummy.Next = l1
+		head.Next = l1
 	}
 
 	if l2 != nil {
-		dummy.Next = l2
+		head.Next = l2
 	}
-	return head.Next
+	return dummy.Next
 }
 
 // 递归解法
@@ -161,24 +161,24 @@ func TestPartition(t *testing.T) {
 
 // 小于的一个链表, 大于等于的一个链表, 这两个链表原节点顺序不变。 组成一个新链表
 func partition(head *ListNode, x int) *ListNode {
-	dummyL := &ListNode{-1, nil}
-	dummyR := &ListNode{-1, nil}
+	l := &ListNode{-1, nil}
+	r := &ListNode{-1, nil}
+	dummyL := l
+	dummyR := r
 
-	lhead := dummyL
-	rhead := dummyR
 	for head != nil {
 		if head.Val < x {
-			dummyL.Next = head
-			dummyL = dummyL.Next
+			l.Next = head
+			l = l.Next
 		} else {
-			dummyR.Next = head
-			dummyR = dummyR.Next
+			r.Next = head
+			r = r.Next
 		}
 		head = head.Next
 	}
-	dummyL.Next = rhead.Next
-	dummyR.Next = nil //不然结果有个环
-	return lhead.Next
+	l.Next = dummyR.Next
+	r.Next = nil //不然结果有个环
+	return dummyL.Next
 }
 
 func TestMergeKLists(t *testing.T) {
@@ -207,19 +207,11 @@ func TestMergeKLists(t *testing.T) {
 
 // 合并k个有序链表
 func mergeKLists(lists []*ListNode) *ListNode {
-	if len(lists) == 0 {
-		return nil
+	head := &ListNode{-1, nil}
+	for i := 0; i < len(lists); i++ {
+		head.Next = mergeTwoLists(head.Next, lists[i])
 	}
-
-	head := lists[0]
-	for i, v := range lists {
-		if i == 0 {
-			continue
-		}
-		head = mergeTwoListsV2(head, v)
-
-	}
-	return head
+	return head.Next
 }
 
 // 倒数第k个节点(从1开始计数)
