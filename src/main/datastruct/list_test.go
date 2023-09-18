@@ -150,11 +150,11 @@ func mergeTwoListsV2(l1 *ListNode, l2 *ListNode) *ListNode {
 func TestPartition(t *testing.T) {
 
 	head := &ListNode{1,
-		&ListNode{4,
-			&ListNode{3,
-				&ListNode{2,
-					&ListNode{5,
-						&ListNode{2, nil}}}}}}
+		&ListNode{5,
+			&ListNode{2,
+				&ListNode{3,
+					&ListNode{4,
+						&ListNode{1, nil}}}}}}
 	partition(head, 3)
 
 }
@@ -177,7 +177,7 @@ func partition(head *ListNode, x int) *ListNode {
 		head = head.Next
 	}
 	l.Next = dummyR.Next
-	r.Next = nil //不然结果有个环
+	r.Next = nil //不然当x右边有比x小的元素结果有个环
 	return dummyL.Next
 }
 
@@ -350,17 +350,17 @@ func reverseListIte(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
-	var pre *ListNode
-	curr := head
+	var prev *ListNode
+	successor := head
 
-	for curr != nil {
-		curr = head.Next
-		head.Next = pre
-		pre = head
-		head = curr
+	for successor != nil {
+		successor = head.Next
+		head.Next = prev
 
+		prev = head
+		head = successor
 	}
-	return pre
+	return prev
 }
 
 /**
