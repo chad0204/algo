@@ -97,7 +97,7 @@ func traverseV2(root *TreeNode) int {
 // 543. 二叉树的直径
 func diameterOfBinaryTree(root *TreeNode) int {
 	/*
-		思路是"所有"子树的左右最大深度之和。
+		思路是"所有"子树的左右最大深度之和。注意是所有, 而不是root左右之和
 		涉及左右子树所以是后序遍历, "最大"需要记录最大值
 	*/
 	d := 0
@@ -112,7 +112,8 @@ func diameter(root *TreeNode, d *int) int {
 	l := diameter(root.Left, d)
 	r := diameter(root.Right, d)
 	*d = Max(l+r, *d)
-	return Max(l, r) + 1 // 计算左右子树的深度
+	// 返回当前节点的最长子树
+	return Max(l, r) + 1
 }
 
 // 114. 二叉树展开为链表, 分解子问题模式。如果返回类型不是void, 可以考虑遍历的思想
