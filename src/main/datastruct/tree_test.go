@@ -176,6 +176,14 @@ type Node struct {
 	Next  *Node
 }
 
+func TestCL(t *testing.T) {
+	root := &Node{1,
+		&Node{2, &Node{4, nil, nil, nil}, &Node{5, nil, nil, nil}, nil},
+		&Node{3, &Node{6, nil, nil, nil}, &Node{7, nil, nil, nil}, nil},
+		nil}
+	connectLevel(root)
+}
+
 // 116. 填充每个节点的下一个右侧节点指针. 解决子树直接的空隙问题
 // 解法一: 层序遍历
 func connectLevel(root *Node) *Node {
@@ -186,7 +194,8 @@ func connectLevel(root *Node) *Node {
 	queue = append(queue, root)
 	for len(queue) > 0 {
 		n := len(queue)
-		var temp *Node
+		//每一层清空
+		var prevRight *Node
 		for i := 0; i < n; i++ {
 			curr := queue[0]
 			queue = queue[1:]
@@ -195,11 +204,11 @@ func connectLevel(root *Node) *Node {
 			}
 			queue = append(queue, curr.Left)
 			queue = append(queue, curr.Right)
-			if temp != nil {
-				temp.Next = curr.Left
+			if prevRight != nil {
+				prevRight.Next = curr.Left
 			}
 			curr.Left.Next = curr.Right
-			temp = curr.Right
+			prevRight = curr.Right
 		}
 	}
 	return root
