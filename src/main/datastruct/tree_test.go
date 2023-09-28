@@ -194,7 +194,7 @@ func connectLevel(root *Node) *Node {
 	queue = append(queue, root)
 	for len(queue) > 0 {
 		n := len(queue)
-		//每一层清空
+		//每一层开始前清空
 		var prevRight *Node
 		for i := 0; i < n; i++ {
 			curr := queue[0]
@@ -204,10 +204,11 @@ func connectLevel(root *Node) *Node {
 			}
 			queue = append(queue, curr.Left)
 			queue = append(queue, curr.Right)
+			curr.Left.Next = curr.Right
 			if prevRight != nil {
 				prevRight.Next = curr.Left
 			}
-			curr.Left.Next = curr.Right
+			//记录当前节点的右节点
 			prevRight = curr.Right
 		}
 	}
