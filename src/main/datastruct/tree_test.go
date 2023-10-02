@@ -97,7 +97,7 @@ func traverseV2(root *TreeNode) int {
 // 543. 二叉树的直径
 func diameterOfBinaryTree(root *TreeNode) int {
 	/*
-		思路是"所有"子树的左右最大深度之和。
+		思路是"所有"子树的左右最大深度之和。注意是所有, 而不是root左右之和
 		涉及左右子树所以是后序遍历, "最大"需要记录最大值
 	*/
 	d := 0
@@ -112,7 +112,8 @@ func diameter(root *TreeNode, d *int) int {
 	l := diameter(root.Left, d)
 	r := diameter(root.Right, d)
 	*d = Max(l+r, *d)
-	return Max(l, r) + 1 // 计算左右子树的深度
+	// 返回当前节点的最长子树
+	return Max(l, r) + 1
 }
 
 // 114. 二叉树展开为链表, 分解子问题模式。如果返回类型不是void, 可以考虑遍历的思想
@@ -175,6 +176,14 @@ type Node struct {
 	Next  *Node
 }
 
+func TestCL(t *testing.T) {
+	root := &Node{1,
+		&Node{2, &Node{4, nil, nil, nil}, &Node{5, nil, nil, nil}, nil},
+		&Node{3, &Node{6, nil, nil, nil}, &Node{7, nil, nil, nil}, nil},
+		nil}
+	connectLevel(root)
+}
+
 // 116. 填充每个节点的下一个右侧节点指针. 解决子树直接的空隙问题
 // 解法一: 层序遍历
 func connectLevel(root *Node) *Node {
@@ -185,7 +194,8 @@ func connectLevel(root *Node) *Node {
 	queue = append(queue, root)
 	for len(queue) > 0 {
 		n := len(queue)
-		var temp *Node
+		//每一层开始前清空
+		var prevRight *Node
 		for i := 0; i < n; i++ {
 			curr := queue[0]
 			queue = queue[1:]
@@ -194,11 +204,12 @@ func connectLevel(root *Node) *Node {
 			}
 			queue = append(queue, curr.Left)
 			queue = append(queue, curr.Right)
-			if temp != nil {
-				temp.Next = curr.Left
-			}
 			curr.Left.Next = curr.Right
-			temp = curr.Right
+			if prevRight != nil {
+				prevRight.Next = curr.Left
+			}
+			//记录当前节点的右节点
+			prevRight = curr.Right
 		}
 	}
 	return root
