@@ -394,9 +394,6 @@ func reverseBetween(head *ListNode, left int, right int) *ListNode {
 }
 
 func reverseRight(head *ListNode, right int) (*ListNode, *ListNode) {
-	if head == nil {
-		return nil, nil
-	}
 	if right == 1 {
 		return head, head.Next
 	}
