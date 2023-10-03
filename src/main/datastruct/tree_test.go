@@ -258,6 +258,28 @@ func buildTreeTraversal(inorder []int, inStart int, inEnd int, postorder []int, 
 	return &TreeNode{rootVal, left, right}
 }
 
+// 106. 从中序与后序遍历序列构造二叉树 简洁版
+func buildTreeV2(inorder []int, postorder []int) *TreeNode {
+	if len(postorder) == 0 {
+		return nil
+	}
+	if len(postorder) == 1 {
+		return &TreeNode{postorder[len(postorder)-1], nil, nil}
+	}
+	rootVal := postorder[len(postorder)-1]
+	rootIdx := 0
+	for i, v := range inorder {
+		if v == rootVal {
+			rootIdx = i
+			break
+		}
+	}
+	root := &TreeNode{postorder[len(postorder)-1], nil, nil}
+	root.Left = buildTree(inorder[:rootIdx], postorder[:rootIdx])
+	root.Right = buildTree(inorder[rootIdx+1:], postorder[rootIdx:len(postorder)-1])
+	return root
+}
+
 func TestConstructFromPrePost(t *testing.T) {
 	//root := &TreeNode{1,
 	//	&TreeNode{2, &TreeNode{4, nil, nil}, &TreeNode{5, nil, nil}},
@@ -266,6 +288,7 @@ func TestConstructFromPrePost(t *testing.T) {
 
 }
 
+// 889. 根据前序和后序遍历构造二叉树
 func constructFromPrePost(preorder []int, postorder []int) *TreeNode {
 	return construct(preorder, 0, len(preorder)-1, postorder, 0, len(postorder)-1)
 }
@@ -298,6 +321,29 @@ func construct(preorder []int, preStart int, preEnd int,
 	return &TreeNode{rootVal, left, right}
 }
 
+// 889. 根据前序和后序遍历构造二叉树 简洁版
+func constructFromPrePostV2(preorder []int, postorder []int) *TreeNode {
+	if len(preorder) == 0 {
+		return nil
+	}
+	if len(preorder) == 1 {
+		return &TreeNode{preorder[0], nil, nil}
+	}
+
+	leftVal := preorder[1]
+	leftIdx := 0
+	for i, v := range postorder {
+		if leftVal == v {
+			leftIdx = i
+			break
+		}
+	}
+	root := &TreeNode{preorder[0], nil, nil}
+	root.Left = constructFromPrePost(preorder[1:1+leftIdx+1], postorder[:leftIdx+1])
+	root.Right = constructFromPrePost(preorder[1+leftIdx+1:], postorder[leftIdx+1:len(postorder)-1])
+	return root
+}
+
 /*
 652. 寻找重复的子树
 https://mp.weixin.qq.com/s/LJbpo49qppIeRs-FbgjsSQ
@@ -305,17 +351,17 @@ https://mp.weixin.qq.com/s/LJbpo49qppIeRs-FbgjsSQ
 func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
 	valMap := make(map[string]int)
 	res := make([]*TreeNode, 0)
-	traversalFDS(root, valMap, &res)
+	traversalDFS(root, valMap, &res)
 	return res
 }
 
-func traversalFDS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) string {
+func traversalDFS(root *TreeNode, valMap map[string]int, res *[]*TreeNode) string {
 	if root == nil {
 		return "#"
 	}
 
-	left := traversalFDS(root.Left, valMap, res)
-	right := traversalFDS(root.Right, valMap, res)
+	left := traversalDFS(root.Left, valMap, res)
+	right := traversalDFS(root.Right, valMap, res)
 
 	subTree := left + ", " + right + ", " + strconv.Itoa(root.Val)
 
