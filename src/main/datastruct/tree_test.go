@@ -399,18 +399,18 @@ func (this *Codec) deserialize(data string) *TreeNode {
 
 // # # 2     #  #  4  # # 5  3     1
 func (this *Codec) deserializeHelper(postorder *[]string) *TreeNode {
-	// if len(*postorder) == 0 {
-	//     return nil
-	// }
+	if len(*postorder) == 0 {
+		return nil
+	}
 
 	lastIndex := len(*postorder) - 1
 	val := (*postorder)[lastIndex]
-	//主要就是postorder每次构建完一个节点 都要减掉一个
+	//主要就是postorder每次构建完一个节点 都要减掉一个(#号也算)。这里使用指针, 因为不同递归分支的构建要影响原参数。
 	*postorder = (*postorder)[:lastIndex]
 	if val == "#" {
 		return nil
 	}
-
+	//序列化时是先左后右, 反序列化要先右后左
 	right := this.deserializeHelper(postorder)
 	left := this.deserializeHelper(postorder)
 
