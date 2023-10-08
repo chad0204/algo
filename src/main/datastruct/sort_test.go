@@ -50,11 +50,14 @@ func mergeSort(nums []int) []int {
 	}
 	arr1 := mergeSort(nums[:len(nums)/2])
 	arr2 := mergeSort(nums[len(nums)/2:])
+
+	//todo 优化 如果arr1 < arr2, 直接return
+
 	//后序
 	return merge(arr1, arr2)
 }
 
-//合并两个数组
+// 合并两个数组
 func merge(n1 []int, n2 []int) []int {
 	l := 0
 	r := 0
@@ -94,15 +97,3 @@ func bubbleSort(nums []int) {
 		}
 	}
 }
-
-/**
-
-   1
- 2   3
-4 5  6 7
-
-前序: 1 2 4 5 3 6 7
-中序: 4 2 5 1 6 3 7
-后序: 4 5 2 6 7 3 1
-
-*/
