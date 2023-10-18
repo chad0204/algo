@@ -18,21 +18,22 @@ https://www.cnblogs.com/labuladong/p/15943579.html
 */
 
 // 315. 计算右侧小于当前元素的个数
+
+// 记录数组中的元素的索引
 type Pair struct {
-	val int
-	idx int
+	val int //索引值
+	idx int //索引
 }
 
 func countSmaller(nums []int) []int {
+	//索引下标和原数组一样, 记录的值是右侧小于当前下标元素的个数, 每次递归累加
 	counts := make([]int, len(nums))
-
+	//索引数组
 	arr := make([]*Pair, len(nums))
 	for i := 0; i < len(nums); i++ {
 		arr[i] = &Pair{nums[i], i}
 	}
-
 	sort(arr, &counts)
-
 	return counts
 }
 
@@ -54,6 +55,7 @@ func mergeC(n1 []*Pair, n2 []*Pair, counts *[]int) []*Pair {
 	var tmp []*Pair
 	for l < len(n1) && r < len(n2) {
 		if n1[l].val <= n2[r].val {
+			//左边元素,
 			tmp = append(tmp, n1[l])
 			(*counts)[n1[l].idx] += r
 			l++
