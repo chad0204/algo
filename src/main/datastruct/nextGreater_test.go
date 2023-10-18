@@ -9,6 +9,7 @@ func TestNextGE(t *testing.T) {
 	fmt.Print(nextGreaterElements([]int{1, 2, 3, 4, 5, 6, 5, 4, 5, 1, 2, 3}))
 }
 
+// 496. 下一个更大元素 I
 func nextGreaterElements(nums []int) []int {
 	res := make([]int, len(nums))
 	s := make([]int, 0)
