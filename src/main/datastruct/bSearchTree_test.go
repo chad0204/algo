@@ -140,27 +140,23 @@ func dp(lo, hi int, mem [][]int) int {
 
 // 95. 不同的二叉搜索树 II
 func generateTrees(n int) []*TreeNode {
-	return build(1, n)
+	return generateTreesHelper(1, n)
 }
 
-func build(lo, hi int) []*TreeNode {
+func generateTreesHelper(min int, max int) []*TreeNode {
 	res := make([]*TreeNode, 0)
-	if lo > hi {
+	if min > max {
+		//nil 也是一种节点
 		res = append(res, nil)
-		return res
 	}
-	for i := lo; i <= hi; i++ {
-		leftTrees := build(lo, i-1)
-		rightTrees := build(i+1, hi)
 
-		//穷举
-		for l := range leftTrees {
-			for r := range rightTrees {
-				left := leftTrees[l]
-				right := rightTrees[r]
-
-				root := &TreeNode{i, left, right}
-				res = append(res, root)
+	//以i逐个作为root
+	for rootVal := min; rootVal <= max; rootVal++ {
+		lefts := generateTreesHelper(min, rootVal-1)
+		rights := generateTreesHelper(rootVal+1, max)
+		for _, left := range lefts {
+			for _, right := range rights {
+				res = append(res, &TreeNode{rootVal, left, right})
 			}
 		}
 	}
