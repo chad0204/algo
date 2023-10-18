@@ -1,5 +1,55 @@
 package datastruct
 
+/*
+
+二叉搜索数: 对于节点node, 左子树节点值都比自己小, 右子树节点值都比自己大; 对于节点node, 他的左右子树都是二叉搜索树
+
+
+隐藏条件: 二叉搜索树的中序遍历是有序的
+
+
+*/
+
+// 538. 把二叉搜索树转换为累加树
+func convertBST(root *TreeNode) *TreeNode {
+	res := 0
+	convertBSTHelper(root, &res)
+	return root
+}
+
+func convertBSTHelper(root *TreeNode, res *int) {
+	if root == nil {
+		return
+	}
+	//要累加比自己大的元素, 所以从右边开始中序遍历
+	convertBSTHelper(root.Right, res)
+	*res = *res + root.Val
+	root.Val = *res
+	convertBSTHelper(root.Left, res)
+
+}
+
+// 230. 二叉搜索树中第K小的元素
+func kthSmallest(root *TreeNode, k int) int {
+	res := 0
+	rank := 0
+	kthSmallestHelper(root, k, &res, &rank)
+	return res
+}
+
+func kthSmallestHelper(root *TreeNode, k int, res *int, rank *int) {
+	if root == nil {
+		return
+	}
+	kthSmallestHelper(root.Left, k, res, rank)
+	*rank++
+	if *rank == k {
+		*res = root.Val
+		return
+	}
+	kthSmallestHelper(root.Right, k, res, rank)
+}
+
 //98. 验证二叉搜索树
 func isValidBST(root *TreeNode) bool {
 	return isValidHelper(root, nil, nil)
@@ -17,6 +67,43 @@ func isValidHelper(root *TreeNode, min *TreeNode, max *TreeNode) bool {
 	}
 	//左子树更新最大值. 右子树更新最小值
 	return isValidHelper(root.Left, min, root) && isValidHelper(root.Right, root, max)
+}
+
+// 450. 删除二叉搜索树中的节点
+func deleteNode(root *TreeNode, key int) *TreeNode {
+	return deleteNodeHelper(root, key)
+}
+
+func deleteNodeHelper(root *TreeNode, key int) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if root.Val < key {
+		root.Right = deleteNodeHelper(root.Right, key)
+	} else if root.Val > key {
+		root.Left = deleteNodeHelper(root.Left, key)
+	} else {
+		//注意 这里不能直接将右边最小值拿上来，然后拼接上原先的左右。因为最小值还没有被删除。
+		//右边的最小值
+		minRight := getMin(root.Right)
+		if minRight == nil {
+			return root.Left
+		}
+		root.Val = minRight.Val
+		root.Right = deleteNodeHelper(root.Right, minRight.Val)
+	}
+	return root
+}
+
+func getMin(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	if root.Left == nil {
+		return root
+	}
+	return getMin(root.Left)
 }
 
 // https://mp.weixin.qq.com/s/kcwz2lyRxxOsC3n11qdVSw
