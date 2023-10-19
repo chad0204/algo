@@ -33,16 +33,16 @@ func countSmaller(nums []int) []int {
 	for i := 0; i < len(nums); i++ {
 		arr[i] = &Pair{nums[i], i}
 	}
-	sort(arr, &counts)
+	sortHelper(arr, &counts)
 	return counts
 }
 
-func sort(nums []*Pair, counts *[]int) []*Pair {
+func sortHelper(nums []*Pair, counts *[]int) []*Pair {
 	if len(nums) <= 1 {
 		return nums
 	}
-	arr1 := sort(nums[:len(nums)/2], counts)
-	arr2 := sort(nums[len(nums)/2:], counts)
+	arr1 := sortHelper(nums[:len(nums)/2], counts)
+	arr2 := sortHelper(nums[len(nums)/2:], counts)
 
 	//后序
 	return mergeC(arr1, arr2, counts)
