@@ -12,7 +12,7 @@ func TestQuickSort(t *testing.T) {
 }
 
 func quickSort(nums []int, start, end int) {
-	if start >= end {
+	if start > end {
 		return
 	}
 	//前序
@@ -22,6 +22,7 @@ func quickSort(nums []int, start, end int) {
 }
 
 func part(nums []int, start, end int) int {
+	//第一位, 最后一位, 中间值, 随机值
 	p := nums[start]
 	l := start
 	r := end
