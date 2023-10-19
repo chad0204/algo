@@ -205,7 +205,7 @@ func maxProfitK(k int, prices []int) int {
 			}
 			if j == 0 {
 				dp[i][j][0] = 0
-				dp[i][j][1] = math.MinInt32//一笔没买就持有, 不可能啊。但是按照公式推应该是-prices[i]。都可以
+				dp[i][j][1] = math.MinInt32 //一笔没买就持有, 不可能啊。但是按照公式推应该是-prices[i]。都可以
 				continue
 			}
 			dp[i][j][0] = Max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
@@ -216,7 +216,7 @@ func maxProfitK(k int, prices []int) int {
 }
 
 // k = 1 “今天买了不能卖” 和 k无限次的区别就是一天不能同时买卖
-//121. 买卖股票的最佳时机
+// 121. 买卖股票的最佳时机
 func maxProfit1(prices []int) int {
 	/*
 	   state func:
@@ -473,4 +473,33 @@ func robDp(root *TreeNode, mem map[*TreeNode]int) int {
 	}
 	mem[root] = Max(a, b)
 	return mem[root]
+}
+
+// 95. 不同的二叉搜索树 II
+func numTreesDp(n int) int {
+	mem := make([][]int, n+1)
+	for i := range mem {
+		mem[i] = make([]int, n+1)
+		for j := range mem[i] {
+			mem[i][j] = -1
+		}
+	}
+	return numTreesDpHelper(1, n, mem)
+}
+
+func numTreesDpHelper(lo int, hi int, mem [][]int) int {
+	if lo >= hi {
+		return 1
+	}
+	if mem[lo][hi] != -1 {
+		return mem[lo][hi]
+	}
+	res := 0
+	for i := lo; i <= hi; i++ {
+		l := numTreesDpHelper(lo, i-1, mem)
+		r := numTreesDpHelper(i+1, hi, mem)
+		res += l * r
+	}
+	mem[lo][hi] = res
+	return res
 }
