@@ -464,9 +464,9 @@ func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
 // 235. 二叉搜索树的最近公共祖先
 func lowestCommonAncestor235(root, p, q *TreeNode) *TreeNode {
 	if p.Val < q.Val {
-		return lcaHelper(root, p, q)
+		return lcaHelper235(root, p, q)
 	} else {
-		return lcaHelper(root, q, p)
+		return lcaHelper235(root, q, p)
 	}
 }
 
