@@ -109,7 +109,7 @@ func getMin(root *TreeNode) *TreeNode {
 // https://mp.weixin.qq.com/s/kcwz2lyRxxOsC3n11qdVSw
 // 96. 不同的二叉搜索树
 func numTrees(n int) int {
-	mem := make([][]int, n+1)
+	mem := make([][]int, n+1) //二维数据都是n+1
 	for i := range mem {
 		mem[i] = make([]int, n+1)
 		for j := range mem[i] {
