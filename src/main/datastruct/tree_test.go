@@ -465,9 +465,9 @@ func lcaHelper(root *TreeNode, p, q *TreeNode) *TreeNode {
 func lowestCommonAncestor235(root, p, q *TreeNode) *TreeNode {
 	//注意需要判定p q大小
 	if p.Val < q.Val {
-		return lcaHelper(root, p, q)
+		return lcaHelper235(root, p, q)
 	} else {
-		return lcaHelper(root, q, p)
+		return lcaHelper235(root, q, p)
 	}
 }
 
