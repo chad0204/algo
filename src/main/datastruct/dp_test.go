@@ -77,7 +77,7 @@ func TestCoinChange(t *testing.T) {
 func coinChange(coins []int, amount int) int {
 	m := make([]int, amount+1)
 	for i := range m {
-		m[i] = -999
+		m[i] = -1
 	}
 	return dpCoin(coins, amount, m)
 }
@@ -89,41 +89,45 @@ func dpCoin(coins []int, amount int, m []int) int {
 	if amount < 0 {
 		return -1
 	}
-	if m[amount] != -999 { // 数组初始都设置成-999
+	if m[amount] != -1 {
 		return m[amount]
 	}
 
-	tmp := math.MaxInt32
+	res := math.MaxInt32
 	for _, c := range coins {
 		v := dpCoin(coins, amount-c, m) //子问题
 		if v == -1 {                    // 子问题无解 父问题也无解
 			continue
 		}
-		tmp = Min(tmp, v+1) // 少了c 多一枚硬币
+		res = Min(res, v+1) // 少了c 多一枚硬币
 	}
-	m[amount] = tmp
+	//res没有找到最小值，依然将math.MaxInt32设置到m[amount], 防止前面m[amount] == -1还要计算
+	m[amount] = res
 	//这里也要注意
-	if tmp == math.MaxInt32 {
+	if res == math.MaxInt32 {
 		return -1
 	}
-	return tmp
+	return res
 }
 
 func coinChangeIterator(coins []int, amount int) int {
 	dp := make([]int, amount+1)
-	for i := range dp {
-		dp[i] = math.MaxInt32 //dp[i-c]+1其他语言会溢出, 其实可以改成amount+1
-	}
-	dp[0] = 0
-	for i := 1; i < amount+1; i++ {
+	for i := 0; i <= amount; i++ {
+		if i == 0 {
+			dp[i] = 0
+			continue
+		}
+		//初始化为math.MaxInt32, 可能dp[i-c]+1其他语言会溢出, 其实可以改成amount+1
+		dp[i] = amount + 1
 		for _, c := range coins {
 			if i < c {
 				continue
 			}
+			// 每次选一个硬币c, 那么就比i-c多一个硬币, 看下当前选哪个硬币最小
 			dp[i] = Min(dp[i-c]+1, dp[i])
 		}
 	}
-	if dp[amount] == math.MaxInt32 {
+	if dp[amount] == amount+1 {
 		return -1
 	}
 	return dp[amount]
@@ -501,5 +505,29 @@ func numTreesDpHelper(lo int, hi int, mem [][]int) int {
 		res += l * r
 	}
 	mem[lo][hi] = res
+	return res
+}
+
+// 300. 最长递增子序列
+func lengthOfLIS(nums []int) int {
+	dp := make([]int, len(nums))
+	for i := 0; i < len(dp); i++ {
+		if i == 0 {
+			dp[0] = 1
+			continue
+		}
+		//遍历[0, i)得到dp[j], 找到比nums[i]大的nums[j]（说明dp[i]是dp[j]+1）。让dp[i]和这些dp[j]+1逐一比较
+		dp[i] = 1
+		for j := 0; j < i; j++ {
+			if nums[i] > nums[j] {
+				dp[i] = Max(dp[i], dp[j]+1)
+			}
+		}
+	}
+	// 最后取最值
+	res := 0
+	for _, v := range dp {
+		res = Max(v, res)
+	}
 	return res
 }
