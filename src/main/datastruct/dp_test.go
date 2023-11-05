@@ -531,3 +531,40 @@ func lengthOfLIS(nums []int) int {
 	}
 	return res
 }
+
+// 931. 下降路径最小和. 思考： 是不是可以给长和宽都多一列(值为最大值, 这样就可以避免边界溢出)。试试自上而下的递归？
+func minFallingPathSum(matrix [][]int) int {
+	dp := make([][]int, len(matrix))
+	for i, _ := range dp {
+		dp[i] = make([]int, len(matrix))
+	}
+	//行
+	for i := 0; i < len(matrix); i++ {
+		//列
+		for j := 0; j < len(matrix); j++ {
+			if i == 0 {
+				dp[i][j] = matrix[i][j]
+				continue
+			}
+			dp[i][j] = math.MaxInt32
+			dp[i][j] = Min(dp[i-1][j]+matrix[i][j], dp[i][j])
+			if j == 0 {
+				dp[i][j] = Min(dp[i-1][j+1]+matrix[i][j], dp[i][j])
+				continue
+			}
+			if j == len(matrix)-1 {
+				dp[i][j] = Min(dp[i-1][j-1]+matrix[i][j], dp[i][j])
+				continue
+			}
+			dp[i][j] = Min(dp[i-1][j+1]+matrix[i][j], dp[i][j])
+			dp[i][j] = Min(dp[i-1][j-1]+matrix[i][j], dp[i][j])
+		}
+	}
+	res := math.MaxInt32
+	for i := 0; i < len(matrix); i++ {
+		res = Min(dp[len(matrix)-1][i], res)
+	}
+	return res
+}
+
+// 115. 不同的子序列 https://blog.csdn.net/fdl123456/article/details/124938272
