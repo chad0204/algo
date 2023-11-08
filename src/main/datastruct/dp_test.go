@@ -568,3 +568,50 @@ func minFallingPathSum(matrix [][]int) int {
 }
 
 // 115. 不同的子序列 https://blog.csdn.net/fdl123456/article/details/124938272
+
+// 思路 s[0: idx]在words中存在, 只需要判断s[idx:]是否存在即可, 逐步缩小范围, idx就是状态。减枝: 当words存在类似的单词, idx会被重复计算
+func TestWord(t *testing.T) {
+
+	wordBreak("leetcode", []string{"leet", "code"})
+}
+
+func wordBreak(s string, wordDict []string) bool {
+	wordMap := make(map[string]bool)
+	for _, word := range wordDict {
+		wordMap[word] = true
+	}
+	//索引表示切割点, -1 未计算 0 已计算但凑不出 1 已计算能凑出
+	memo := make([]int, len(s))
+	for i := 0; i < len(memo); i++ {
+		memo[i] = -1
+	}
+	return wordBreakDp(s, wordMap, 0, memo)
+}
+
+func wordBreakDp(s string, wordMap map[string]bool, idx int, memo []int) bool {
+	if len(s) == idx {
+		return true
+	}
+
+	if memo[idx] != -1 {
+		if memo[idx] == 0 {
+			//0 ~ idx 无法凑出
+			return false
+		} else {
+			//0 ~ idx 可以凑出
+			return true
+		}
+	}
+
+	for i := idx; i < len(s); i++ {
+		ss := s[idx : i+1]
+		if wordMap[ss] {
+			if wordBreakDp(s, wordMap, i+1, memo) {
+				memo[idx] = 1
+				return true
+			}
+		}
+	}
+	memo[idx] = 0
+	return false
+}
