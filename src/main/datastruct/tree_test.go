@@ -59,7 +59,7 @@ func TestMaxDepth(t *testing.T) {
 func maxDepth(root *TreeNode) int {
 	res = 0 //每次执行 清空
 	depth := 0
-	traverse(root, &depth)
+	maxDepthHelperPre(root, &depth)
 	return res
 }
 
@@ -69,28 +69,29 @@ func maxDepth(root *TreeNode) int {
 */
 var res int
 
-func traverse(root *TreeNode, depth *int) {
+func maxDepthHelperPre(root *TreeNode, depth *int) {
 	if root == nil {
 		return
 	}
 	*depth++
 	if root.Left == nil && root.Right == nil {
+		//找到头了更新下
 		res = Max(res, *depth)
 	}
-	traverse(root.Left, depth)
-	traverse(root.Right, depth)
+	maxDepthHelperPre(root.Left, depth)
+	maxDepthHelperPre(root.Right, depth)
 	*depth--
 }
 
 /*
 后序遍历, 是一种分解子问题的思想, 进阶就是动态规划
 */
-func traverseV2(root *TreeNode) int {
+func maxDepthHelperPost(root *TreeNode) int {
 	if root == nil {
 		return 0
 	}
-	l := traverseV2(root.Left)
-	r := traverseV2(root.Right)
+	l := maxDepthHelperPost(root.Left)
+	r := maxDepthHelperPost(root.Right)
 	return Max(l, r) + 1
 }
 
