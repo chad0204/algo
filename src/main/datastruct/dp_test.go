@@ -3,6 +3,7 @@ package datastruct
 import (
 	"fmt"
 	"math"
+	"strings"
 	"testing"
 )
 
@@ -567,8 +568,6 @@ func minFallingPathSum(matrix [][]int) int {
 	return res
 }
 
-// 115. 不同的子序列 https://blog.csdn.net/fdl123456/article/details/124938272
-
 // 思路 s[0: idx]在words中存在, 只需要判断s[idx:]是否存在即可, 逐步缩小范围, idx就是状态。减枝: 当words存在类似的单词, idx会被重复计算
 func TestWord(t *testing.T) {
 
@@ -614,4 +613,65 @@ func wordBreakDp(s string, wordMap map[string]bool, idx int, memo []int) bool {
 	}
 	memo[idx] = 0
 	return false
+}
+
+//140. 单词拆分 II
+func wordBreakII(s string, wordDict []string) []string {
+	wordMap := make(map[string]bool)
+	for _, word := range wordDict {
+		wordMap[word] = true
+	}
+	words := make([]string, 0)
+	sentences := make([]string, 0)
+	dpWordBreakII(s, wordMap, 0, words, &sentences)
+	return sentences
+}
+
+func dpWordBreakII(s string, wordMap map[string]bool, idx int, words []string, sentences *[]string) {
+	if idx == len(s) {
+		sentence := strings.Join(words, " ")
+		*sentences = append(*sentences, sentence)
+		return
+	}
+	for i := idx; i < len(s); i++ {
+		ss := s[idx : i+1]
+		if wordMap[ss] {
+			words = append(words, ss)
+			dpWordBreakII(s, wordMap, i+1, words, sentences)
+			words = words[:len(words)-1]
+		}
+	}
+}
+
+// 115. 不同的子序列 https://blog.csdn.net/fdl123456/article/details/124938272
+func numDistinct(s string, t string) int {
+	mem := make([][]int, len(s))
+	for i, _ := range mem {
+		mem[i] = make([]int, len(t))
+		for j, _ := range mem[i] {
+			mem[i][j] = -1
+		}
+	}
+	return dpND(s, 0, t, 0, mem)
+}
+
+func dpND(s string, i int, t string, j int, mem [][]int) int {
+	if j == len(t) {
+		return 1
+	}
+	//说明s[i..]已经不能凑出t[j..]
+	if len(s)-i < len(t)-j {
+		return 0
+	}
+	if mem[i][j] != -1 {
+		return mem[i][j]
+	}
+	if s[i] == t[j] {
+		//当s[i] == t[j]时, 可以选择i j都匹配， 也可以i不匹配
+		mem[i][j] = dpND(s, i+1, t, j, mem) + dpND(s, i+1, t, j+1, mem)
+	} else {
+		//当s[i] != t[j]时, 只能i不匹配
+		mem[i][j] = dpND(s, i+1, t, j, mem)
+	}
+	return mem[i][j]
 }
