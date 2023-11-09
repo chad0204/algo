@@ -675,3 +675,32 @@ func dpND(s string, i int, t string, j int, mem [][]int) int {
 	}
 	return mem[i][j]
 }
+
+//迭代, 自下而上, 从base case推出所有结果
+func numDistinctV2(s string, t string) int {
+	m, n := len(s), len(t)
+	if m < n {
+		return 0
+	}
+	//dp[i][j]表示 s[i:]的子序列中包含t[j:]的数量
+	dp := make([][]int, m+1)
+	//dp[i][n]表示s[i:]的子序列中包含t[n:]（空字符串）的数量, 肯定包含, 都为1
+	//dp[m][j]表示s[m:]（空字符串）的子序列中包含t[j:]的数量, 肯定没有, 都为0
+	for i, _ := range dp {
+		dp[i] = make([]int, n+1)
+		dp[i][n] = 1
+	}
+
+	for i := m - 1; i >= 0; i-- {
+		for j := n - 1; j >= 0; j-- {
+			if s[i] == t[j] {
+				//如果s[i] == t[j], 有两种情况. s[i:]的子序列包含t[j:]的数量 + s[i+1:]的子序列包含t[j:]的数量
+				dp[i][j] = dp[i+1][j+1] + dp[i+1][j]
+			} else {
+				//如果s[i] != t[j], 只有一种情况. s[i+1:]的子序列包含t[j:]的数量
+				dp[i][j] = dp[i+1][j]
+			}
+		}
+	}
+	return dp[0][0]
+}
