@@ -615,7 +615,7 @@ func wordBreakDp(s string, wordMap map[string]bool, idx int, memo []int) bool {
 	return false
 }
 
-//140. 单词拆分 II
+// 140. 单词拆分 II
 func wordBreakII(s string, wordDict []string) []string {
 	wordMap := make(map[string]bool)
 	for _, word := range wordDict {
@@ -657,6 +657,7 @@ func numDistinct(s string, t string) int {
 
 func dpND(s string, i int, t string, j int, mem [][]int) int {
 	if j == len(t) {
+		//只有s[i] == t[j]时, j才会往后走(j+1), 所以j到达len(t), 说明匹配到了
 		return 1
 	}
 	//说明s[i..]已经不能凑出t[j..]
@@ -676,7 +677,7 @@ func dpND(s string, i int, t string, j int, mem [][]int) int {
 	return mem[i][j]
 }
 
-//迭代, 自下而上, 从base case推出所有结果
+// 迭代, 自下而上, 从base case推出所有结果
 func numDistinctV2(s string, t string) int {
 	m, n := len(s), len(t)
 	if m < n {
