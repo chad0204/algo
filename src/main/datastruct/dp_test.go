@@ -657,6 +657,7 @@ func numDistinct(s string, t string) int {
 
 func dpND(s string, i int, t string, j int, mem [][]int) int {
 	if j == len(t) {
+		//只有s[i] == t[j]时, j才会+1, 能加到len(t), 说明匹配完了
 		return 1
 	}
 	//说明s[i..]已经不能凑出t[j..]
