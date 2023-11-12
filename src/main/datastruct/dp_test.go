@@ -840,3 +840,86 @@ func longestPalindromeSubseq(s string) int {
 	}
 	return dp[0][len(s)-1]
 }
+
+/*
+0-1背包问题
+
+416. 分割等和子集
+322. 零钱兑换 也可以用二维解法。一维数组更简单(完全背包问题)
+
+二者不同: 分割子集数组元素只能用一次, 零钱兑换可以用无数次
+*/
+func canPartition(nums []int) bool {
+	// 求所有元素和的一半sum, 判断nums中是否有子集能组成sum。转化为背包问题
+	sum := 0
+	for _, v := range nums {
+		sum += v
+	}
+	if sum%2 == 1 {
+		return false
+	}
+	sum = sum / 2
+	// dp[i][j] 表示前i个元素能否凑成j
+	dp := make([][]bool, len(nums)+1)
+	for i := range dp {
+		dp[i] = make([]bool, sum+1)
+	}
+
+	for i := 0; i <= len(nums); i++ {
+		for j := 0; j <= sum; j++ {
+			if i == 0 {
+				//没有元素肯定装不满
+				dp[i][j] = false
+				continue
+			}
+			if j == 0 {
+				//相当于j是装满的
+				dp[i][j] = true
+				continue
+			}
+			if j-nums[i-1] < 0 {
+				// 没有空间选第i个元素, 继承前i-1个元素的值
+				dp[i][j] = dp[i-1][j]
+			} else {
+				// 有空间, 选择nums[i-1]和不选nums[i-1]做为子集。
+				// 选   dp[i-1][j]
+				// 不选 dp[i-1][j-nums[i-1]]
+				dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]]
+			}
+		}
+	}
+	return dp[len(nums)][sum]
+}
+
+func coinChangeV2(coins []int, amount int) int {
+	//dp[i][j]表示前i个元素凑成j所需的最少硬币
+	dp := make([][]int, len(coins)+1)
+	for i := range dp {
+		dp[i] = make([]int, amount+1)
+	}
+	for i := 0; i <= len(coins); i++ {
+		for j := 1; j <= amount; j++ {
+			if i == 0 {
+				dp[i][j] = amount + 1
+				continue
+			}
+			if j == 0 {
+				dp[i][j] = 0
+				continue
+			}
+
+			if j-coins[i-1] < 0 {
+				dp[i][j] = dp[i-1][j]
+			} else {
+				//todo 思考为啥这里是dp[i] 上一题是dp[i-1]
+				//不使用  dp[i-1][j]
+				//使用    dp[i][j-coins[i-1]] + 1
+				dp[i][j] = Min(dp[i-1][j], dp[i][j-coins[i-1]]+1)
+			}
+		}
+	}
+	if dp[len(coins)][amount] == amount+1 {
+		return -1
+	}
+	return dp[len(coins)][amount]
+}
