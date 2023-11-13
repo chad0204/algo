@@ -844,7 +844,11 @@ func longestPalindromeSubseq(s string) int {
 /*
 0-1背包问题
 
-416. 分割等和子集
+416. 分割等和子集  1 5 11 5    11
+
+1 5 1 5
+
+
 322. 零钱兑换 也可以用二维解法。一维数组更简单(完全背包问题)
 
 二者不同: 分割子集数组元素只能用一次, 零钱兑换可以用无数次
@@ -877,13 +881,19 @@ func canPartition(nums []int) bool {
 				dp[i][j] = true
 				continue
 			}
+			// 可以理解为i是从1计数的
 			if j-nums[i-1] < 0 {
-				// 没有空间选第i个元素, 继承前i-1个元素的值
+				// 不能把nums[i]算入子集, 继承前i-1个元素的值
 				dp[i][j] = dp[i-1][j]
 			} else {
 				// 有空间, 选择nums[i-1]和不选nums[i-1]做为子集。
-				// 选   dp[i-1][j]
-				// 不选 dp[i-1][j-nums[i-1]]
+				// 不把nums[i]算入子集   dp[i-1][j]
+				// 把nums[i]算入子集 dp[i-1][j-nums[i-1]]
+				/*
+						思考为啥这里是dp[i-1][j-nums[i-1]] 而不是dp[i][j-nums[i-1]]。
+
+					dp[i-1][j-nums[i-1]] 表示算上当前元素, 能不能凑成j。那么就看前i-1个元素能不能凑成j-nums[i-1]。如果用dp[i][j-nums[i-1]], 那么nums[i]就重复计算了
+				*/
 				dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]]
 			}
 		}
@@ -911,7 +921,6 @@ func coinChangeV2(coins []int, amount int) int {
 			if j-coins[i-1] < 0 {
 				dp[i][j] = dp[i-1][j]
 			} else {
-				//todo 思考为啥这里是dp[i] 上一题是dp[i-1]
 				//不使用  dp[i-1][j]
 				//使用    dp[i][j-coins[i-1]] + 1
 				dp[i][j] = Min(dp[i-1][j], dp[i][j-coins[i-1]]+1)
