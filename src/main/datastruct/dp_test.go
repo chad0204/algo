@@ -922,7 +922,7 @@ func coinChangeV2(coins []int, amount int) int {
 				dp[i][j] = dp[i-1][j]
 			} else {
 				//不使用  dp[i-1][j]
-				//使用    dp[i][j-coins[i-1]] + 1
+				//使用    dp[i][j-coins[i-1]] + 1 使用则要把i加进来。而01背包的nums[i]算入子集, 则不能把i加进来算j-nums[i-1]
 				dp[i][j] = Min(dp[i-1][j], dp[i][j-coins[i-1]]+1)
 			}
 		}
