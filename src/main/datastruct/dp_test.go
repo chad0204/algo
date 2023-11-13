@@ -510,6 +510,10 @@ func numTreesDpHelper(lo int, hi int, mem [][]int) int {
 }
 
 // 300. 最长递增子序列
+/*
+思路：在i位置上lis等于任意比nums[i]小的元素的lis+1, 取最小值。dp[i] = min{dp[j]+1}, 0<=j<i,nums[j]<nums[i]
+base case dp[0] = 1, 且任意位置的最小值都是1
+*/
 func lengthOfLIS(nums []int) int {
 	dp := make([]int, len(nums))
 	for i := 0; i < len(dp); i++ {
@@ -615,7 +619,7 @@ func wordBreakDp(s string, wordMap map[string]bool, idx int, memo []int) bool {
 	return false
 }
 
-//140. 单词拆分 II
+// 140. 单词拆分 II
 func wordBreakII(s string, wordDict []string) []string {
 	wordMap := make(map[string]bool)
 	for _, word := range wordDict {
@@ -657,7 +661,7 @@ func numDistinct(s string, t string) int {
 
 func dpND(s string, i int, t string, j int, mem [][]int) int {
 	if j == len(t) {
-		//只有s[i] == t[j]时, j才会+1, 能加到len(t), 说明匹配完了
+		//只有s[i] == t[j]时, j才会往后走(j+1), 所以j到达len(t), 说明匹配到了
 		return 1
 	}
 	//说明s[i..]已经不能凑出t[j..]
@@ -677,7 +681,7 @@ func dpND(s string, i int, t string, j int, mem [][]int) int {
 	return mem[i][j]
 }
 
-//迭代, 自下而上, 从base case推出所有结果
+// 迭代, 自下而上, 从base case推出所有结果
 func numDistinctV2(s string, t string) int {
 	m, n := len(s), len(t)
 	if m < n {
@@ -704,4 +708,218 @@ func numDistinctV2(s string, t string) int {
 		}
 	}
 	return dp[0][0]
+}
+
+// 72. 编辑距离
+/*
+思路： s[i]==t[j], 不需要操作,由s[i-1],t[j-1]转化而来, dp[i-1][j-1];
+      s[i]!=t[j], 由s增, s删, s改三种情况的最小值转换操作步骤+1，即min{dp[i][j-1], dp[i-1][j], dp[i-1][j-1]+1}
+
+base case：
+i == 0, 只需要给s新增元素, dp[0][j] = j
+j == 0, 只需要给s删除元素, dp[i][0] = i
+*/
+func minDistance(word1 string, word2 string) int {
+	dp := make([][]int, len(word1)+1)
+	for i := range dp {
+		dp[i] = make([]int, len(word2)+1)
+	}
+	for i := 0; i <= len(word1); i++ {
+		for j := 0; j <= len(word2); j++ {
+			if i == 0 {
+				dp[i][j] = j
+				continue
+			}
+			if j == 0 {
+				dp[i][j] = i
+				continue
+			}
+			// 0 这个位置只计数
+			if word1[i-1] == word2[j-1] {
+				dp[i][j] = dp[i-1][j-1]
+			} else {
+				dp[i][j] = Min(Min(dp[i][j-1], dp[i-1][j]), dp[i-1][j-1]) + 1
+			}
+		}
+	}
+	return dp[len(word1)][len(word2)]
+}
+
+/*
+最长公共子序列问题
+https://mp.weixin.qq.com/s/ZhPEchewfc03xWv9VP3msg
+
+1143. 最长公共子序列
+思路:
+s[i] == t[j], 说明dp[i][j] = dp[i-1][j-1] + 1
+s[i] != t[j], 两种情况, 要么s退后一步, 要么t退后一步, dp[i][j] = min{dp[i-1][j], dp[i][j-1]}
+
+base case: 当i == 0时, dp[0][j] = 0; 当j == 0时, dp[i][0] == 0
+
+583. 两个字符串的删除操作
+712. 两个字符串的最小ASCII删除和
+
+备注: 这三题就是"编辑距离"的简化版
+*/
+//712. 两个字符串的最小ASCII删除和
+func TestMDS(t *testing.T) {
+	minimumDeleteSum("abc", "abc")
+}
+
+func minimumDeleteSum(s1 string, s2 string) int {
+	dp := make([][]int, len(s1)+1)
+	for i := range dp {
+		dp[i] = make([]int, len(s2)+1)
+	}
+	for i := 0; i <= len(s1); i++ {
+		for j := 0; j <= len(s2); j++ {
+			if i == 0 {
+				//注意这里累加到j
+				for m := 0; m < j; m++ {
+					dp[i][j] += int(s2[m])
+				}
+				fmt.Printf("dp[%d][%d] = %d\n", i, j, dp[i][j])
+				continue
+			}
+			if j == 0 {
+				//注意这里累加到i
+				for m := 0; m < i; m++ {
+					dp[i][j] += int(s1[m])
+				}
+				fmt.Printf("dp[%d][%d] = %d\n", i, j, dp[i][j])
+				continue
+			}
+			if s1[i-1] == s2[j-1] {
+				dp[i][j] = dp[i-1][j-1]
+				fmt.Printf("dp[%d][%d] = %d\n", i, j, dp[i][j])
+			} else {
+				dp[i][j] = Min(dp[i-1][j]+int(s1[i-1]), dp[i][j-1]+int(s2[j-1]))
+				fmt.Printf("dp[%d][%d] = %d\n", i, j, dp[i][j])
+			}
+		}
+	}
+	return dp[len(s1)][len(s2)]
+}
+
+// 516. 最长回文子序列
+// https://mp.weixin.qq.com/s/zNai1pzXHeB2tQE6AdOXTA
+/*
+思路: 设dp[i][j]为s[i...j]的最长回文子序列,
+如果s[i]==s[j], s[i]和s[j]都可以加入到回文中, dp[i][j] = d[i+1][j-1]+2,
+如果s[i]!=s[j], 两种情况, 要么s[i]要么s[j], dp[i][j] = max{d[i+1][j], dp[i][j-1]}
+
+base case: i == j, 说明只有一个字符, dp[i][j] == 1,i > j, 不可能, dp[i][j] == 0
+
+
+1312. 让字符串成为回文串的最少插入次数 与本题类似
+*/
+func longestPalindromeSubseq(s string) int {
+	dp := make([][]int, len(s))
+	for i := range dp {
+		dp[i] = make([]int, len(s))
+	}
+	for i := len(s) - 1; i >= 0; i-- {
+		for j := 0; j < len(s); j++ {
+			if i == j {
+				//如果只有一个字符
+				dp[i][j] = 1
+				continue
+			}
+			if i > j {
+				//不存在的位置
+				dp[i][j] = 0
+				continue
+			}
+
+			if s[i] == s[j] {
+				dp[i][j] = dp[i+1][j-1] + 2
+			} else {
+				dp[i][j] = Max(dp[i+1][j], dp[i][j-1])
+			}
+		}
+	}
+	return dp[0][len(s)-1]
+}
+
+/*
+0-1背包问题
+
+416. 分割等和子集
+322. 零钱兑换 也可以用二维解法。一维数组更简单(完全背包问题)
+
+二者不同: 分割子集数组元素只能用一次, 零钱兑换可以用无数次
+*/
+func canPartition(nums []int) bool {
+	// 求所有元素和的一半sum, 判断nums中是否有子集能组成sum。转化为背包问题
+	sum := 0
+	for _, v := range nums {
+		sum += v
+	}
+	if sum%2 == 1 {
+		return false
+	}
+	sum = sum / 2
+	// dp[i][j] 表示前i个元素能否凑成j
+	dp := make([][]bool, len(nums)+1)
+	for i := range dp {
+		dp[i] = make([]bool, sum+1)
+	}
+
+	for i := 0; i <= len(nums); i++ {
+		for j := 0; j <= sum; j++ {
+			if i == 0 {
+				//没有元素肯定装不满
+				dp[i][j] = false
+				continue
+			}
+			if j == 0 {
+				//相当于j是装满的
+				dp[i][j] = true
+				continue
+			}
+			if j-nums[i-1] < 0 {
+				// 没有空间选第i个元素, 继承前i-1个元素的值
+				dp[i][j] = dp[i-1][j]
+			} else {
+				// 有空间, 选择nums[i-1]和不选nums[i-1]做为子集。
+				// 选   dp[i-1][j]
+				// 不选 dp[i-1][j-nums[i-1]]
+				dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]]
+			}
+		}
+	}
+	return dp[len(nums)][sum]
+}
+
+func coinChangeV2(coins []int, amount int) int {
+	//dp[i][j]表示前i个元素凑成j所需的最少硬币
+	dp := make([][]int, len(coins)+1)
+	for i := range dp {
+		dp[i] = make([]int, amount+1)
+	}
+	for i := 0; i <= len(coins); i++ {
+		for j := 1; j <= amount; j++ {
+			if i == 0 {
+				dp[i][j] = amount + 1
+				continue
+			}
+			if j == 0 {
+				dp[i][j] = 0
+				continue
+			}
+
+			if j-coins[i-1] < 0 {
+				dp[i][j] = dp[i-1][j]
+			} else {
+				//todo 思考为啥这里是dp[i] 上一题是dp[i-1]
+				//不使用  dp[i-1][j]
+				//使用    dp[i][j-coins[i-1]] + 1
+				dp[i][j] = Min(dp[i-1][j], dp[i][j-coins[i-1]]+1)
+			}
+		}
+	}
+	if dp[len(coins)][amount] == amount+1 {
+		return -1
+	}
+	return dp[len(coins)][amount]
 }
