@@ -1031,3 +1031,32 @@ func abs(num int) int {
 	}
 	return num
 }
+
+//64. 最小路径和
+func minPathSum(grid [][]int) int {
+	if len(grid) == 0 {
+		return 0
+	}
+	m := len(grid)    //3
+	n := len(grid[0]) //3
+	//dp[i][j]表示 i,j时最小
+	dp := make([][]int, m+1)
+	for i := range dp {
+		dp[i] = make([]int, n+1)
+	}
+
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			if i == 1 {
+				dp[i][j] = dp[i][j-1] + grid[i-1][j-1]
+				continue
+			}
+			if j == 1 {
+				dp[i][j] = dp[i-1][j] + grid[i-1][j-1]
+				continue
+			}
+			dp[i][j] = Min(dp[i-1][j], dp[i][j-1]) + grid[i-1][j-1]
+		}
+	}
+	return dp[m][n]
+}
