@@ -888,14 +888,14 @@ func canPartition(nums []int) bool {
 
 	for i := 0; i <= len(nums); i++ {
 		for j := 0; j <= sum; j++ {
-			if i == 0 {
-				//没有元素肯定装不满
-				dp[i][j] = false
-				continue
-			}
 			if j == 0 {
 				//相当于j是装满的
 				dp[i][j] = true
+				continue
+			}
+			if i == 0 {
+				//没有元素肯定装不满
+				dp[i][j] = false
 				continue
 			}
 			// 可以理解为i是从1计数的
@@ -926,12 +926,12 @@ func coinChangeV2(coins []int, amount int) int {
 	}
 	for i := 0; i <= len(coins); i++ {
 		for j := 0; j <= amount; j++ {
-			if i == 0 {
-				dp[i][j] = amount + 1
-				continue
-			}
 			if j == 0 {
 				dp[i][j] = 0
+				continue
+			}
+			if i == 0 {
+				dp[i][j] = amount + 1
 				continue
 			}
 
@@ -959,12 +959,12 @@ func change(amount int, coins []int) int {
 	}
 	for i := 0; i <= len(coins); i++ {
 		for j := 0; j <= amount; j++ {
-			if i == 0 {
-				dp[i][j] = 0
-				continue
-			}
 			if j == 0 {
 				dp[i][j] = 1
+				continue
+			}
+			if i == 0 {
+				dp[i][j] = 0
 				continue
 			}
 			if j-coins[i-1] < 0 {
@@ -979,3 +979,55 @@ func change(amount int, coins []int) int {
 
 //494. 目标和
 //https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485700&idx=1&sn=433fc5ec5e03a86064d458320332a688&chksm=9bd7f70caca07e1aad658333ac05df501796862a418d8f856b12bb6ca73a924552901ec86d9b&cur_album_id=1318881141113536512&scene=189#wechat_redirect
+func TestFS(t *testing.T) {
+	findTargetSumWays([]int{0, 0, 1}, 1)
+}
+
+func findTargetSumWays(nums []int, target int) int {
+	/*
+	   赋+的子集为A, 赋-的子集为B
+	   sum(A) - sum(B) = target
+	   sum(A) = target + sum(B)
+	   2*sum(A) = target + sum(B) + sum(A)
+	   sum(A) = (target + sum(nums)) / 2
+	   存在多少子集A, 使得A正好能凑够(target + sum(nums)) / 2
+	*/
+	sum := 0
+	for _, v := range nums {
+		sum += v
+	}
+	//防止target是负数
+	sum = abs(target) + sum
+	if sum%2 == 1 || sum < abs(target) {
+		return 0
+	}
+	sum = sum / 2
+	//dp[i][j]表示前i个元素，能凑成j的方法的数量
+	dp := make([][]int, len(nums)+1)
+	for i := range dp {
+		dp[i] = make([]int, sum+1)
+	}
+
+	//先初始化,j == 0
+	for i := 0; i <= len(nums); i++ {
+		dp[i][0] = 1
+	}
+	for i := 1; i <= len(nums); i++ {
+		//依然j==0依然要算, 防止nums[0]==0的情况, +0和-0是两种情况
+		for j := 0; j <= sum; j++ {
+			if j-nums[i-1] < 0 {
+				dp[i][j] = dp[i-1][j]
+			} else {
+				dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i-1]]
+			}
+		}
+	}
+	return dp[len(nums)][sum]
+}
+
+func abs(num int) int {
+	if num < 0 {
+		return -num
+	}
+	return num
+}
