@@ -191,99 +191,109 @@ dp[x][0][0] = 0
 后面两种就是增加了不同的约束条件: 冷冻期, 手续费
 */
 func maxProfitK(k int, prices []int) int {
+	/*
+	   dp[i][j][0] 表示第i天, 交易j笔, 未持有的最大利润
+	   dp[i][j][1] 表示第i天, 交易j笔, 持有股票时的最大利润
+
+	   前一天未持有, 今天无操作; 前一天持有, 今天卖了一笔, 笔数不变, 笔数在买的时候扣掉
+	   dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1] + prices[i-1])
+	   前一天持有, 今天无操作; 前一天未持有, 今天买了一笔, 说明前一天的笔数是j-1(今天是j)
+	   dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i-1])
+
+
+	   dp[0][j][0] = 0
+	   dp[0][j][1] = math.MinInt32
+
+	*/
 	n := len(prices)
-	dp := make([][][]int, n)
+	dp := make([][][]int, n+1)
 	for i := range dp {
-		dp[i] = make([][]int, k+1) // 因为从0开始, 比如两笔, 就有0, 1, 2
+		dp[i] = make([][]int, k+1)
 		for j := range dp[i] {
 			dp[i][j] = make([]int, 2)
 		}
 	}
-
-	for i := 0; i < n; i++ {
+	for i := 0; i <= n; i++ {
 		for j := 0; j <= k; j++ {
-			//i == 0 满足状态转移方程, 通过状态转移方程推倒出用base case表示。因为-1不能作为数组下标
 			if i == 0 {
-				dp[i][j][0] = Max(0, math.MinInt32)
-				dp[i][j][1] = Max(math.MinInt32, 0-prices[i])
+				dp[i][j][0] = 0
+				dp[i][j][1] = math.MinInt32
 				continue
 			}
 			if j == 0 {
 				dp[i][j][0] = 0
-				dp[i][j][1] = math.MinInt32 //一笔没买就持有, 不可能啊。但是按照公式推应该是-prices[i]。都可以
+				dp[i][j][1] = math.MinInt32
 				continue
 			}
-			dp[i][j][0] = Max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
-			dp[i][j][1] = Max(dp[i-1][j][1], dp[i-1][j-1][0]-prices[i])
+			dp[i][j][0] = Max(dp[i-1][j][0], dp[i-1][j][1]+prices[i-1])
+			dp[i][j][1] = Max(dp[i-1][j][1], dp[i-1][j-1][0]-prices[i-1])
 		}
 	}
-	return dp[n-1][k][0]
+	return dp[n][k][0]
 }
 
 // k = 1 “今天买了不能卖” 和 k无限次的区别就是一天不能同时买卖
 // 121. 买卖股票的最佳时机
 func maxProfit1(prices []int) int {
+
 	/*
-	   state func:
-	   昨天没有, 今天无操作; 昨天有, 今天卖了。今天卖了不能买, 无妨。
-	   dp[i][j][0] = max{dp[i-1][j][0], dp[i-1][j][1] + prices[i]}
+			1次交易
+			买 卖 无操作
+			持有 未持有
 
-	   昨天有, 今天无操作; 昨天没有, 今天买了。今天买了不能卖, 而且只能交易一次, 所以今天利润是-prices[i]
-	   dp[i][j][1] = max{dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]}
-	               = max{dp[i-1][1][1], -prices[i]}
+		   第i天不持有股票
+		   dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
+		   第i天持有股票, 之前就持有今天无操作; 要么之前不持有今天买的, 由于只能买一次, 那么之前利润一定0, 今天0 - price[i]
+		   dp[i][1] = max(dp[i-1][1], -prices[i])
 
-	   去掉j
 
-	   base case:
-	   dp[-1][0] = 0
-	   dp[-1][1] = math.MinInt32
-
+		   i == 0
+		   dp[0][0] = 0
+		   dp[0][1] = 不可能
 	*/
-	n := len(prices)
-	dp := make([][]int, n)
-	for i := 0; i < n; i++ {
+	dp := make([][]int, len(prices)+1)
+	for i := range dp {
 		dp[i] = make([]int, 2)
 	}
-	for i := 0; i < n; i++ {
+	for i := 0; i <= len(prices); i++ {
 		if i == 0 {
 			dp[0][0] = 0
-			dp[0][1] = -prices[i]
+			dp[0][1] = math.MinInt32
 			continue
 		}
-		dp[i][0] = Max(dp[i-1][0], dp[i-1][1]+prices[i])
-		dp[i][1] = Max(dp[i-1][1], -prices[i])
+		dp[i][0] = Max(dp[i-1][0], dp[i-1][1]+prices[i-1])
+		dp[i][1] = Max(dp[i-1][1], -prices[i-1])
 	}
-
-	return dp[n-1][0]
+	return dp[len(prices)][0]
 }
 
-// k = +infinity
+// k = +∞
 // 122. 买卖股票的最佳时机 II
 func maxProfitInfinity(prices []int) int {
-	/*
-	   state func:
-	   dp[i][0] = max{dp[i-1][0], dp[i-1][1] + prices[i]}
-	   dp[i][1] = max{dp[i-1][1], dp[i-1][0] - prices[i]}
+	/**
 
-	   base case:
-	   dp[-1][0] = 0
-	   dp[-1][1] = math.MinInt32
+	  dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i-1])
+	  dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i-1])
+
+	  dp[0][0] = 0
+	  dp[0][1] = -math.MinInt32
+
 	*/
-	n := len(prices)
-	dp := make([][]int, n)
-	for i := 0; i < n; i++ {
+	dp := make([][]int, len(prices)+1)
+	for i := range dp {
 		dp[i] = make([]int, 2)
 	}
-	for i := 0; i < n; i++ {
+
+	for i := 0; i <= len(prices); i++ {
 		if i == 0 {
 			dp[0][0] = 0
-			dp[0][1] = -prices[i]
+			dp[0][1] = math.MinInt32
 			continue
 		}
-		dp[i][0] = Max(dp[i-1][0], dp[i-1][1]+prices[i])
-		dp[i][1] = Max(dp[i-1][1], dp[i-1][0]-prices[i])
+		dp[i][0] = Max(dp[i-1][0], dp[i-1][1]+prices[i-1])
+		dp[i][1] = Max(dp[i-1][1], dp[i-1][0]-prices[i-1])
 	}
-	return dp[n-1][0]
+	return dp[len(prices)][0]
 }
 
 // 714. 买卖股票的最佳时机含手续费
@@ -540,7 +550,7 @@ func lengthOfLIS(nums []int) int {
 // 931. 下降路径最小和. 思考： 是不是可以给长和宽都多一列(值为最大值, 这样就可以避免边界溢出)。试试自上而下的递归？
 func minFallingPathSum(matrix [][]int) int {
 	dp := make([][]int, len(matrix))
-	for i, _ := range dp {
+	for i := range dp {
 		dp[i] = make([]int, len(matrix))
 	}
 	//行
@@ -650,9 +660,9 @@ func dpWordBreakII(s string, wordMap map[string]bool, idx int, words []string, s
 // 115. 不同的子序列 https://blog.csdn.net/fdl123456/article/details/124938272
 func numDistinct(s string, t string) int {
 	mem := make([][]int, len(s))
-	for i, _ := range mem {
+	for i := range mem {
 		mem[i] = make([]int, len(t))
-		for j, _ := range mem[i] {
+		for j := range mem[i] {
 			mem[i][j] = -1
 		}
 	}
@@ -691,7 +701,7 @@ func numDistinctV2(s string, t string) int {
 	dp := make([][]int, m+1)
 	//dp[i][n]表示s[i:]的子序列中包含t[n:]（空字符串）的数量, 肯定包含, 都为1
 	//dp[m][j]表示s[m:]（空字符串）的子序列中包含t[j:]的数量, 肯定没有, 都为0
-	for i, _ := range dp {
+	for i := range dp {
 		dp[i] = make([]int, n+1)
 		dp[i][n] = 1
 	}
@@ -848,11 +858,9 @@ func longestPalindromeSubseq(s string) int {
 
 1 5 1 5
 
-
 322. 零钱兑换 也可以用二维解法。一维数组更简单(完全背包问题)
 
 二者不同: 分割子集(01背包)数组元素只能用一次, 零钱兑换(完全背包)可以用无数次
-
 
 假设背包的容量为5。有四个物品，它们的重量和价值分别为:
 物品1: 重量 w1 = 2, 价值 v1 = 3
@@ -864,7 +872,6 @@ func longestPalindromeSubseq(s string) int {
 dp[i][j] = max(dp[i-1][j], dp[i-1][j-w[i]] + v[i])
 完全背包: 考虑第i个元素时, 加上v[i]之后求j-w[i]时, 可以再带上i, 能用多次
 dp[i][j] = max(dp[i-1][j], dp[i][j-w[i]] + v[i])
-
 */
 func TestCP(t *testing.T) {
 	canPartition([]int{1, 2, 3})
@@ -977,8 +984,8 @@ func change(amount int, coins []int) int {
 	return dp[len(coins)][amount]
 }
 
-//494. 目标和
-//https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485700&idx=1&sn=433fc5ec5e03a86064d458320332a688&chksm=9bd7f70caca07e1aad658333ac05df501796862a418d8f856b12bb6ca73a924552901ec86d9b&cur_album_id=1318881141113536512&scene=189#wechat_redirect
+// 494. 目标和
+// https://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247485700&idx=1&sn=433fc5ec5e03a86064d458320332a688&chksm=9bd7f70caca07e1aad658333ac05df501796862a418d8f856b12bb6ca73a924552901ec86d9b&cur_album_id=1318881141113536512&scene=189#wechat_redirect
 func TestFS(t *testing.T) {
 	findTargetSumWays([]int{0, 0, 1}, 1)
 }
@@ -1032,7 +1039,7 @@ func abs(num int) int {
 	return num
 }
 
-//64. 最小路径和
+// 64. 最小路径和
 func minPathSum(grid [][]int) int {
 	if len(grid) == 0 {
 		return 0
