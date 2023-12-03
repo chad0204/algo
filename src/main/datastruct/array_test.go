@@ -12,7 +12,7 @@ func TestRemoveDuplicates(t *testing.T) {
 	removeDuplicates(a)
 }
 
-// 删除有序数组中的重复项 (有序是关键) 覆盖！
+// 删除有序数组中的重复项 (有序是关键, 有序表示重复的一定相连) 覆盖！
 func removeDuplicates(nums []int) int {
 	//2, 2, 2, 2, 3, 4, 5, 6, 7
 	//2, 3, 4, 5, 6, 7, 5, 6, 7
@@ -22,7 +22,6 @@ func removeDuplicates(nums []int) int {
 		if nums[s] != nums[f] {
 			s++
 			nums[s] = nums[f]
-			f++
 		} else {
 			f++
 		}
