@@ -262,7 +262,12 @@ func canJumpGreedy(nums []int) bool {
 			//当前最远距离maxPos无法超过当前位置i, 说明遇到0卡住了(该0前面所有位置都跳到此0), 无法跳过
 			return false
 		}
+		//走到这里表示maxPos能涵盖的地方
 		maxPos = Max(maxPos, i+nums[i])
+		//这里可以优化下
+		//if maxPos >= len(nums) -1 {
+		//	return true
+		//}
 	}
 	return maxPos >= len(nums)-1
 }
