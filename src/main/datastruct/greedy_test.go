@@ -255,14 +255,61 @@ func canJumpDp2(nums []int) bool {
 	return dp[len(nums)-1] >= len(nums)-1
 }
 
+/*
+	0             7
+	2 3 1 1 4 1 1 1
+
+	当前位置i=0, 看能否跳到位置len-1 = 7
+
+	nums[0] = 2
+	0 + 1
+	0 + 2
+	说明当前位置能覆盖的最大位置maxPos是2
+
+	nums[1] = 3(1能被maxPos覆盖)
+	1 + 1
+	1 + 2
+	1 + 3
+	说明当前位置能覆盖的最大位置maxPos是4
+
+	nums[2] = 1(2能被maxPos覆盖)
+	2 + 1
+	说明当前位置能覆盖的最大位置maxPos还是4
+
+	nums[3] = 1(3能被maxPos覆盖)
+	3 + 1
+	说明当前位置能覆盖的最大位置maxPos还是4
+
+	nums[4] = 4(4能被maxPos覆盖)
+	4 + 1
+	...
+	4 + 4
+	说明当前位置能覆盖的最大位置maxPos是8, 已经超过7,ok
+
+   如果延长数组为下面
+	0             7   9
+	2 3 1 1 4 1 1 1 0 1
+
+	nums[5], nums[6], nums[7] = 1(5,6,7能被maxPos覆盖)
+	因为都比8小, 还是取8
+	说明当前位置能覆盖的最大位置maxPos是8
+
+	nums[8] = 0(8能被maxPos覆盖)
+	8 + 0 = 8
+	说明当前位置能覆盖的最大位置maxPos还是8
+
+    nums[9] = 1(9不能被maxPos覆盖, 永远到不了9, 不用计算maxPos了, 结束)
+
+
+*/
 func canJumpGreedy(nums []int) bool {
 	maxPos := 0
 	for i := 0; i < len(nums); i++ {
-		if maxPos < i {
-			//当前最远距离maxPos无法超过当前位置i, 说明遇到0卡住了(该0前面所有位置都跳到此0), 无法跳过
+		if i > maxPos {
+			//当前最远距离maxPos无法超过当前位置i, 说明遇到0卡住了(该0前面所有位置都跳到此0), 无法跳过, 不用计算了
 			return false
 		}
-		//走到这里表示maxPos能涵盖的地方
+		//走到这里表示maxPos能覆盖到的地方
 		maxPos = Max(maxPos, i+nums[i])
 		//这里可以优化下
 		//if maxPos >= len(nums) -1 {
@@ -273,61 +320,43 @@ func canJumpGreedy(nums []int) bool {
 }
 
 // 45. 跳跃游戏 II
-func jump(nums []int) int {
-	if len(nums) <= 1 {
-		return 0
-	}
-	maxPos := nums[0] // 当前能够到达的最远位置
-	end := nums[0]    // 当前跳跃范围的边界
-	jumps := 1        // 跳跃次数
-	for i := 1; i < len(nums); i++ {
-		if i > end {
-			// 如果当前位置超过了当前跳跃范围的边界，需要增加一次跳跃
-			jumps++
-			end = maxPos
-		}
-		// 更新当前能够到达的最远位置
-		maxPos = Max(maxPos, i+nums[i])
-	}
-
-	if end >= len(nums)-1 {
-		// 如果当前跳跃范围的边界已经超过了或者到达了数组末尾，返回跳跃次数
-		return jumps
-	}
-
-	// 无法到达最后一个位置
-	return -1
+func TestJ(t *testing.T) {
+	jumpV2([]int{2, 3, 1, 1, 1, 4, 1, 1, 1})
 }
 
 /*
-    1       2
-3 1 4 2 1 1 1 1
+	0 1 2 3 4 5 6 7 8
+	2 3 1 1 1 4 1 1 1
+      1   3   5 6
 
-i nums[i] end max step
-0  3       0   3   0
-1  1       3   3   1     i > end
-2  6           6
-3  2           6
-4  1       6   6   2      i > end
-5  1           6
-6  1           7
-7  1        7  7   3      i > end
+这里的思路和上一题一样
+    nums[0] = 2, maxPos = 0 + 2 = 2
+    nums[1] = 3, maxPos = 1 + 3 = 4
+    nums[2] = 1, maxPos = max(2+1, 4) = 4
+    nums[3] = 1, maxPos = max(3+1, 4) = 4
+    nums[4] = 1, maxPos = max(4+1, 4) = 5
+    nums[5] = 4, maxPos = max(5+4, 5) = 9, 已经能跳到了ok, 但是这里不能return, 因为可能后面还有更大的nums[i]产生更小的步数
+    nums[6] = 1, maxPos = max(6+1, 9) = 9
+    nums[7] = 1, maxPos = max(7+1, 9) = 9
 
-比如在位置0， nums[0] = 3, 有三种跳法
-跳一步 1 + nums[1] = 2
-跳两步 2 + nums[2] = 6
-跳三步 3 + nums[3] = 5
-很明显, 跳两步最优, 也就是选择2, 最大到6
+
+现在的问题就是如何计数, 在什么时机需要计数,
+
+    nums[0] = 2, end = 0, maxPos = 0 + 2 = 2, 索引0能被end覆盖, 不用更新步数
+    nums[1] = 3, end = 0, maxPos = 1 + 3 = 4, end = 2, 索引1超过了之前的最大索引0, 设置最大索引为上一个maxPos=2, 新增步数
+    nums[2] = 1, end = 2, maxPos = max(2+1, 4) = 4
+    nums[3] = 1, end = 2, maxPos = max(3+1, 4) = 4, end = 4, 索引3超过了之前的最大索引2, 设置最大索引为4,  新增步数
+    nums[4] = 1, end = 4, maxPos = max(4+1, 4) = 5
+    nums[5] = 4, end = 4, maxPos = max(5+4, 5) = 9, end = 5, 索引5超过了之前的最大索引4, 设置最大索引为9,  新增步数         已经能跳到了ok, 但是这里不能return, 因为可能后面还有更大的nums[i]产生更小的步数
+    nums[6] = 1, end = 5, maxPos = max(6+1, 9) = 9, end = 9, 索引5超过了之前的最大索引4, 设置最大索引为9,  新增步数
+    nums[7] = 1, end = 9, maxPos = max(7+1, 9) = 9
+
 
 */
 
-func TestJ(t *testing.T) {
-	jumpV2([]int{3, 1, 4, 2, 1, 1, 1, 1})
-}
-
 // 题目已保证可以达到
 func jumpV2(nums []int) int {
-	end := 0    // 当前跳跃范围的边界
+	end := 0    // 当前跳跃范围的边界, 当i超过maxPos时才更新
 	maxPos := 0 // 当前能够到达的最远位置
 	steps := 0  // 跳跃次数
 	for i := 0; i < len(nums); i++ {
@@ -335,10 +364,11 @@ func jumpV2(nums []int) int {
 			// 如果当前位置超过了当前跳跃范围的边界，需要增加一次跳跃
 			steps++
 			end = maxPos
+			//fmt.Println(i)
 		}
 		// 更新当前能够到达的最远位置
 		maxPos = Max(maxPos, nums[i]+i)
-		fmt.Printf("i := %d, nums[i] = %d, end := %d, maxLen := %d, step:= %d \n", i, nums[i], end, maxPos, steps)
+		fmt.Printf("i := %d, nums[i] = %d, end := %d, maxPos := %d, steps:= %d \n", i, nums[i], end, maxPos, steps)
 	}
 	return steps
 }
