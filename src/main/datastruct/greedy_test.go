@@ -256,51 +256,49 @@ func canJumpDp2(nums []int) bool {
 }
 
 /*
-	0             7
-	2 3 1 1 4 1 1 1
+		0             7
+		2 3 1 1 4 1 1 1
 
-	当前位置i=0, 看能否跳到位置len-1 = 7
+		当前位置i=0, 看能否跳到位置len-1 = 7
 
-	nums[0] = 2
-	0 + 1
-	0 + 2
-	说明当前位置能覆盖的最大位置maxPos是2
+		nums[0] = 2
+		0 + 1
+		0 + 2
+		说明当前位置能覆盖的最大位置maxPos是2
 
-	nums[1] = 3(1能被maxPos覆盖)
-	1 + 1
-	1 + 2
-	1 + 3
-	说明当前位置能覆盖的最大位置maxPos是4
+		nums[1] = 3(1能被maxPos覆盖)
+		1 + 1
+		1 + 2
+		1 + 3
+		说明当前位置能覆盖的最大位置maxPos是4
 
-	nums[2] = 1(2能被maxPos覆盖)
-	2 + 1
-	说明当前位置能覆盖的最大位置maxPos还是4
+		nums[2] = 1(2能被maxPos覆盖)
+		2 + 1
+		说明当前位置能覆盖的最大位置maxPos还是4
 
-	nums[3] = 1(3能被maxPos覆盖)
-	3 + 1
-	说明当前位置能覆盖的最大位置maxPos还是4
+		nums[3] = 1(3能被maxPos覆盖)
+		3 + 1
+		说明当前位置能覆盖的最大位置maxPos还是4
 
-	nums[4] = 4(4能被maxPos覆盖)
-	4 + 1
-	...
-	4 + 4
-	说明当前位置能覆盖的最大位置maxPos是8, 已经超过7,ok
+		nums[4] = 4(4能被maxPos覆盖)
+		4 + 1
+		...
+		4 + 4
+		说明当前位置能覆盖的最大位置maxPos是8, 已经超过7,ok
 
-   如果延长数组为下面
-	0             7   9
-	2 3 1 1 4 1 1 1 0 1
+	   如果延长数组为下面
+		0             7   9
+		2 3 1 1 4 1 1 1 0 1
 
-	nums[5], nums[6], nums[7] = 1(5,6,7能被maxPos覆盖)
-	因为都比8小, 还是取8
-	说明当前位置能覆盖的最大位置maxPos是8
+		nums[5], nums[6], nums[7] = 1(5,6,7能被maxPos覆盖)
+		因为都比8小, 还是取8
+		说明当前位置能覆盖的最大位置maxPos是8
 
-	nums[8] = 0(8能被maxPos覆盖)
-	8 + 0 = 8
-	说明当前位置能覆盖的最大位置maxPos还是8
+		nums[8] = 0(8能被maxPos覆盖)
+		8 + 0 = 8
+		说明当前位置能覆盖的最大位置maxPos还是8
 
-    nums[9] = 1(9不能被maxPos覆盖, 永远到不了9, 不用计算maxPos了, 结束)
-
-
+	    nums[9] = 1(9不能被maxPos覆盖, 永远到不了9, 不用计算maxPos了, 结束)
 */
 func canJumpGreedy(nums []int) bool {
 	maxPos := 0
@@ -351,12 +349,11 @@ func TestJ(t *testing.T) {
     nums[6] = 1, end = 5, maxPos = max(6+1, 9) = 9, end = 9, 索引5超过了之前的最大索引4, 设置最大索引为9,  新增步数
     nums[7] = 1, end = 9, maxPos = max(7+1, 9) = 9
 
-
 */
 
 // 题目已保证可以达到
 func jumpV2(nums []int) int {
-	end := 0    // 当前跳跃范围的边界, 当i超过maxPos时才更新
+	end := 0    // 当前跳跃范围的边界, 当i超过边界end时才更新
 	maxPos := 0 // 当前能够到达的最远位置
 	steps := 0  // 跳跃次数
 	for i := 0; i < len(nums); i++ {
