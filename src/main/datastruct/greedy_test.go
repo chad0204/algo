@@ -369,3 +369,51 @@ func jumpV2(nums []int) int {
 	}
 	return steps
 }
+
+// 134. 加油站
+/**
+
+假设从x加油站出发经过z加油站最远能到达y加油站，那么从z加油站直接出发，不可能到达y下一个加油站。
+因为从x出发到z加油站时肯定还有存储的油(不然到不了y)，这都到不了y的下一站，而直接从z出发刚开始是没有存储的油的，所以更不可能到达y的下一站
+
+ 0 1 2 3 4 5
+[2,2,2,1,2,1]
+[1,1,1,5,1,1]
+
+从0走到3发现不行了, 不需要走1和2了
+
+
+*/
+
+func TestC(t *testing.T) {
+	canCompleteCircuit([]int{2, 2, 2, 1, 2, 1}, []int{1, 1, 1, 5, 1, 1})
+}
+
+func canCompleteCircuit(gas []int, cost []int) int {
+	n := len(gas)
+	for i := 0; i < n; {
+		sumGas := 0
+		sumCost := 0
+		//计数, 从当前位置走一圈
+		cnt := 0
+		for cnt < n {
+			j := (i + cnt) % n
+			sumGas += gas[j]
+			sumCost += cost[j]
+			if sumCost > sumGas {
+				break
+			}
+			cnt++
+		}
+		if cnt == n {
+			//分支表示从i出发走了一圈, 都满足sumCost <= sumGas
+			return i
+		} else {
+			//分支表示cnt没走完就break了, cnt是从i出发能走的最远距离了。
+			//i走到cnt都不行, 那么从i到cnt之间的每一步出发都不行。
+			//直接跳到从i出发能到达的最远距离的下一个
+			i = i + cnt + 1
+		}
+	}
+	return -1
+}
