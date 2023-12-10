@@ -148,7 +148,7 @@ func TestNumMatrix(t *testing.T) {
 
 }
 
-// 1094. 拼车
+// 1094. 拼车 差分数组
 func TestCarPooling(t *testing.T) {
 	//[[2,1,5],[3,5,7]] 3
 	trips := make([][]int, 2)
@@ -199,7 +199,7 @@ func GetRes(diff []int) []int {
 	return nums
 }
 
-// 1109. 航班预订统计
+// 1109. 航班预订统计 差分数组
 func corpFlightBookings(bookings [][]int, n int) []int {
 	nums := make([]int, n)
 	diff := NewDiff(nums)
