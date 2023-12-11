@@ -395,24 +395,22 @@ func canCompleteCircuit(gas []int, cost []int) int {
 		sumGas := 0
 		sumCost := 0
 		//计数, 从当前位置走一圈
-		cnt := 0
-		for cnt < n {
-			j := (i + cnt) % n
-			sumGas += gas[j]
-			sumCost += cost[j]
+		j := 0
+		for ; j < n; j++ {
+			sumGas += gas[(i+j)%n]
+			sumCost += cost[(i+j)%n]
 			if sumCost > sumGas {
 				break
 			}
-			cnt++
 		}
-		if cnt == n {
+		if j == n {
 			//分支表示从i出发走了一圈, 都满足sumCost <= sumGas
 			return i
 		} else {
 			//分支表示cnt没走完就break了, cnt是从i出发能走的最远距离了。
 			//i走到cnt都不行, 那么从i到cnt之间的每一步出发都不行。
 			//直接跳到从i出发能到达的最远距离的下一个
-			i = i + cnt + 1
+			i = i + j + 1
 		}
 	}
 	return -1
