@@ -1067,3 +1067,81 @@ func minPathSum(grid [][]int) int {
 	}
 	return dp[m][n]
 }
+
+/*
+42. 接雨水
+
+1. i往两边延伸, 遇到两边的最大高度l, r, 最大高度max = min(l, r)
+2. i能接的水量 max - height[i]
+
+0,1,0,2,1,0,1,3,2,1,2,1
+
+4,2,0,3,2,5
+
+暴力解法时间复杂度 n*n
+
+*/
+
+func trap(height []int) int {
+	n := len(height)
+	temp := make([]int, n)
+	for i := 1; i < n-1; i++ {
+		lMax := 0
+		for j := i - 1; j >= 0; j-- {
+			if height[j] > height[i] {
+				lMax = Max(height[j], lMax)
+			}
+		}
+		rMax := 0
+		for j := i + 1; j < n; j++ {
+			if height[j] > height[i] {
+				rMax = Max(height[j], rMax)
+			}
+		}
+		if Min(lMax, rMax) > height[i] {
+			temp[i] = Min(lMax, rMax) - height[i]
+		}
+	}
+	res := 0
+	for _, v := range temp {
+		res += v
+	}
+	return res
+}
+
+/*
+1. i往两边延伸, 遇到两边的最大高度l, r, 最大高度max = min(l, r)
+2. i能接的水量 max - height[i]
+
+0,1,0,2,1,0,1,3,2,1,2,1
+
+4,2,0,3,2,5
+
+dp思路: 先分别计算i的左右最大位置
+
+*/
+func trapDp(height []int) int {
+	n := len(height)
+	//leftMax[i]表示i以及i左边的所有位置中的height最大值
+	leftMax := make([]int, n)
+
+	leftMax[0] = height[0]
+	for i := 1; i < n; i++ {
+		leftMax[i] = Max(leftMax[i-1], height[i])
+	}
+
+	//rightMax[i]表示i以及i右边的所有位置中的height最大值
+	rightMax := make([]int, n)
+	rightMax[n-1] = height[n-1]
+	for i := n - 2; i >= 0; i-- {
+		rightMax[i] = Max(rightMax[i+1], height[i])
+	}
+
+	res := 0
+	for i := 0; i < n; i++ {
+		//if Min(leftMax[i], rightMax[i]) > height[i] {
+		res += Min(leftMax[i], rightMax[i]) - height[i]
+		//}
+	}
+	return res
+}
