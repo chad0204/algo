@@ -415,3 +415,47 @@ func canCompleteCircuit(gas []int, cost []int) int {
 	}
 	return -1
 }
+
+/*
+ratings
+1 3 7 7 7 6 5 4 3 2 1 1 1
+
+1 2 3 1 1 7 6 5 4 3 2 1 1
+
+1 2 3 1 1 2 3 4 5 6 7 1 1
+
+递增
+|<-pre->|  相等  |<--dec-->|  相等
+1   2   3  1 1   2 3 4 5 6 7  1 1
+
+*/
+func candy(ratings []int) int {
+	n := len(ratings)
+	res := 1
+	pre := 1 //前一个同学分配的水果数量
+	dec := 0 //递减序列的长度
+	inc := 1 //递增序列的长度
+	for i := 1; i < n; i++ {
+		if ratings[i] > ratings[i-1] {
+			dec = 0
+			pre++
+			res += pre
+			inc = pre
+		} else if ratings[i] == ratings[i-1] {
+			dec = 0
+			pre = 1
+			res += pre
+			inc = pre
+		} else {
+			//倒着计算递减序列
+			dec++
+			if dec == inc {
+				//这步操作相当于把上一个递增的最大pre跳过, 并给后面的dec都递增
+				dec++
+			}
+			res += dec
+			pre = 1
+		}
+	}
+	return res
+}
