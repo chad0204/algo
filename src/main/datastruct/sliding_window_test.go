@@ -177,3 +177,97 @@ func lengthOfLongestSubstring(s string) int {
 	}
 	return l
 }
+
+/*
+
+30. 串联所有单词的子串
+
+abarfoothefoobarman
+
+foo bar
+
+0
+
+windows = len(words) * len(words[0])
+
+
+
+
+*/
+func TestFindSyb(t *testing.T) {
+	fmt.Println(findSubstringV2("abarfoothefoobarman", []string{"foo", "bar"}))
+}
+func findSubstring(s string, words []string) []int {
+	needs := make(map[string]int)
+	for _, v := range words {
+		needs[v] += 1
+	}
+	n := len(words)
+	m := len(words[0])
+	res := make([]int, 0)
+	//从每一个字符开始遍历
+	for i := 0; i < len(s)-n*m+1; i++ {
+		right := i
+		l := i + n*m
+		checkSum := 0
+		windows := make(map[string]int)
+		for right < l {
+			word := s[right : right+m]
+			right += m
+			if _, ok := needs[word]; ok {
+				windows[word] += 1
+				if windows[word] == needs[word] {
+					checkSum++
+				}
+			} else {
+				//因为中间不能有间隔, 存在不满足的表示从当前i开始不能匹配
+				break
+			}
+			if checkSum == len(needs) {
+				res = append(res, i)
+			}
+		}
+	}
+	return res
+}
+
+func findSubstringV2(s string, words []string) []int {
+
+	n, m := len(words), len(words[0])
+	needs := make(map[string]int)
+	for _, word := range words {
+		needs[word]++
+	}
+	res := make([]int, 0)
+	//遍历单词的每一个可能的起始位置（0 到 wordLen-1） 不管匹配的word在哪, s上从0出发找到word的起始位置不会超过wordLen
+	for i := 0; i < m; i++ {
+		left, right, count := i, i, 0
+		windows := make(map[string]int)
+
+		for right+m <= len(s) {
+			add := s[right : right+m]
+			right += m
+			if _, ok := needs[add]; ok {
+				windows[add]++
+				count++
+				for windows[add] > needs[add] {
+					rmv := s[left : left+m]
+					windows[rmv]--
+					left += m
+					count--
+				}
+			} else {
+				//因为中间不能有间隔x
+				left = right
+				windows = make(map[string]int)
+				count = 0
+			}
+
+			if count == n {
+				res = append(res, left)
+			}
+		}
+	}
+
+	return res
+}
