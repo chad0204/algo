@@ -226,7 +226,7 @@ func (d *Diff) Incr(i, j, val int) {
 // 48. 旋转图像 先对角线翻转, 再逐行翻转
 func rotate(matrix [][]int) {
 	n := len(matrix)
-	// 沿对角线镜像反转
+	// 沿对角线镜像反转, 只能遍历半个矩阵, 不然就转回去了
 	for row := 0; row < n; row++ {
 		for col := row; col < n; col++ {
 			matrix[row][col], matrix[col][row] = matrix[col][row], matrix[row][col]
@@ -260,17 +260,19 @@ func spiralOrder(matrix [][]int) []int {
 	low := m - 1   //下边界--
 
 	for up <= low && left <= right {
-		if up <= low {
+		if up <= low { //表示up到low之间还有行
 			for i := left; i <= right; i++ {
 				res = append(res, matrix[up][i])
 			}
+			//只有遍历过这行, 才能++
 			up++
 		}
 
-		if left <= right {
+		if left <= right { //表示left到right之间还有列
 			for i := up; i <= low; i++ {
 				res = append(res, matrix[i][right])
 			}
+			//只有遍历过这列, 才能++
 			right--
 		}
 
@@ -290,4 +292,84 @@ func spiralOrder(matrix [][]int) []int {
 
 	}
 	return res
+}
+
+/**
+36. 有效的数独
+
+board[i][j]
+所在的行是下标i, 所在的列是下j, 所在的box是x
+条件：
+1. board[i][j]在i行只出现一次
+2. board[i][j]在j列只出现一次
+3. board[i][j]在box[x]只出现一次
+
+
+如何根据i,j定位box（9x9的矩阵, box有9个，分别为0到8）：
+
+0 1 2
+3 4 5
+6 7 8
+
+1. j找列
+j/3表示所在的box为第几列(0,1,2), 不管i
+0/3 = 0
+1/3 = 0
+2/3 = 0
+..
+4/3 = 1
+..
+8/3 = 2
+
+
+2. i找行, 前面判断列, 算上i的话, 如果i在012, 就是box就是j/3, 不用加; 如果i在345, box需要加1行就是3; 如果i在678, box需要加2行就是6; 也就是 j/3 + (i/3) * 3
+i/3表示所在的box为第几行(0,1,2)
+0/3 = 0
+1/3 = 0
+2/3 = 0
+..
+4/3 = 1
+..
+8/3 = 2
+*/
+
+type Pos struct {
+	pos int
+	val byte
+}
+
+func isValidSudoku(board [][]byte) bool {
+	// board[i][j] 在第i行是否存在
+	rowMap := make(map[Pos]bool)
+	colMap := make(map[Pos]bool)
+	boxMap := make(map[Pos]bool)
+
+	//也可以这么定义
+	//row := make([][10]bool, 9)   // 存储每一行的每个数是否出现过, 9行10个数
+	//col := make([][10]bool, 9)   // 存储每一列的每个数是否出现过
+	//box := make([][10]bool, 9)   // 存储每一个box的每个数是否出现过
+
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			val := board[i][j]
+			if val == '.' {
+				continue
+			}
+			if rowMap[Pos{i, val}] {
+				return false
+			}
+			if colMap[Pos{i, val}] {
+				return false
+			}
+			if boxMap[Pos{i, val}] {
+				return false
+			}
+
+			rowMap[Pos{i, val}] = true
+			colMap[Pos{j, val}] = true
+			boxMap[Pos{j/3 + (i/3)*3, val}] = true
+
+		}
+	}
+	return true
 }
