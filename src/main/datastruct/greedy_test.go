@@ -303,7 +303,7 @@ func canJumpDp2(nums []int) bool {
 func canJumpGreedy(nums []int) bool {
 	maxPos := 0
 	for i := 0; i < len(nums); i++ {
-		if i > maxPos {
+		if maxPos < i {
 			//当前最远距离maxPos无法超过当前位置i, 说明遇到0卡住了(该0前面所有位置都跳到此0), 无法跳过, 不用计算了
 			return false
 		}
@@ -314,6 +314,7 @@ func canJumpGreedy(nums []int) bool {
 		//	return true
 		//}
 	}
+	//这里直接返回true即可
 	return maxPos >= len(nums)-1
 }
 
@@ -427,7 +428,6 @@ ratings
 递增
 |<-pre->|  相等  |<--dec-->|  相等
 1   2   3  1 1   2 3 4 5 6 7  1 1
-
 */
 func candy(ratings []int) int {
 	n := len(ratings)
