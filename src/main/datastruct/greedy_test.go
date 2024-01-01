@@ -359,7 +359,7 @@ func jumpV2(nums []int) int {
 	steps := 0  // 跳跃次数
 	for i := 0; i < len(nums); i++ {
 		if i > end {
-			// 如果当前位置超过了当前跳跃范围的边界，需要增加一次跳跃
+			// 如果当前位置超过了上一次跳跃范围的边界，需要增加一次跳跃, 并更新当前边界为上一个的最远位置
 			steps++
 			end = maxPos
 			//fmt.Println(i)
