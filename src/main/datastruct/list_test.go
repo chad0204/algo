@@ -5,6 +5,14 @@ import (
 	"testing"
 )
 
+/**
+
+1. 舍得用变量，千万别想着节省变量，否则容易被逻辑绕晕
+2. head 有可能需要改动时，先增加一个假head(dummy), 返回的时候直接取 dummy.next，这样就不需要为修改 head 增加一大堆逻辑了。
+
+
+*/
+
 func TestHasCycle(t *testing.T) {
 
 	head := ListNode{1,
@@ -159,7 +167,7 @@ func TestPartition(t *testing.T) {
 
 }
 
-// 小于的一个链表, 大于等于的一个链表, 这两个链表原节点顺序不变。 组成一个新链表
+// 86. 分隔链表 小于的一个链表, 大于等于的一个链表, 这两个链表原节点顺序不变。 组成一个新链表
 func partition(head *ListNode, x int) *ListNode {
 	l := &ListNode{-1, nil}
 	r := &ListNode{-1, nil}
@@ -284,22 +292,46 @@ func TestDeleteDuplicates(t *testing.T) {
 
 }
 
-// 删除链表中的重复元素
+// 83. 删除排序链表中的重复元素
 func deleteDuplicates(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
 	s := head
 	f := head
+
 	for f != nil {
-		if s.Val != f.Val {
+		if s.Val == f.Val {
+			f = f.Next
+		} else {
 			s.Next = f
-			s = s.Next
+			s = f
 		}
-		f = f.Next
 	}
 	s.Next = nil
 	return head
+}
+
+// 82. 删除排序链表中的重复元素 II
+func deleteDuplicatesV2(head *ListNode) *ListNode {
+	//因为head可能被编辑, 所以设置虚拟头节点
+	dummy := &ListNode{-1, head}
+	s := dummy
+	f := head
+	for f != nil && f.Next != nil {
+		val := f.Val
+		if f.Next.Val == val {
+			for f != nil && f.Val == val {
+				f = f.Next
+			}
+			s.Next = f
+		} else {
+			s = f
+			f = f.Next
+		}
+	}
+
+	return dummy.Next
 }
 
 /**
@@ -315,6 +347,7 @@ f f f f f
 */
 //19. 删除链表的倒数第 N 个结点
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	//因为head可能被编辑, 所以设置虚拟头节点
 	dummy := &ListNode{-1, head}
 	f := dummy
 	s := dummy
@@ -339,8 +372,8 @@ func reverseList(head *ListNode) *ListNode {
 	if head.Next == nil {
 		return head
 	}
-
 	newHead := reverseList(head.Next)
+	//这里不能用newHead, 比如1,2,3,4,5回溯的1时候, head = 1, newHead = 5, 5->1是不对的
 	head.Next.Next = head
 	head.Next = nil
 	return newHead //透传
@@ -420,16 +453,20 @@ func reverseKGroup(head *ListNode, k int) *ListNode {
 	if head == nil {
 		return nil
 	}
+	//迭代到tail的下一个节点
 	successor := head
-	i := 0
-	for ; i < k; i++ {
+	idx := 0
+	for idx < k {
 		if successor == nil {
 			//数量不足k, 不翻转
 			return head
 		}
 		successor = successor.Next
+		idx++
 	}
+	//反转head到tail, head做为tail指向successor
 	newHead := reverseNode(head, successor)
+	//head就是本次反转的tail, tail的next指向下一个的head。递归继续反转successor到k
 	head.Next = reverseKGroup(successor, k)
 	return newHead
 }
@@ -477,4 +514,66 @@ func isPalindrome(head *ListNode) bool {
 		right = right.Next
 	}
 	return true
+}
+
+type Nodee struct {
+	Val    int
+	Next   *Nodee
+	Random *Nodee
+}
+
+// 138. 随机链表的复制
+func TestCopy(t *testing.T) {
+	head := &Nodee{1, &Nodee{2, &Nodee{3, nil, nil}, nil}, nil}
+	list := copyRandomList(head)
+	fmt.Println(list)
+}
+
+func copyRandomList(head *Nodee) *Nodee {
+	exists := make(map[*Nodee]*Nodee)
+	return copyRandomListHelper(head, exists)
+}
+
+func copyRandomListHelper(head *Nodee, exists map[*Nodee]*Nodee) *Nodee {
+	if head == nil {
+		return nil
+	}
+
+	if _, ok := exists[head]; ok {
+		return exists[head]
+	}
+	newHead := &Nodee{head.Val, nil, nil}
+	exists[head] = newHead
+	newHead.Next = copyRandomListHelper(head.Next, exists)
+	newHead.Random = copyRandomListHelper(head.Random, exists)
+	return newHead
+}
+
+// 61. 旋转链表
+func rotateRight(head *ListNode, k int) *ListNode {
+	if head == nil {
+		return nil
+	}
+	//计算长度, 并找到尾节点
+	tail := head
+	l := 1
+	for tail.Next != nil {
+		tail = tail.Next
+		l++
+	}
+	k = l - k%l
+	if k == l {
+		//这里是个小优化
+		return head
+	}
+	//收尾相连
+	tail.Next = head
+	for k > 1 {
+		head = head.Next
+		k--
+	}
+	//断开
+	newHead := head.Next
+	head.Next = nil
+	return newHead
 }
