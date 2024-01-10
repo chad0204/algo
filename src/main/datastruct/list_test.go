@@ -184,8 +184,9 @@ func partition(head *ListNode, x int) *ListNode {
 		}
 		head = head.Next
 	}
-	l.Next = dummyR.Next
 	r.Next = nil //不然当x右边有比x小的元素结果有个环
+
+	l.Next = dummyR.Next
 	return dummyL.Next
 }
 
