@@ -20,9 +20,9 @@ func TestLRU(t *testing.T) {
 }
 
 type LRUCache struct {
-	kv       map[int]*LRUNode
-	head     *LRUNode
-	tail     *LRUNode
+	kv       map[int]*LRUNode // map里的所有元素, 都被维护成链表, map的值是Node指针, 指向链表中的元素
+	head     *LRUNode         //head.Next是最旧的元素
+	tail     *LRUNode         //tail.Prev是最新的元素
 	size     int
 	capacity int
 }
@@ -56,6 +56,9 @@ func (this *LRUCache) delNode(node *LRUNode) {
 	node.next = nil
 }
 
+/**
+插入一个元素, 一定是四步操作, 注意不要先断掉tail和prev的连接
+*/
 func (this *LRUCache) addLast(node *LRUNode) {
 	this.tail.prev.next = node
 	node.next = this.tail
@@ -63,16 +66,25 @@ func (this *LRUCache) addLast(node *LRUNode) {
 	this.tail.prev = node
 }
 
+func (this *LRUCache) addLast2(node *LRUNode) {
+	node.prev = this.tail.prev
+	this.tail.prev.next = node
+	this.tail.prev = node
+	node.next = this.tail
+}
+
 func (this *LRUCache) Get(key int) int {
 	if _, ok := this.kv[key]; !ok {
 		return -1
 	}
+	//移动到队尾
 	this.moveLast(this.kv[key])
 	return this.kv[key].val
 }
 
 func (this *LRUCache) Put(key int, value int) {
 	if _, ok := this.kv[key]; ok {
+		//已存在, 只需要更新, 移动即可
 		this.kv[key].val = value
 		this.moveLast(this.kv[key])
 		return
@@ -83,6 +95,7 @@ func (this *LRUCache) Put(key int, value int) {
 	this.size++
 	if this.size > this.capacity {
 		delete(this.kv, this.head.next.key)
+		//删除队头
 		this.delNode(this.head.next)
 		this.size--
 	}
