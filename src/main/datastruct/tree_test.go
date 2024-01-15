@@ -2,6 +2,7 @@ package datastruct
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"testing"
@@ -492,4 +493,24 @@ func lcaHelper235(root, min, max *TreeNode) *TreeNode {
 	//	return root
 	//}
 	return root
+}
+
+//530. 二叉搜索树的最小绝对差
+func getMinimumDifference(root *TreeNode) int {
+	res := math.MaxInt32
+	prev := -1
+	inOrder(root, &prev, &res)
+	return res
+}
+
+func inOrder(root *TreeNode, prev *int, res *int) {
+	if root == nil {
+		return
+	}
+	inOrder(root.Left, prev, res)
+	if *prev != -1 {
+		*res = Min(*res, root.Val-*prev)
+	}
+	*prev = root.Val
+	inOrder(root.Right, prev, res)
 }
