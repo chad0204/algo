@@ -66,19 +66,19 @@ func (t *TreeNode) LevelTraverse(res *[]int) {
 }
 
 func (t *TreeNode) LevelTraverseV2(res *[]int) {
-	if t == nil {
-		return
-	}
-	queue := make([]*TreeNode, 1)
-	queue[0] = t
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, t)
 	for len(queue) > 0 {
-		curr := queue[0]
-		queue = queue[1:]
-		*res = append(*res, curr.Val)
-		if curr.Left != nil {
+		n := len(queue)
+		for i := 0; i < n; i++ {
+			curr := queue[0]
+			queue = queue[1:]
+			if curr == nil {
+				*res = append(*res, -1)
+				continue
+			}
+			*res = append(*res, curr.Val)
 			queue = append(queue, curr.Left)
-		}
-		if curr.Right != nil {
 			queue = append(queue, curr.Right)
 		}
 	}
