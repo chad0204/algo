@@ -31,23 +31,22 @@ func convertBSTHelper(root *TreeNode, res *int) {
 
 // 230. 二叉搜索树中第K小的元素
 func kthSmallest(root *TreeNode, k int) int {
-	res := 0
-	rank := 0
-	kthSmallestHelper(root, k, &res, &rank)
+	res := -1
+	inOrder(root, &k, &res)
 	return res
 }
 
-func kthSmallestHelper(root *TreeNode, k int, res *int, rank *int) {
+func kthSmallestHelper(root *TreeNode, k *int, res *int) {
 	if root == nil {
 		return
 	}
-	kthSmallestHelper(root.Left, k, res, rank)
-	*rank++
-	if *rank == k {
+	inOrder(root.Left, k, res)
+	*k = *k - 1
+	if *k == 0 {
 		*res = root.Val
 		return
 	}
-	kthSmallestHelper(root.Right, k, res, rank)
+	inOrder(root.Right, k, res)
 }
 
 //98. 验证二叉搜索树
