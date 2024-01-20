@@ -163,7 +163,7 @@ func backTrackUnique(nums []int, path []int, used []bool, r *[][]int) {
 		}
 		//与前一个相邻分支值重复 并且前一个相邻分支没有在深度遍历中使用, 则跳过
 		if i > 0 && nums[i] == nums[i-1] && !used[i-1] {
-			// 如果!used[i-1], 说明相邻节点已经在深度树中, 不应该剪切当前分支
+			// 如果used[i-1] == true, 说明相邻节点已经在深度树中, 不应该剪切当前分支(前提是排序)
 			continue
 		}
 		path = append(path, nums[i])
