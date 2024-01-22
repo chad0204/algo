@@ -523,7 +523,7 @@ type Nodee struct {
 	Random *Nodee
 }
 
-// 138. 随机链表的复制
+// 138. 随机链表的复制 (类似的题目 133. 克隆图)
 func TestCopy(t *testing.T) {
 	head := &Nodee{1, &Nodee{2, &Nodee{3, nil, nil}, nil}, nil}
 	list := copyRandomList(head)
