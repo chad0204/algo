@@ -32,7 +32,64 @@ func getNodeV2(node *TrieNode, key string, i int) *TrieNode {
 	if len(key) == i {
 		return node
 	}
-	return getNodeV2(node.child[i], key, i+1)
+	return getNodeV2(node.child[key[i]], key, i+1)
+}
+
+func putNode(node *TrieNode, key string, val int) *TrieNode {
+	if node == nil {
+		return &TrieNode{}
+	}
+	for i := 0; i < len(key); i++ {
+		if node.child[key[i]] == nil {
+			node.child[key[i]] = &TrieNode{}
+		}
+		node = node.child[key[i]]
+	}
+	node.val = val
+	return node
+}
+
+func putNodeV2(node *TrieNode, key string, val int, i int) *TrieNode {
+	if node == nil {
+		node = &TrieNode{}
+	}
+	if i == len(key) {
+		node.val = val
+		return node
+	}
+	c := key[i]
+	node.child[c] = putNodeV2(node.child[c], key, val, i+1)
+	return node
+}
+
+func removeNode(node *TrieNode, key string, i int) *TrieNode {
+	if node == nil {
+		return nil
+	}
+
+	if i == len(key) {
+		// 找到了 key的最后一个字符对应的 TrieNode，删除 val。 这里不能node = nil, 因为下面可能还有值, 只能把当前节点的值设为空
+		node.val = 0
+	} else {
+		//递归去子树删除
+		c := key[i]
+		node.child[c] = removeNode(node.child[c], key, i+1)
+	}
+	//后序处理, 倒着向上处理. 回溯处理路径中的每个一个节点, 逐个判断是否删除。
+
+	if node.val != 0 {
+		//回溯路径上存在有值节点, 不能被删除。 比如abcde, 删除e, 发现d有值, d就不能删除。
+		return node
+	}
+
+	//检查是否存在有值子节点（后缀）, 有就不用清理, 没有则清理。比如abcdef, 删除e, 需要判断e下面有没有值, 有f所以节点e不能删除。
+	for c := 0; c < 256; c++ {
+		if node.child[c] != nil {
+			return node
+		}
+	}
+	//既没有存储 val（这里val==0），也没有后缀树枝，上面判断过。比如abcde, 删除e, e的值已经是0, e也没有子值, d = nil
+	return nil
 }
 
 func (t *TrieMap) get(key string) int {
@@ -53,59 +110,15 @@ func (t *TrieMap) put(key string, val int) {
 	if !t.containsKey(key) {
 		t.size++
 	}
-	t.root = putHelper(t.root, key, val, 0)
-}
-
-func putHelper(node *TrieNode, key string, val int, i int) *TrieNode {
-	if node == nil {
-		node = &TrieNode{}
-	}
-	if i == len(key) {
-		node.val = val
-		return node
-	}
-	c := key[i]
-	node.child[c] = putHelper(node.child[c], key, val, i+1)
-	return node
+	t.root = putNodeV2(t.root, key, val, 0)
 }
 
 func (t *TrieMap) remove(key string) {
 	if !t.containsKey(key) {
 		return
 	}
-	t.root = removeHelper(t.root, key, 0)
+	t.root = removeNode(t.root, key, 0)
 	t.size--
-}
-
-func removeHelper(node *TrieNode, key string, i int) *TrieNode {
-	if node == nil {
-		return nil
-	}
-	if i != len(key) {
-		//递归去子树删除
-		c := key[i]
-		node.child[c] = removeHelper(node.child[c], key, i+1)
-	}
-	//后序处理, 倒着向上处理
-
-	if i == len(key) {
-		// 找到了 key的最后一个字符对应的 TrieNode，删除 val。 这里不能node = nil, 因为下面可能还有值, 只能把当前节点的值设为空
-		node.val = 0
-	}
-
-	//路径上存在有值节点, 不能被删除。 比如abcde, 删除e, 发现d有值, d就不能删除。
-	if node.val != 0 {
-		return node
-	}
-
-	//检查是否存在有值子节点（后缀）, 有就不用清理, 没有则清理。比如abcdef, 删除e, 需要判断e下面有没有值, 有f所以节点e不能删除。
-	for c := 0; c < 256; c++ {
-		if node.child[c] != nil {
-			return node
-		}
-	}
-	//既没有存储 val（这里val==0），也没有后缀树枝，上面判断过。比如abcde, 删除e, e的值已经是0, e也没有子值, d = nil
-	return nil
 }
 
 // 判断是和否存在前缀为 prefix 的键
