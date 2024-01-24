@@ -38,6 +38,7 @@ func TestTrie(t *testing.T) {
 type Trie struct {
 	children [26]*Trie //a ~ z 是97～122正好26个, 用索引下标来存char
 	val      bool      //0 1 用bool也可以
+	Word     string    //0 1 用bool也可以
 }
 
 func (this *Trie) Insert(word string) {
@@ -57,7 +58,7 @@ func InsertHelper(node *Trie, word string, i int) *Trie {
 	return node
 }
 
-//迭代
+// 迭代
 func (this *Trie) Search(word string) bool {
 	node := this
 	for i := 0; i < len(word); i++ {
@@ -73,7 +74,7 @@ func (this *Trie) Search(word string) bool {
 	return false
 }
 
-//递归
+// 递归
 func (this *Trie) SearchV2(word string) bool {
 	node := searchHelper(word, 0, this)
 	if node != nil && node.val {
@@ -97,7 +98,7 @@ func searchHelper(word string, i int, node *Trie) *Trie {
 	return searchHelper(word, i+1, node.children[c])
 }
 
-//最小前缀, 没有就返回word
+// 最小前缀, 没有就返回word
 func (t *Trie) shortestPrefix(word string) string {
 	p := t
 	for i := 0; i < len(word); i++ {
@@ -116,7 +117,7 @@ func (t *Trie) shortestPrefix(word string) string {
 	return word
 }
 
-//递归
+// 递归
 func (t *Trie) shortestPrefixV2(word string) string {
 	return shortestPrefixHelper(t, word, 0)
 }
@@ -133,4 +134,72 @@ func shortestPrefixHelper(node *Trie, word string, i int) string {
 	}
 	c := word[i] - 'a'
 	return shortestPrefixHelper(node.children[c], word, i+1)
+}
+
+// 212. 单词搜索 II
+func findWords(board [][]byte, words []string) []string {
+	visited := make([][]bool, len(board))
+	for i := range visited {
+		visited[i] = make([]bool, len(board[0]))
+	}
+	trie := &Trie{}
+	for _, word := range words {
+		addNode(trie, word, 0)
+	}
+
+	res := make(map[string]bool)
+	for r := 0; r < len(board); r++ {
+		for c := 0; c < len(board[0]); c++ {
+			dfsFindWords(board, visited, r, c, trie, res)
+		}
+	}
+
+	result := make([]string, 0)
+	for k := range res {
+		result = append(result, k)
+	}
+	return result
+}
+
+func dfsFindWords(board [][]byte, visited [][]bool, r, c int, trie *Trie, res map[string]bool) {
+	if r < 0 || c < 0 || r >= len(board) || c >= len(board[0]) {
+		return
+	}
+	//不能漏掉头节点
+	ch := board[r][c] - 'a'
+	trie = trie.children[ch]
+	if visited[r][c] {
+		return
+	}
+
+	if trie == nil {
+		//说明没有这个前缀, 剪枝
+		return
+	}
+
+	if len(trie.Word) > 0 {
+		//说明找到了, 这里不能return。 比如ab, abb同时存在, 匹配到ab, 还要匹配abb
+		res[trie.Word] = true
+		//return
+	}
+
+	visited[r][c] = true
+	dfsFindWords(board, visited, r-1, c, trie, res)
+	dfsFindWords(board, visited, r+1, c, trie, res)
+	dfsFindWords(board, visited, r, c-1, trie, res)
+	dfsFindWords(board, visited, r, c+1, trie, res)
+	visited[r][c] = false
+}
+
+func addNode(root *Trie, word string, i int) *Trie {
+	if root == nil {
+		root = &Trie{}
+	}
+	if i == len(word) {
+		root.Word = word
+		return root
+	}
+	ch := word[i] - 'a'
+	root.children[ch] = addNode(root.children[ch], word, i+1)
+	return root
 }

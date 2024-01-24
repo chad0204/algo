@@ -8,8 +8,8 @@ type TrieMap struct {
 }
 
 type TrieNode struct {
-	val   int            //初始化0, 所以0表示没有值, TrieMap不能put value == 0的key. 前缀数应该不存值, bool类型即可
-	child [256]*TrieNode // 用索引下标来存char, ASCII总共有256位, 包含所有char
+	Val      int            //初始化0, 所以0表示没有值, TrieMap不能put value == 0的key. 前缀数应该不存值, bool类型即可
+	children [256]*TrieNode // 用索引下标来存char, ASCII总共有256位, 包含所有char
 }
 
 // 从节点 node 开始搜索 key，如果存在返回对应节点，否则返回 null
@@ -20,7 +20,7 @@ func getNode(node *TrieNode, key string) *TrieNode {
 			return nil
 		}
 		c := key[i]
-		p = p.child[c]
+		p = p.children[c]
 	}
 	return p
 }
@@ -32,7 +32,7 @@ func getNodeV2(node *TrieNode, key string, i int) *TrieNode {
 	if len(key) == i {
 		return node
 	}
-	return getNodeV2(node.child[key[i]], key, i+1)
+	return getNodeV2(node.children[key[i]], key, i+1)
 }
 
 func putNode(node *TrieNode, key string, val int) *TrieNode {
@@ -40,12 +40,12 @@ func putNode(node *TrieNode, key string, val int) *TrieNode {
 		return &TrieNode{}
 	}
 	for i := 0; i < len(key); i++ {
-		if node.child[key[i]] == nil {
-			node.child[key[i]] = &TrieNode{}
+		if node.children[key[i]] == nil {
+			node.children[key[i]] = &TrieNode{}
 		}
-		node = node.child[key[i]]
+		node = node.children[key[i]]
 	}
-	node.val = val
+	node.Val = val
 	return node
 }
 
@@ -54,11 +54,11 @@ func putNodeV2(node *TrieNode, key string, val int, i int) *TrieNode {
 		node = &TrieNode{}
 	}
 	if i == len(key) {
-		node.val = val
+		node.Val = val
 		return node
 	}
 	c := key[i]
-	node.child[c] = putNodeV2(node.child[c], key, val, i+1)
+	node.children[c] = putNodeV2(node.children[c], key, val, i+1)
 	return node
 }
 
@@ -68,37 +68,37 @@ func removeNode(node *TrieNode, key string, i int) *TrieNode {
 	}
 
 	if i == len(key) {
-		// 找到了 key的最后一个字符对应的 TrieNode，删除 val。 这里不能node = nil, 因为下面可能还有值, 只能把当前节点的值设为空
-		node.val = 0
+		// 找到了 key的最后一个字符对应的 TrieNode，删除 Val。 这里不能node = nil, 因为下面可能还有值, 只能把当前节点的值设为空
+		node.Val = 0
 	} else {
 		//递归去子树删除
 		c := key[i]
-		node.child[c] = removeNode(node.child[c], key, i+1)
+		node.children[c] = removeNode(node.children[c], key, i+1)
 	}
 	//后序处理, 倒着向上处理. 回溯处理路径中的每个一个节点, 逐个判断是否删除。
 
-	if node.val != 0 {
+	if node.Val != 0 {
 		//回溯路径上存在有值节点, 不能被删除。 比如abcde, 删除e, 发现d有值, d就不能删除。
 		return node
 	}
 
 	//检查是否存在有值子节点（后缀）, 有就不用清理, 没有则清理。比如abcdef, 删除e, 需要判断e下面有没有值, 有f所以节点e不能删除。
 	for c := 0; c < 256; c++ {
-		if node.child[c] != nil {
+		if node.children[c] != nil {
 			return node
 		}
 	}
-	//既没有存储 val（这里val==0），也没有后缀树枝，上面判断过。比如abcde, 删除e, e的值已经是0, e也没有子值, d = nil
+	//既没有存储 Val（这里val==0），也没有后缀树枝，上面判断过。比如abcde, 删除e, e的值已经是0, e也没有子值, d = nil
 	return nil
 }
 
 func (t *TrieMap) get(key string) int {
 	node := getNode(t.root, key)
 	//node不为nil或者node的val为空(这里用0表示)， 表示值不存在。存在节点存在val为空是因为下面可能还有值, 比如 存了abc, 没存ab, 找ab
-	if node == nil || node.val == 0 {
+	if node == nil || node.Val == 0 {
 		return 0
 	}
-	return node.val
+	return node.Val
 }
 
 // 就算getNode(key)的返回值x非空，也只能说字符串key是一个「前缀」；除非x.val同时非空，才能判断键key存在
@@ -135,14 +135,14 @@ func (t *TrieMap) shortestPrefixOf(query string) string {
 			//query = abcd, dic = abd. c对应nil, abd不是前缀
 			return ""
 		}
-		if p.val != 0 {
+		if p.Val != 0 {
 			//找到最短
 			return query[:i]
 		}
 		c := query[i]
-		p = p.child[c]
+		p = p.children[c]
 	}
-	if p != nil && p.val != 0 {
+	if p != nil && p.Val != 0 {
 		//query本身就是最短前缀
 		return query
 	}
@@ -157,14 +157,14 @@ func (t *TrieMap) longestPrefixOf(query string) string {
 		if p == nil {
 			return ""
 		}
-		if p.val != 0 {
+		if p.Val != 0 {
 			//更新最大值
 			max = i
 		}
 		c := query[i]
-		p = p.child[c]
+		p = p.children[c]
 	}
-	if p != nil && p.val != 0 {
+	if p != nil && p.Val != 0 {
 		//query本身就是最短前缀
 		return query
 	}
@@ -186,12 +186,12 @@ func (t *TrieMap) keysWithPrefix(prefix string) []string {
 		if node == nil {
 			return
 		}
-		if node.val != 0 {
+		if node.Val != 0 {
 			*res = append(*res, string(path))
 		}
 		for i := 0; i < 256; i++ {
 			path = append(path, byte(i))
-			traversalTrie(res, node.child[i], path)
+			traversalTrie(res, node.children[i], path)
 			path = path[:len(path)-1]
 		}
 	}
@@ -211,7 +211,7 @@ func (t *TrieMap) keysWithPattern(pattern string) []string {
 		}
 		if i == len(pattern) {
 			//分支匹配完成
-			if node.val != 0 {
+			if node.Val != 0 {
 				*res = append(*res, string(path))
 			}
 			return
@@ -222,13 +222,13 @@ func (t *TrieMap) keysWithPattern(pattern string) []string {
 			//遍历所有字符
 			for j := 0; j < 256; j++ {
 				path = append(path, byte(j))
-				traversalTrie(res, path, node.child[j], i+1, pattern)
+				traversalTrie(res, path, node.children[j], i+1, pattern)
 				path = path[:len(path)-1]
 			}
 		} else {
 			//只匹配c的节点
 			path = append(path, c)
-			traversalTrie(res, path, node.child[c], i+1, pattern)
+			traversalTrie(res, path, node.children[c], i+1, pattern)
 			path = path[:len(path)-1]
 		}
 	}
