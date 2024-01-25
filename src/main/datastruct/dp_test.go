@@ -1118,7 +1118,6 @@ func trap(height []int) int {
 4,2,0,3,2,5
 
 dp思路: 先分别计算i的左右最大位置
-
 */
 func trapDp(height []int) int {
 	n := len(height)
@@ -1142,6 +1141,40 @@ func trapDp(height []int) int {
 		//if Min(leftMax[i], rightMax[i]) > height[i] {
 		res += Min(leftMax[i], rightMax[i]) - height[i]
 		//}
+	}
+	return res
+}
+func TestMaxSubArray(t *testing.T) {
+	maxSubArray([]int{-1, -2})
+}
+
+// 53. 最大子数组和
+func maxSubArray(nums []int) int {
+	n := len(nums)
+	//dp[i]表示以nums[i]为结尾的连续数组的最大值
+	dp := make([]int, n)
+
+	for i := 0; i < n; i++ {
+		if i == 0 {
+			dp[i] = nums[i]
+			continue
+		}
+		if dp[i-1] > 0 {
+			//dp[i-1]是正值, 无论num[i]是正是负都加上,
+			//注意这里会让值变小, 没事, 因为以i结尾的连续值就是会小, 后面会遍历一遍取最大值
+			dp[i] = dp[i-1] + nums[i]
+		} else if nums[i] < dp[i-1] {
+			//dp[i-1]是负数, 当前值比dp[i-1]小, 从i重新开始
+			dp[i] = nums[i]
+		} else {
+			//dp[i-1]是负数, 当前值比dp[i-1]大, 从i重新开始
+			dp[i] = nums[i]
+		}
+	}
+
+	res := math.MinInt32
+	for _, v := range dp {
+		res = Max(res, v)
 	}
 	return res
 }
