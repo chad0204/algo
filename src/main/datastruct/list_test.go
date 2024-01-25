@@ -578,3 +578,31 @@ func rotateRight(head *ListNode, k int) *ListNode {
 	head.Next = nil
 	return newHead
 }
+
+func TestSortList(t *testing.T) {
+	head := ListNode{-1, nil}
+	head.Next = &ListNode{1, nil}
+	head.Next.Next = &ListNode{2, nil}
+	head.Next.Next.Next = &ListNode{3, nil}
+	head.Next.Next.Next.Next = &ListNode{4, nil}
+	fmt.Println(sortList(&head))
+
+}
+
+//148. 排序链表
+func sortList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	//slow是真正的mid的前一个
+	slow, fast := head, head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	mid := slow.Next
+	slow.Next = nil
+	left := sortList(head)
+	right := sortList(mid)
+	return mergeTwoLists(left, right)
+}

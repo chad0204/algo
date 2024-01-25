@@ -250,7 +250,7 @@ func combine(n int, k int) [][]int {
 		nums = append(nums, i)
 	}
 	var path []int
-	used := make([]bool, n) //想想怎么可以不用标记使用
+	used := make([]bool, n) //想想怎么可以不用标记使用, backtrackCombine(nums, path, i+1, k, used, res)， 这里取i+1即可
 	var res [][]int
 	backtrackCombine(nums, path, 0, k, used, &res)
 	return res
