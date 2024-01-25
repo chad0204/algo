@@ -521,7 +521,7 @@ func numTreesDpHelper(lo int, hi int, mem [][]int) int {
 
 // 300. 最长递增子序列
 /*
-思路：在i位置上lis等于任意比nums[i]小的元素的lis+1, 取最小值。dp[i] = min{dp[j]+1}, 0<=j<i,nums[j]<nums[i]
+思路：在i位置上lis等于任意比nums[i]小的元素的lis+1, 取最大值。dp[i] = max{dp[j]+1}, 0<=j<i,nums[j]<nums[i]
 base case dp[0] = 1, 且任意位置的最小值都是1
 */
 func lengthOfLIS(nums []int) int {
