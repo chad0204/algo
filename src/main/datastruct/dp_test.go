@@ -525,6 +525,7 @@ func numTreesDpHelper(lo int, hi int, mem [][]int) int {
 base case dp[0] = 1, 且任意位置的最小值都是1
 */
 func lengthOfLIS(nums []int) int {
+	//dp[i]表示以nums[i]为结尾的最长子序列的长度
 	dp := make([]int, len(nums))
 	for i := 0; i < len(dp); i++ {
 		if i == 0 {
@@ -545,6 +546,116 @@ func lengthOfLIS(nums []int) int {
 		res = Max(v, res)
 	}
 	return res
+}
+
+func TestLengthOfLISV2(t *testing.T) {
+	lengthOfLISV2([]int{10, 9, 2, 5, 3, 7, 21, 18})
+	//lengthOfLISV2([]int{7, 8, 9, 1, 2, 3, 5, 4})
+}
+
+/**
+
+解法一: 朴素dp
+
+dp[i]表示以nums[i]为结尾的最长递增子序列的长度
+初始化dp[i] = 1
+
+每个dp[i] = max(dp[j]+1, dp[i]), nums[j] < nums[i], k属于[0,i)
+
+
+
+解法二：dp + 二分查找
+
+dp[i]表示以长度为i+1的最长递增子序列的最小值）
+最小值: 比如1254中长度为3的递增子序列为 1,2,5; 1,2,4。长度为3递增子序列的最小值应该是4而不是5
+i+1, 因为二分查找确定位置时, 得到的结果是当前长度的最后一位i+1, 比如124,6, 迭代到6的时候二分查找[0,3]插入位置是3, 等于上一个长度len, 所以i+1更方便。
+
+
+初始化dp[i] = 0
+
+1 2 5 6
+已知的长度为3的值为5, dp[2] = 5,
+如果当前迭代到的数组值是6, 那么二分查找6在dp中的位置, 也就是找[0, 2+1]中的位置, 结果是3, dp[3] = 6, dp[3] = 6, 插入的位置正好是3, 说明当前元素比之前的元素都大, 所以新长度为3+1
+
+1 2 5 3
+如果当前迭代到的数组值是3, 那么二分查找3在dp中的位置, 也就是找[0, 2+1]中的位置, 结果是2, dp[2] = 3。 相当于3在位置2取代了5(肯定取小的), 插入的位置是2, 长度不变
+
+demo1:
+比如 10, 9, 2, 5, 3, 7, 21, 18
+dp[0] = 10, len = 1
+dp[0] = 9, len = 1
+dp[0] = 2, len = 1
+得到dp[0] = 2
+
+dp[1] = 5, len = 2
+dp[1] = 3, len = 2
+2,5
+2,3
+得到dp[1] = 3
+
+dp[2] = 7, len = 3
+2,3,7
+得到dp[2] = 7
+
+
+dp[3] = 21, len = 4
+dp[3] = 18, len = 4
+2,3,7,21
+2,3,7,18
+得到dp[3] = 18
+
+demo2:
+nums = {7, 8, 9, 1, 2, 3, 5, 4}, len=0
+
+nums=7, index = 0, dp[0] = 7, len = 1, 规则1 二分查找得到的index等于上一个长度0, 表示nums[i]比之前的元素都大, 长度+1
+nums=8, index = 1, dp[1] = 8, len = 2, 规则1
+nums=9, index = 2, dp[2] = 9, len = 3, 规则1
+nums=1, index = 0, dp[0] = 1, len = 3, 规则2二分查找得到的index<len, 表示nums[i]比[0,index]的元素都小, 长度不变, 替换原来index的元素。这里可以理解为长度为1的结尾最小值应该是1而不是之前的7
+nums=2, index = 1, dp[1] = 2, len = 3, 规则2
+nums=3, index = 2, dp[2] = 3, len = 3, 规则2
+nums=5, index = 3, dp[3] = 5, len = 4, 规则1
+nums=4, index = 3, dp[3] = 4, len = 4, 规则2
+
+
+
+gpt解释：
+1. 我们维护一个数组 dp，其中 dp[i] 表示长度为 i+1 的递增子序列的末尾元素的最小值。注意，dp 数组并不一定是一个有效的递增序列，但是 dp 的长度就是当前最长递增子序列的长度。
+2. 我们遍历输入数组 nums，对于每个元素 num，我们使用二分查找找到 dp 中第一个大于或等于 num 的位置 index。如果 index 等于当前最长递增子序列的长度，说明 num 大于当前递增子序列的最大值，因此我们更新当前递增子序列的长度。
+3. 如果 index 小于当前最长递增子序列的长度，说明我们可以用 num 替换掉 dp[index]，因为 num 较小，有可能构成更长的递增子序列。
+4. 最终，dp 数组的长度即为最长递增子序列的长度。
+
+
+*/
+
+// 300. 最长递增子序列（动态规划 + 二分查找，清晰图解）
+func lengthOfLISV2(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	dp := make([]int, len(nums))
+	length := 0
+
+	for _, num := range nums {
+		// 使用二分查找找到 num 在 dp 中的插入位置
+		left, right := 0, length
+		for left < right {
+			mid := (left + right) / 2
+			if dp[mid] < num {
+				left = mid + 1
+			} else {
+				right = mid
+			}
+		}
+		// 插入 num 到正确的位置
+		dp[left] = num
+		// 如果 num 大于当前已记录的递增序列的最大值，则更新递增序列长度
+		if left == length {
+			length++
+		}
+	}
+
+	return length
 }
 
 // 931. 下降路径最小和. 思考： 是不是可以给长和宽都多一列(值为最大值, 这样就可以避免边界溢出)。试试自上而下的递归？
