@@ -9,18 +9,37 @@ PE
 CE
 
 
+## 回溯
 
-- [x] 双指针
-- [x] 滑动窗口
-- [x] 回溯
-- [x] dp
-- [x] 贪心
-- [x] binary search
-- [x] btree 
-- [x] array
-- [x] list
-- [x] stack 
-- [x] lru, lfu 
-- [x] priority queue
-- [x] 前缀树
-- [x] heap
+
+
+
+## dp
+## 贪心
+## 滑动窗口
+
+## binary search
+
+#### 33. 搜索旋转排序数组
+#### 162. 寻找峰值
+#### 153. 寻找旋转排序数组中的最小值
+todo
+#### 81. 搜索旋转排序数组 II
+#### 4. 寻找两个正序数组的中位数
+
+
+## btree 
+## array
+## list
+## stack 
+## lru, lfu 
+## priority queue
+## 前缀树
+## heap
+
+
+#### 215. 数组中的第K个最大元素
+
+
+## 双指针
+## sort
