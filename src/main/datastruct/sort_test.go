@@ -98,3 +98,42 @@ func bubbleSort(nums []int) {
 		}
 	}
 }
+
+func TestHeapSort(t *testing.T) {
+	nums := []int{5, 3, 9, 2, 4, 1, 6, 8, 10}
+	heapSort(nums)
+	fmt.Println(nums)
+}
+
+func heapSort(nums []int) {
+	heapify(nums)
+	n := len(nums) - 1
+	for i := 0; i <= n; i++ {
+		nums[0], nums[n-i] = nums[n-i], nums[0]
+		heapifyDown(nums, 0, n-i)
+	}
+}
+
+func heapify(nums []int) {
+	n := len(nums)
+	for i := n/2 - 1; i >= 0; i-- {
+		heapifyDown(nums, i, n)
+	}
+}
+
+func heapifyDown(nums []int, lastParentIdx int, n int) {
+	childIdx := lastParentIdx*2 + 1
+	for childIdx < n {
+		if childIdx+1 < n && nums[childIdx] < nums[childIdx+1] {
+			//存在比左子节点大的右子节点
+			childIdx++
+		}
+		//不用下沉了
+		if nums[lastParentIdx] >= nums[childIdx] {
+			break
+		}
+		nums[lastParentIdx], nums[childIdx] = nums[childIdx], nums[lastParentIdx]
+		lastParentIdx = childIdx
+		childIdx = lastParentIdx*2 + 1
+	}
+}

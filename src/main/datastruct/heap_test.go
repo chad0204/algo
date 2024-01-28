@@ -13,6 +13,30 @@ import (
 	    10
 	  9    8
 	7  6  5  4
+
+二叉堆可以用数组实现而不是链表
+*  因为
+*  若 parent = N
+*  则   left  = 2*N+1, right = 2*N+2
+*
+*  若 left_child = n
+*  则    right_child = n+1,parent = (n-1)/2
+
+
+推导完全二叉树的最后一个非叶子节点索引值为i = n/2 - 1(n为数组长度):
+1. 如果最后一个非叶子节点只有一个左子节点, 索引为2*i+1
+有 2*i+1 = n-1 => i = n/2 - 1
+
+2. 如果最后一个非叶子节点有右子节点, 索引为2*i+2
+有 2*i+2 = n-1 => i = (n-1)/2 - 1
+由于最后一个非叶子节点包含两个节点, 那么数组长度n为奇数, 此时(n-1)/2 - 1 = n-1/2 - 1, 得到i = n/2 - 1
+
+综上, i = n/2 - 1
+
+
+
+堆排只有到下沉, 顺序最大堆
+
 */
 
 // idx位置上浮到l, 用于新增元素
@@ -99,6 +123,7 @@ func buildMaxHeap(nums []int) {
 	}
 }
 
+// 顺序构建最大堆
 func heapSortASC(nums []int) {
 	buildMaxHeap(nums)
 
@@ -110,6 +135,7 @@ func heapSortASC(nums []int) {
 	}
 }
 
+// 逆序构建最小堆
 func heapSortDESC(nums []int) {
 	buildMinHeap(nums)
 
@@ -150,7 +176,7 @@ func TestBinaryHeap(t *testing.T) {
 
 	fmt.Println("-------排序-------")
 	//排序
-	heapSortDESC(nums)
+	heapSortASC([]int{3, 2, 1, 5, 6, 4})
 	fmt.Println(nums)
 }
 
