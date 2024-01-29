@@ -631,33 +631,39 @@ gpt解释：
 
 // 300. 最长递增子序列（动态规划 + 二分查找，清晰图解）
 func lengthOfLISV2(nums []int) int {
-	if len(nums) == 0 {
-		return 0
-	}
-
-	dp := make([]int, len(nums))
+	n := len(nums)
+	//dp[i]表示长度为i+1的递增子序列的最后一位的值
+	dp := make([]int, n)
+	//已有的最长序列
 	length := 0
-
-	for _, num := range nums {
-		// 使用二分查找找到 num 在 dp 中的插入位置
-		left, right := 0, length
-		for left < right {
-			mid := (left + right) / 2
-			if dp[mid] < num {
-				left = mid + 1
-			} else {
-				right = mid
-			}
-		}
-		// 插入 num 到正确的位置
-		dp[left] = num
-		// 如果 num 大于当前已记录的递增序列的最大值，则更新递增序列长度
-		if left == length {
+	//寻找nums[i]的插入位置
+	for i := 0; i < n; i++ {
+		// 使用二分查找, 找到nums[i]在dp中的插入位置
+		idx := searchInsertIdx(dp, nums[i], length)
+		if idx == length {
+			//说明插入位置是已有最长序列的尾部, 即nums[i]大于当前已记录的递增序列的值的最大值，更新递增序列长度。
 			length++
 		}
+		//替换长度为length的位置的
+		dp[idx] = nums[i]
 	}
-
 	return length
+}
+
+func searchInsertIdx(dp []int, target int, length int) int {
+	left, right := 0, length-1
+	for left <= right {
+		mid := left + (right-left)/2
+		if target > dp[mid] {
+			left = mid + 1
+		} else if target < dp[mid] {
+			right = mid - 1
+		} else {
+			left = mid
+			break
+		}
+	}
+	return left
 }
 
 // 931. 下降路径最小和. 思考： 是不是可以给长和宽都多一列(值为最大值, 这样就可以避免边界溢出)。试试自上而下的递归？
