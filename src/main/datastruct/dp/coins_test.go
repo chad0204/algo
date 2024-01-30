@@ -1,11 +1,24 @@
-package datastruct
+package dp
 
-import "testing"
+import (
+	"algo/src/main/datastruct"
+	"testing"
+)
 
 func TestCoint(t *testing.T) {
 	coinChangeIA([]int{1, 2, 5}, 11)
 }
 
+/**
+爬楼梯
+零钱兑换
+零钱兑换2
+
+
+完全背包
+
+
+*/
 func coinChangeIA(coins []int, amount int) int {
 	/**
 	  dp[i]表示凑够i最少需要多少硬币
@@ -26,7 +39,7 @@ func coinChangeIA(coins []int, amount int) int {
 			if dp[j-c] == amount+1 {
 				continue
 			}
-			dp[j] = Min(dp[j-c]+1, dp[j])
+			dp[j] = datastruct.Min(dp[j-c]+1, dp[j])
 		}
 	}
 	if dp[amount] == amount+1 {
@@ -54,7 +67,7 @@ func coinChangeIB(coins []int, amount int) int {
 			if dp[j-c] == amount+1 {
 				continue
 			}
-			dp[j] = Min(dp[j-c]+1, dp[j])
+			dp[j] = datastruct.Min(dp[j-c]+1, dp[j])
 		}
 	}
 	if dp[amount] == amount+1 {
