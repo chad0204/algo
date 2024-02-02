@@ -957,6 +957,38 @@ func longestPalindromeSubseq(s string) int {
 	return dp[0][len(s)-1]
 }
 
+//5. 最长回文子串
+func longestPalindromeDp(s string) string {
+	n := len(s)
+	dp := make([][]bool, n)
+	for i := range dp {
+		dp[i] = make([]bool, n)
+	}
+
+	maxLen := 1
+	start := 0
+	end := 0
+	for r := 0; r < n; r++ {
+		//以r结尾的最大子串
+		for l := 0; l <= r; l++ {
+			if r == l {
+				dp[l][r] = true
+				continue
+			}
+			//r-l == 1
+			if s[r] == s[l] && (r-l == 1 || dp[l+1][r-1]) {
+				dp[l][r] = true
+				if r-l+1 > maxLen {
+					maxLen = r - l + 1
+					start = l
+					end = r
+				}
+			}
+		}
+	}
+	return s[start : end+1]
+}
+
 /*
 0-1背包问题
 
