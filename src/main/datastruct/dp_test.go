@@ -71,7 +71,7 @@ func fibV2(n int) int {
 
 func TestCoinChange(t *testing.T) {
 	fmt.Println(coinChange([]int{186, 419, 83, 408}, 6249))
-	fmt.Println(coinChangeIterator([]int{2, 5, 10, 1}, 27))
+	fmt.Println(coinChangeDp([]int{2, 5, 10, 1}, 27))
 }
 
 // 322. 零钱兑换 dp[amount] = min{dp[amount - coin] + 1}
@@ -111,7 +111,7 @@ func dpCoin(coins []int, amount int, m []int) int {
 	return res
 }
 
-func coinChangeIterator(coins []int, amount int) int {
+func coinChangeDp(coins []int, amount int) int {
 	dp := make([]int, amount+1)
 	for i := 0; i <= amount; i++ {
 		if i == 0 {
@@ -564,7 +564,7 @@ dp[i]表示以nums[i]为结尾的最长递增子序列的长度
 
 
 
-解法二：dp + 二分查找
+解法二：二分查找+贪心
 
 dp[i]表示以长度为i+1的最长递增子序列的最小值）
 最小值: 比如1254中长度为3的递增子序列为 1,2,5; 1,2,4。长度为3递增子序列的最小值应该是4而不是5
@@ -701,51 +701,38 @@ func minFallingPathSum(matrix [][]int) int {
 	return res
 }
 
-// 思路 s[0: idx]在words中存在, 只需要判断s[idx:]是否存在即可, 逐步缩小范围, idx就是状态。减枝: 当words存在类似的单词, idx会被重复计算
 func TestWord(t *testing.T) {
 
 	wordBreak("leetcode", []string{"leet", "code"})
 }
 
+// 139. 单词拆分
 func wordBreak(s string, wordDict []string) bool {
 	wordMap := make(map[string]bool)
-	for _, word := range wordDict {
-		wordMap[word] = true
+	for _, v := range wordDict {
+		wordMap[v] = true
 	}
-	//索引表示切割点, -1 未计算 0 已计算但凑不出 1 已计算能凑出
-	memo := make([]int, len(s))
-	for i := 0; i < len(memo); i++ {
-		memo[i] = -1
-	}
-	return wordBreakDp(s, wordMap, 0, memo)
-}
+	/**
+	  dp[i] 表示字符串s的前i个字符组成的字符串s[0..i−1]是否能被空格拆分成若干个字典中出现的单词
+	  dp[i] = dp[j] && word contains dp[j:i] j属于[0,i)
+	  dp[0] = true, 用来表示空字符串。比如s = leet, word = {"leet", "code"}, s可以被拆分成"" "leet"
 
-func wordBreakDp(s string, wordMap map[string]bool, idx int, memo []int) bool {
-	if len(s) == idx {
-		return true
-	}
+	  如果用dp[0]表示第一个字符, 代码比较难写
 
-	if memo[idx] != -1 {
-		if memo[idx] == 0 {
-			//0 ~ idx 无法凑出
-			return false
-		} else {
-			//0 ~ idx 可以凑出
-			return true
-		}
-	}
-
-	for i := idx; i < len(s); i++ {
-		ss := s[idx : i+1]
-		if wordMap[ss] {
-			if wordBreakDp(s, wordMap, i+1, memo) {
-				memo[idx] = 1
-				return true
+	*/
+	n := len(s)
+	dp := make([]bool, n+1)
+	//空字符串为true
+	dp[0] = true
+	for i := 1; i <= n; i++ {
+		for j := 0; j < i; j++ {
+			if dp[j] && wordMap[s[j:i]] {
+				dp[i] = true
+				break
 			}
 		}
 	}
-	memo[idx] = 0
-	return false
+	return dp[n]
 }
 
 // 140. 单词拆分 II
