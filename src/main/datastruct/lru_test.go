@@ -56,7 +56,8 @@ func (this *LRUCache) delNode(node *LRUNode) {
 	node.next = nil
 }
 
-/**
+/*
+*
 插入一个元素, 一定是四步操作, 注意不要先断掉tail和prev的连接
 */
 func (this *LRUCache) addLast(node *LRUNode) {
@@ -94,6 +95,7 @@ func (this *LRUCache) Put(key int, value int) {
 	this.kv[key] = node
 	this.size++
 	if this.size > this.capacity {
+		//先删map, 要是先删除队头, this.head.next就变了, 没法删key了。不然就得加个临时变量
 		delete(this.kv, this.head.next.key)
 		//删除队头
 		this.delNode(this.head.next)
