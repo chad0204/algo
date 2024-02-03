@@ -67,6 +67,21 @@ func detectCycle(head *ListNode) *ListNode {
 			为何慢指针第一圈走不完一定会和快指针相遇？由于快指针比慢指针快一步, 如果都在环中, 那么慢指针静止, 快指针相当于1步的速度前进, 一圈内一定相遇。得出a + b是慢指针在第一次相遇是慢指针的路程
 
 			备注: 此题用map比较普世
+
+
+			思路二：
+			设head到环入口a, 相遇点到环入口c, 圈长为L
+
+			1. f - s = nL
+			2. 2s = f
+			=> s = nL
+
+			1. s = nL
+			2. a + (L-c) = s (这里有个隐藏条件, 就是相遇时, 慢指针只走了一圈不到。反证法, 比如快慢指针在圈内同时出发, 那么必然在起点处相遇, 且s走完一圈, 题中相当于s比f慢出发, f会在一圈内追上s)
+			=> a = c + (n-1)L
+
+
+
 	*/
 
 	slow := head
@@ -589,7 +604,7 @@ func TestSortList(t *testing.T) {
 
 }
 
-//148. 排序链表
+// 148. 排序链表
 func sortList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
