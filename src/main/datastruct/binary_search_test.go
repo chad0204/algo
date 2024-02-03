@@ -165,12 +165,11 @@ func search(nums []int, target int) int {
 			return mid
 		}
 		/*
-				肯定有一半有有序的
-				这里有个边界, nums[left] == nums[mid]的情况,
-				nums[left] == nums[mid]表示(l+r)/2 = mid = l, 有两种情况：1. r=l; 2.r=l+1
+					肯定有一半有有序的
 
-			如果l==r且不是target, 随便哪边都行, 最后会返回-1
-			如果l+1==r且不是target, 只能试试left = mid+1
+			nums[left] <= nums[mid] , 算左区间有序
+			nums[mid] <= nums[right], 算右区间有序
+
 		*/
 
 		if nums[left] <= nums[mid] {
