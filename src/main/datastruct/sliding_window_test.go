@@ -13,7 +13,7 @@ import (
 */
 
 func TestMinWindow(t *testing.T) {
-	fmt.Println(minWindow("a", "a"))
+	fmt.Println(minWindowV2("a", "a"))
 }
 
 // 剑指 Offer II 017. 含有所有字符的最短字符串; 76. 最小覆盖子串
@@ -66,6 +66,46 @@ func minWindow(s string, t string) string {
 		return ""
 	}
 	return s[start : start+l]
+}
+
+// 推荐
+func minWindowV2(s string, t string) string {
+	n := len(s)
+	needMap := make(map[byte]int)
+	for i := range t {
+		needMap[t[i]] += 1
+	}
+	checkSum := 0
+	checkMap := make(map[byte]int, 0)
+	windows := make([]byte, 0)
+	res := ""
+	maxLen := n + 1
+	for i := 0; i < n; i++ {
+		add := s[i]
+		windows = append(windows, add)
+		if _, ok := needMap[add]; ok {
+			checkMap[add] += 1
+			if needMap[add] == checkMap[add] {
+				checkSum++
+			}
+		}
+		for checkSum == len(needMap) {
+			if len(windows) < maxLen {
+				res = string(windows)
+				maxLen = len(windows)
+			}
+			rmv := windows[0]
+			windows = windows[1:]
+
+			if _, ok := needMap[rmv]; ok {
+				if needMap[rmv] == checkMap[rmv] {
+					checkSum--
+				}
+				checkMap[rmv] -= 1
+			}
+		}
+	}
+	return res
 }
 
 // 567. 字符串的排列; 剑指 Offer II 014. 字符串中的变位词; 这题和438一样 就是返回值类型不一样
@@ -151,7 +191,7 @@ func findAnagrams(s string, p string) []int {
 }
 
 func TestLOLS(t *testing.T) {
-	lengthOfLongestSubstring("abcdef")
+	lengthOfLongestSubstringV2("abcdef")
 }
 
 // 3. 无重复字符的最长子串; 剑指 Offer 48. 最长不含重复字符的子字符串 剑指 Offer II 016. 不含重复字符的最长子字符串
@@ -178,8 +218,30 @@ func lengthOfLongestSubstring(s string) int {
 	return l
 }
 
-/*
+// 推荐
+func lengthOfLongestSubstringV2(s string) int {
+	n := len(s)
+	if n == 0 {
+		return 0
+	}
+	checkMap := make(map[byte]int, 0)
+	windows := make([]byte, 0)
+	maxLen := 0
+	for i := 0; i < n; i++ {
+		add := s[i]
+		windows = append(windows, add)
+		checkMap[add] += 1
+		for checkMap[add] > 1 {
+			rmv := windows[0]
+			windows = windows[1:]
+			checkMap[rmv] -= 1
+		}
+		maxLen = Max(maxLen, len(windows))
+	}
+	return maxLen
+}
 
+/*
 30. 串联所有单词的子串
 
 abarfoothefoobarman
@@ -189,10 +251,6 @@ foo bar
 0
 
 windows = len(words) * len(words[0])
-
-
-
-
 */
 func TestFindSyb(t *testing.T) {
 	fmt.Println(findSubstringV2("abarfoothefoobarman", []string{"foo", "bar"}))
