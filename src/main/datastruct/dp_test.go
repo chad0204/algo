@@ -958,31 +958,41 @@ func longestPalindromeSubseq(s string) int {
 }
 
 //5. 最长回文子串
-func longestPalindromeDp(s string) string {
+func longestPalindromeDP(s string) string {
+	/**
+	  dp[i][j]表示s[i:j]是否是回文子串
+	*/
 	n := len(s)
 	dp := make([][]bool, n)
 	for i := range dp {
 		dp[i] = make([]bool, n)
 	}
-
 	maxLen := 1
 	start := 0
 	end := 0
 	for r := 0; r < n; r++ {
-		//以r结尾的最大子串
 		for l := 0; l <= r; l++ {
-			if r == l {
+			//base case 同一个字符, 肯定是回文
+			if l == r {
 				dp[l][r] = true
 				continue
 			}
-			//r-l == 1
-			if s[r] == s[l] && (r-l == 1 || dp[l+1][r-1]) {
-				dp[l][r] = true
-				if r-l+1 > maxLen {
-					maxLen = r - l + 1
-					start = l
-					end = r
+			//字符相等
+			if s[r] == s[l] {
+				//相邻, 是回文
+				if r-l == 1 {
+					dp[l][r] = true
 				}
+				//前一个状态也是回文
+				if dp[l+1][r-1] {
+					dp[l][r] = true
+				}
+			}
+			//根据最大长度更新位置
+			if dp[l][r] && r-l+1 > maxLen {
+				maxLen = r - l + 1
+				start = l
+				end = r
 			}
 		}
 	}
