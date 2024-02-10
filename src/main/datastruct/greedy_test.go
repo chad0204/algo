@@ -354,8 +354,8 @@ func TestJ(t *testing.T) {
 
 // 题目已保证可以达到
 func jumpV2(nums []int) int {
-	end := 0    // 当前跳跃范围的边界, 当i超过边界end时才更新
-	maxPos := 0 // 当前能够到达的最远位置
+	end := 0    // 当前步数跳跃范围的边界, 当i超过end才更新 比如 4 4 4 4 5 1 1 1 1
+	maxPos := 0 // 每个索引位置能到达的最远位置
 	steps := 0  // 跳跃次数
 	for i := 0; i < len(nums); i++ {
 		if i > end {
