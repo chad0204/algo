@@ -163,6 +163,26 @@ func findMin(nums []int) int {
 	return res
 }
 
+// 153. 寻找旋转排序数组中的最小值 更好理解
+func findMinV2(nums []int) int {
+	n := len(nums)
+	l, r := 0, n-1
+	for l <= r {
+		if l == r {
+			break
+		}
+		mid := l + (r-l)/2
+		if nums[mid] > nums[r] {
+			//一定在右边
+			l = mid + 1
+		} else {
+			//在mid左边, 或者等于mid
+			r = mid
+		}
+	}
+	return nums[l]
+}
+
 // 33. 搜索旋转排序数组
 func search(nums []int, target int) int {
 	//二分查找最大值
