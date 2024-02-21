@@ -624,20 +624,20 @@ gpt解释：
 // 300. 最长递增子序列（动态规划 + 二分查找，清晰图解）
 func lengthOfLISV2(nums []int) int {
 	n := len(nums)
-	//dp[i]表示长度为i+1的递增子序列的最后一位的值
-	dp := make([]int, n)
+	//maxLenNums[i]表示长度为i+1的递增子序列的最后一位的值
+	maxLenNums := make([]int, n)
 	//已有的最长序列
-	length := 0
+	length := 0 //可以省略, 直接用len(maxLenNums)
 	//寻找nums[i]的插入位置
 	for i := 0; i < n; i++ {
 		// 使用二分查找, 找到nums[i]在dp中的插入位置
-		idx := searchInsertIdx(dp, nums[i], length)
+		idx := searchInsertIdx(maxLenNums, nums[i], length)
 		if idx == length {
 			//说明插入位置是已有最长序列的尾部, 即nums[i]大于当前已记录的递增序列的值的最大值，更新递增序列长度。
 			length++
 		}
 		//替换长度为length的位置的
-		dp[idx] = nums[i]
+		maxLenNums[idx] = nums[i]
 	}
 	return length
 }
@@ -949,7 +949,7 @@ func longestPalindromeSubseq(s string) int {
 	return dp[0][len(s)-1]
 }
 
-//5. 最长回文子串
+// 5. 最长回文子串
 func longestPalindromeDP(s string) string {
 	/**
 	  dp[i][j]表示s[i:j]是否是回文子串
