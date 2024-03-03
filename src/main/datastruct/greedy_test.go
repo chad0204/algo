@@ -318,6 +318,25 @@ func canJumpGreedy(nums []int) bool {
 	return maxPos >= len(nums)-1
 }
 
+// 55. 跳跃游戏
+func canJumpGreedyV2(nums []int) bool {
+	maxPos := 0
+	edge := 0
+	for i := 0; i < len(nums); i++ {
+		if i > edge {
+			//当i超过当前的最大边界时, 判断能否继续走下去
+
+			if i > maxPos {
+				//当前位置已经超过当前最大边界下里的最大maxPos, 无法继续走了。
+				return false
+			}
+			edge = maxPos
+		}
+		maxPos = Max(maxPos, i+nums[i])
+	}
+	return true
+}
+
 // 45. 跳跃游戏 II
 func TestJ(t *testing.T) {
 	jumpV2([]int{2, 3, 1, 1, 1, 4, 1, 1, 1})
