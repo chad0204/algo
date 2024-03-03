@@ -361,14 +361,15 @@ https://mp.weixin.qq.com/s/z44hk0MW14_mAQd7988mfw
 
 	这间不偷, 上一间偷了, 上一间没偷
 	dp[i][0] = max(dp[i-1][1], dp[i-1][0])
-	这间偷了, 上上间偷了, 上一间没偷
-	dp[i][1] = max(dp[i-2][1] + nums[i], dp[i-1][0] + num[i])
+	这间偷了, 上一间没偷
+	dp[i][1] = dp[i-1][0] + num[i-1]
+
+	dp[0]表示没有房子
 
 	base case:
-	dp[-1][0] = 0
-	dp[-1][1] = math.MinInt32
-	dp[-2][0] = 0
-	dp[-2][1] = math.MinInt32
+	dp[0][0] = 0
+	dp[0][1] = math.MinInt32
+
 
 
 	可以使用一维数组和递归, 我的习惯是从0到n, 也可以从n到0
@@ -378,26 +379,17 @@ https://mp.weixin.qq.com/s/z44hk0MW14_mAQd7988mfw
 // 198. 打家劫舍
 func robV1(nums []int) int {
 	n := len(nums)
-	dp := make([][]int, n)
+	dp := make([][]int, n+1)
 	for i := range dp {
 		dp[i] = make([]int, 2)
 	}
-
-	for i := 0; i < n; i++ {
-		if i == 0 {
-			dp[i][0] = 0
-			dp[i][1] = nums[i]
-			continue
-		}
-		if i == 1 {
-			dp[i][0] = Max(dp[0][1], dp[0][0])
-			dp[i][1] = nums[i]
-			continue
-		}
-		dp[i][0] = Max(dp[i-1][1], dp[i-1][0]) // i-2
-		dp[i][1] = Max(dp[i-2][1]+nums[i], dp[i-1][0]+nums[i])
+	dp[0][0] = 0
+	dp[0][1] = math.MinInt32
+	for i := 1; i <= n; i++ {
+		dp[i][0] = Max(dp[i-1][1], dp[i-1][0])
+		dp[i][1] = dp[i-1][0] + nums[i-1]
 	}
-	return Max(dp[n-1][0], dp[n-1][1])
+	return Max(dp[n][0], dp[n][1])
 }
 
 // 递归 自顶向下
