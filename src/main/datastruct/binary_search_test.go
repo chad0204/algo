@@ -200,7 +200,7 @@ func search(nums []int, target int) int {
 
 		*/
 
-		if nums[left] <= nums[mid] {
+		if nums[left] < nums[mid] {
 			//左半边有序
 			if nums[left] <= target && target < nums[mid] {
 				//在左区间
@@ -209,7 +209,7 @@ func search(nums []int, target int) int {
 				//不在左区间, 朝右边逼近
 				left = mid + 1
 			}
-		} else {
+		} else if nums[mid] < nums[right] {
 			//右半边有序
 			if nums[mid] < target && target <= nums[right] {
 				left = mid + 1
@@ -217,6 +217,12 @@ func search(nums []int, target int) int {
 				//不在右区间, 朝左边逼近
 				right = mid - 1
 			}
+		} else if nums[left] == nums[mid] {
+			//相等说明left==right  or left+1 == right, 也能遇到重复值, 能走到这说明nums[left]不是, left = mid + 1
+			left = mid + 1
+		} else if nums[mid] == nums[right] {
+			//相等说明left==right, 能走到这说明nums[right]不是, 这里可以用mid-1, 也可以直接返回-1
+			right = mid - 1
 		}
 	}
 	return -1
