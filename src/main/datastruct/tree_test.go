@@ -514,3 +514,40 @@ func inOrder(root *TreeNode, prev *int, res *int) {
 	*prev = root.Val
 	inOrder(root.Right, prev, res)
 }
+
+func TestPathSum(t *testing.T) {
+
+	root := &TreeNode{1,
+		&TreeNode{-2, &TreeNode{1, &TreeNode{-1, nil, nil}, nil}, &TreeNode{3, nil, nil}},
+		&TreeNode{-3, &TreeNode{-2, nil, nil}, nil}}
+	pathSum(root, -1)
+
+}
+
+//437. 路径总和 III
+func pathSum(root *TreeNode, targetSum int) int {
+	if root == nil {
+		return 0
+	}
+	//已当前节点为root, 计算总数. 路径必须包含该root
+	res := rootSum(root, targetSum)
+	//子问题：左节点为root
+	leftCnt := pathSum(root.Left, targetSum)
+	//子问题： 右节点为root
+	rightCnt := pathSum(root.Right, targetSum)
+	return leftCnt + rightCnt + res
+}
+
+func rootSum(root *TreeNode, targetSum int) int {
+	if root == nil {
+		return 0
+	}
+	res := 0
+	if targetSum-root.Val == 0 {
+		//说明途径点有满足的，注意这里不能返回，累加完后面的节点可能还有满足的 abc满足， abcd可能也满足
+		res++
+	}
+	leftCnt := rootSum(root.Left, targetSum-root.Val)
+	rightCnt := rootSum(root.Right, targetSum-root.Val)
+	return leftCnt + rightCnt + res
+}
