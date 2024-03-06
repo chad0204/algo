@@ -551,3 +551,34 @@ func rootSum(root *TreeNode, targetSum int) int {
 	rightCnt := rootSum(root.Right, targetSum-root.Val)
 	return leftCnt + rightCnt + res
 }
+
+//124. 二叉树中的最大路径和
+func maxPathSum(root *TreeNode) int {
+	res := math.MinInt32
+	maxPathSumHelper(root, &res)
+	return res
+}
+
+/**
+maxPathSumHelper的结果是包含root的最优解, root的父节点要用这个解，所以不能同时包含左右。
+但是当前的左+根+右也是一种结果, 所以每次都要比较res
+*/
+func maxPathSumHelper(root *TreeNode, res *int) int {
+	if root == nil {
+		return 0
+	}
+
+	l := maxPathSumHelper(root.Left, res)
+	r := maxPathSumHelper(root.Right, res)
+
+	//左+根+右
+	lmr := root.Val + Max(0, l) + Max(0, r)
+	//左+根(当左为负数的时候, 就加0)
+	lm := root.Val + Max(0, l)
+	//根+右
+	mr := root.Val + Max(0, r)
+	//最大值可能是这里的三种
+	*res = Max(mr, Max(lmr, Max(*res, lm)))
+	//但是root的父节点关联root后, 最优解不能同时包含root的左和右
+	return Max(lm, mr)
+}
