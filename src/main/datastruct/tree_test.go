@@ -495,7 +495,7 @@ func lcaHelper235(root, min, max *TreeNode) *TreeNode {
 	return root
 }
 
-//530. 二叉搜索树的最小绝对差
+// 530. 二叉搜索树的最小绝对差
 func getMinimumDifference(root *TreeNode) int {
 	res := math.MaxInt32
 	prev := -1
@@ -524,7 +524,7 @@ func TestPathSum(t *testing.T) {
 
 }
 
-//437. 路径总和 III
+// 437. 路径总和 III
 func pathSum(root *TreeNode, targetSum int) int {
 	if root == nil {
 		return 0
@@ -552,14 +552,15 @@ func rootSum(root *TreeNode, targetSum int) int {
 	return leftCnt + rightCnt + res
 }
 
-//124. 二叉树中的最大路径和
+// 124. 二叉树中的最大路径和
 func maxPathSum(root *TreeNode) int {
 	res := math.MinInt32
 	maxPathSumHelper(root, &res)
 	return res
 }
 
-/**
+/*
+*
 maxPathSumHelper的结果是包含root的最优解, root的父节点要用这个解，所以不能同时包含左右。
 但是当前的左+根+右也是一种结果, 所以每次都要比较res
 */
@@ -581,4 +582,34 @@ func maxPathSumHelper(root *TreeNode, res *int) int {
 	*res = Max(mr, Max(lmr, Max(*res, lm)))
 	//但是root的父节点关联root后, 最优解不能同时包含root的左和右
 	return Max(lm, mr)
+}
+
+// 662. 二叉树最大宽度
+func widthOfBinaryTree(root *TreeNode) int {
+	queue := make([]LevelPair, 0)
+
+	first := LevelPair{root, 1}
+	queue = append(queue, first)
+	res := 1
+	for len(queue) > 0 {
+		//当前层的最后一个节点-第一个节点 + 1
+		res = Max(res, queue[len(queue)-1].idx-queue[0].idx+1)
+		n := len(queue)
+		for i := 0; i < n; i++ {
+			curr := queue[0]
+			if curr.node.Left != nil {
+				queue = append(queue, LevelPair{curr.node.Left, curr.idx * 2})
+			}
+			if curr.node.Right != nil {
+				queue = append(queue, LevelPair{curr.node.Right, curr.idx*2 + 1})
+			}
+			queue = queue[1:]
+		}
+	}
+	return res
+}
+
+type LevelPair struct {
+	node *TreeNode
+	idx  int //层序遍历的序号, 从1开始
 }
