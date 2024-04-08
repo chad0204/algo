@@ -70,12 +70,12 @@ func fibV2(n int) int {
 }
 
 func TestCoinChange(t *testing.T) {
-	fmt.Println(coinChange([]int{186, 419, 83, 408}, 6249))
-	fmt.Println(coinChangeDp([]int{2, 5, 10, 1}, 27))
+	fmt.Println(coinChangeIterate([]int{186, 419, 83, 408}, 6249))
+	fmt.Println(coinChangeIterate([]int{2, 5, 10, 1}, 27))
 }
 
 // 322. 零钱兑换 dp[amount] = min{dp[amount - coin] + 1}
-func coinChange(coins []int, amount int) int {
+func coinChangeIterate(coins []int, amount int) int {
 	m := make([]int, amount+1)
 	for i := range m {
 		m[i] = -1
@@ -109,29 +109,6 @@ func dpCoin(coins []int, amount int, m []int) int {
 		return -1
 	}
 	return res
-}
-
-func coinChangeDp(coins []int, amount int) int {
-	dp := make([]int, amount+1)
-	for i := 0; i <= amount; i++ {
-		if i == 0 {
-			dp[i] = 0
-			continue
-		}
-		//初始化为math.MaxInt32, 可能dp[i-c]+1其他语言会溢出, 其实可以改成amount+1
-		dp[i] = amount + 1
-		for _, c := range coins {
-			if i < c {
-				continue
-			}
-			// 每次选一个硬币c, 那么就比i-c多一个硬币, 看下当前选哪个硬币最小
-			dp[i] = Min(dp[i-c]+1, dp[i])
-		}
-	}
-	if dp[amount] == amount+1 {
-		return -1
-	}
-	return dp[amount]
 }
 
 /*
@@ -989,139 +966,6 @@ func longestPalindromeDP(s string) string {
 		}
 	}
 	return s[start : end+1]
-}
-
-/*
-0-1背包问题
-
-416. 分割等和子集  1 5 11 5    11
-
-1 5 1 5
-
-322. 零钱兑换 也可以用二维解法。一维数组更简单(完全背包问题)
-
-二者不同: 分割子集(01背包)数组元素只能用一次, 零钱兑换(完全背包)可以用无数次
-
-假设背包的容量为5。有四个物品，它们的重量和价值分别为:
-物品1: 重量 w1 = 2, 价值 v1 = 3
-物品2: 重量 w2 = 1, 价值 v2 = 2
-物品3: 重量 w3 = 3, 价值 v3 = 4
-物品4: 重量 w4 = 2, 价值 v4 = 2
-
-0-1背包: 考虑第i个元素时, 加上v[i]之后求j-w[i]时, 不能再带上i
-dp[i][j] = max(dp[i-1][j], dp[i-1][j-w[i]] + v[i])
-完全背包: 考虑第i个元素时, 加上v[i]之后求j-w[i]时, 可以再带上i, 能用多次
-dp[i][j] = max(dp[i-1][j], dp[i][j-w[i]] + v[i])
-*/
-func TestCP(t *testing.T) {
-	canPartition([]int{1, 2, 3})
-}
-
-func canPartition(nums []int) bool {
-	// 求所有元素和的一半sum, 判断nums中是否有子集能组成sum。转化为背包问题
-	sum := 0
-	for _, v := range nums {
-		sum += v
-	}
-	if sum%2 == 1 {
-		return false
-	}
-	sum = sum / 2
-	// dp[i][j] 表示前i个元素能否凑成j
-	dp := make([][]bool, len(nums)+1)
-	for i := range dp {
-		dp[i] = make([]bool, sum+1)
-	}
-
-	for i := 0; i <= len(nums); i++ {
-		for j := 0; j <= sum; j++ {
-			if j == 0 {
-				//相当于j是装满的
-				dp[i][j] = true
-				continue
-			}
-			if i == 0 {
-				//没有元素肯定装不满
-				dp[i][j] = false
-				continue
-			}
-			// 可以理解为i是从1计数的
-			if j-nums[i-1] < 0 {
-				// 不能把nums[i]算入子集, 继承前i-1个元素的值
-				dp[i][j] = dp[i-1][j]
-			} else {
-				// 有空间, 选择nums[i-1]和不选nums[i-1]做为子集。
-				// 不把nums[i-1]算入子集   dp[i-1][j]
-				// 把nums[i-1]算入子集 dp[i-1][j-nums[i-1]], 就要看前i-1个元素能不能凑成j-nums[i-1]
-				/*
-						思考为啥这里是dp[i-1][j-nums[i-1]] 而不是dp[i][j-nums[i-1]]。
-
-					dp[i-1][j-nums[i-1]] 表示算上当前元素, 能不能凑成j。那么就看前i-1个元素能不能凑成j-nums[i-1]。如果用dp[i][j-nums[i-1]], 那么nums[i-1]就重复计算了, 相当于算上nums[i-1]去计算j-nums[i-1]
-				*/
-				dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]]
-			}
-		}
-	}
-	return dp[len(nums)][sum]
-}
-
-func coinChangeV2(coins []int, amount int) int {
-	//dp[i][j]表示前i个元素凑成j所需的最少硬币
-	dp := make([][]int, len(coins)+1)
-	for i := range dp {
-		dp[i] = make([]int, amount+1)
-	}
-	for i := 0; i <= len(coins); i++ {
-		for j := 0; j <= amount; j++ {
-			if j == 0 {
-				dp[i][j] = 0
-				continue
-			}
-			if i == 0 {
-				dp[i][j] = amount + 1
-				continue
-			}
-
-			if j-coins[i-1] < 0 {
-				dp[i][j] = dp[i-1][j]
-			} else {
-				//不使用  dp[i-1][j]
-				//使用    dp[i][j-coins[i-1]] + 1 使用则要把i加进来, 然后硬币数+1。而01背包的nums[i]算入子集, 则不能把i加进来算j-nums[i-1]
-				dp[i][j] = Min(dp[i-1][j], dp[i][j-coins[i-1]]+1)
-			}
-		}
-	}
-	if dp[len(coins)][amount] == amount+1 {
-		return -1
-	}
-	return dp[len(coins)][amount]
-}
-
-// 518. 零钱兑换 II
-func change(amount int, coins []int) int {
-	//dp[i][j] 表示前i个元素, 能凑成j的方式的个数
-	dp := make([][]int, len(coins)+1)
-	for i := range dp {
-		dp[i] = make([]int, amount+1)
-	}
-	for i := 0; i <= len(coins); i++ {
-		for j := 0; j <= amount; j++ {
-			if j == 0 {
-				dp[i][j] = 1
-				continue
-			}
-			if i == 0 {
-				dp[i][j] = 0
-				continue
-			}
-			if j-coins[i-1] < 0 {
-				dp[i][j] = dp[i-1][j]
-			} else {
-				dp[i][j] = dp[i-1][j] + dp[i][j-coins[i-1]]
-			}
-		}
-	}
-	return dp[len(coins)][amount]
 }
 
 // 494. 目标和
