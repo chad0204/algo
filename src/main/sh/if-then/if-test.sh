@@ -15,7 +15,7 @@ else
 fi
 
 
-# 数值比较 eq ge gt le lt ne; 注意bash不能进行浮点数比较, zsh可以
+# 数值比较 -eq -ne -ge -gt -le -lt; 注意bash不能进行浮点数比较, zsh可以
 c="1"
 if [ $a -eq "$c" ]; then
   echo "a eq c"
