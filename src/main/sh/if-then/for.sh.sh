@@ -36,3 +36,29 @@ do
   echo "$file is other"
  fi
 done
+
+
+
+# c语言风格：
+for ((i=0, j=10; i<5; i++,j--))
+do
+  echo "i: $i, j: $j"
+done
+
+
+# 处理循环的输出
+# 输出到文件
+for ((val=0; val<10; val++))
+do
+ echo "val: $val"
+done > file.txt
+
+# 排序后输出
+for ((val=0; val<10; val++))
+do
+ echo "val: $val"
+done | sort
+
+
+
+

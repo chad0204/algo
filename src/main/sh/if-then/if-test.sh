@@ -69,3 +69,28 @@ else
   echo "a not eq 1 or b not eq 2"
 fi
 
+
+# 双括号命令允许你在比较过程中使用高级数学表达式。test命令只能在比较中使用简单的算术操作。test重点是比较, 双括号是运算
+# val++; val--; ++val; --val; !; **(幂运算); <<; >>; &; |; &&; ||
+val=10
+if (( val ** 2 > 90 )); then
+  ((val2 = val ** 2))
+  echo "The square of $val is $val2"
+fi
+
+a=10
+while [ $a -gt 0 ]; do
+  ((tmp=a-1))
+  a=$tmp
+  echo "a=$a"
+done
+
+# 双方括号, 比较字符串
+if [[ $USER == r* ]]
+then
+ echo "Hello $USER"
+else
+ echo "Sorry, I do not know you"
+fi
+
+
